@@ -1,0 +1,113 @@
+.FormCart {
+    width: 30rem;
+    height: 20rem;
+    position: absolute;
+    box-shadow: var(--darker-shadow);
+    right: -5rem;
+    top: 3.5rem;
+    z-index: 1000;
+    border-top: 2px solid var(--hightlight-color);
+    background-color: var(--white-color);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(.5rem);
+    transition: all .3s ease-in-out;
+}
+
+.FormCart.active {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    z-index: 1000;
+}
+
+.cart-content {
+    width: 100%;
+    height: 4rem;
+    height: 78%;
+    padding: 1rem;
+    overflow-y: scroll;
+}
+
+.cart-product {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 7rem;
+    border-bottom: 1px solid var(--vertical-line-color);
+    padding: .5rem 0;
+}
+
+.cart-product:last-child {
+    border-bottom: 0;
+}
+
+.cart-product img {
+    width: 25%;
+    height: 100%;
+}
+
+.cart-product .cart-product-content {
+    width: 65%;
+    height: 90%;
+    vertical-align: middle;
+}
+
+.cart-product-content .cart-product-title {
+    line-height: 1.3;
+    width: 100%;
+    font-size: var(--normal-font-size);
+    margin-bottom: 1rem;
+    color: var(--blue-text-color);
+} 
+
+.quantity-price {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 1rem;
+}
+
+.quantity-price input[type="number"] {
+    width: 3rem;
+    padding: 0 3px;
+}
+
+.cart-product-remove {
+    width: 3%;
+    color: red;
+}
+
+.view-checkout {
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+}
+
+.view-checkout .view,
+.view-checkout .checkout {
+    padding: .7rem 2rem;
+    border-radius: 25px;
+    font-size: var(--normal-font-size);
+}
+
+.view-checkout .view {
+    background-color: var(--vertical-line-color);
+}
+
+.view-checkout .view:hover {
+    background-color: var(--black-color);
+    color: var(--white-color);
+}
+
+.view-checkout .checkout {
+    background-color: var(--hightlight-color);
+}
+
+.view-checkout .checkout:hover {
+    background-color: var(--black-color);
+    color: var(--white-color);
+}

@@ -1,0 +1,162 @@
+.FormLogin {
+    width: 25rem;
+    height: 38rem;
+    background-color: rgba(255,255,255,0.13);
+    backdrop-filter: blur(50px);
+    border: 2px solid var(--white-color);
+    border-radius: 10px;
+    box-shadow: -3px -3px 9px #aaa9a9a2, 3px 3px 7px rgba(147, 149, 151, 0.671);
+    padding: 2.5rem;
+    color: var(--white-color);
+    text-align: center;
+    overflow: hidden;
+    transform: translateY(-15%);
+}
+
+.FormLogin-content {
+    position: relative;
+}
+
+.FormLogin-title {
+    font-size: var(--h1-font-size);
+    font-weight: 500;
+    text-shadow: var(--white-color) 1px 0 10px;
+    margin-bottom: 5rem;
+}
+
+.border-input i {
+    font-size: var(--h3-font-size);
+}
+
+.border-input input {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    width: 100%;
+    padding: 5px 10px 0;
+    color: var(--white-color);
+}
+
+.user-input,
+.pass-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--white-color);
+    height: 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+input[type="password"]::-ms-reveal, 
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+
+.form-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.form-action span {
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.form-action input {
+    margin-right: 5px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.form-action .forget-pass  a {
+    color: var(--white-color);
+}
+
+.FormLogin button[type="submit"] {
+    width: 100%;
+    padding: 5px 0;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+}
+
+.with-socialmedia {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1rem;
+}
+
+.or {
+    margin-bottom: 1.5rem;
+}
+
+.with-socialmedia .Facebook,
+.with-socialmedia .Google {
+    border: 1px solid;
+    border-radius: 2px;
+    padding: 5px;
+    width: 35%;
+    background-color: rgba(255,255,255,0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.with-socialmedia .Facebook i,
+.with-socialmedia .Google i {
+    font-size:var(--h3-font-size);
+}
+
+.dont-have-acc a {
+    margin-left: 5px;
+    color: var(--hightlight-color);
+}
+
+
+.Login {
+    visibility: hidden;
+    opacity: 0;
+    transition: 1s ease-in-out;
+    position: absolute;
+    width: 100%;
+    transform: rotate(-90deg);
+    top: -500px;
+    left: -500px;
+}
+
+.Signup {
+    opacity: 0;
+    visibility: hidden;
+    transition: 1s ease-in-out;
+    position: absolute;
+    width: 100%;
+    transform: rotate(90deg);
+    top: 500px;
+    left: 500px;
+}
+
+/* Hiển thị và fade in */
+.Login.active {
+    visibility: visible;
+    opacity: 1;
+    transform: rotate(0deg);
+    top: 0;
+    left: 0;
+}
+
+.Signup.active {
+    visibility: visible;
+    opacity: 1;
+    transform: rotate(0deg);
+    top: 0;
+    left: 0;
+}
+
+.Signup .FormLogin-title {
+    margin-bottom: 2rem;
+}

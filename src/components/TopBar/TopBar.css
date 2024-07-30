@@ -1,0 +1,34 @@
+.TopBar {
+    width: 100%;
+    background-color: var(--main-background-color);
+    height: 3em;
+    border-bottom: 1px solid var(--dark-color);
+}
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+
+.menu-top-bar-right ul {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+.menu-top-bar-right ul li {
+    position: relative;
+    cursor: pointer;
+}
+.menu-top-bar-right ul li i {
+    font-size: var(--h3-font-size);
+    position: relative;
+    top: 2px;
+}
+
+.sepa {
+  color: #ccc;
+  position: relative;
+  top: 3px;
+}

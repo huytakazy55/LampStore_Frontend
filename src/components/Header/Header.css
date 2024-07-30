@@ -1,0 +1,136 @@
+.header {
+    width: 100%;
+    height: 7em;
+    background-color: var();
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 6em;
+}
+
+.logo img {
+    height: 100%;
+    max-width: 100%;
+}
+
+.navbar-toggler i {
+    line-height: 1;
+    vertical-align: middle;
+    font-size: var(--h2-font-size);
+}
+
+.navbar-search {
+    border: 2px solid var(--hightlight-color);
+    border-radius: 30px;
+    width: 50%;
+    height: 45px;
+    background-color: var(--hightlight-color);
+    overflow: hidden;
+}
+
+.navbar-search input {
+    outline: none;
+    border: none;
+    width: 62%;
+    padding: 2px 20px;
+    height: 100%;
+}
+
+.navbar-search #select-category {
+    outline: none;
+    border: none;
+    width: 28%;
+    font-size: var(--small-font-size);
+    padding: 2px 5px;
+    height: 100%;
+}
+
+.navbar-search .search-icon {
+    width: 10%;
+    height: 100%;
+    background-color: var(--hightlight-color);
+}
+
+.search-icon i {
+    color: var(--main-background-color);
+    line-height: 1;
+    vertical-align: middle;
+    font-size: var(--h3-font-size);
+}
+
+.header-icons {
+    width: 20%;
+    color: var(--black-color);
+}
+
+.header-icons ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-icons ul li i {
+    font-size: var(--h3-font-size);
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.header-icons ul li {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+}
+.header-icons ul li .shopping-cart{
+    position: relative;
+}
+
+.header-icons ul li .cart-number {
+    position: absolute;
+    right: -7px;
+    bottom: -10px;
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: var(--hightlight-color);
+    border-radius: 50%;
+    text-align: center;
+    font-size: var(--mb-0-75);
+    color: #000;
+}
+
+.header-icons ul li .total-cart {
+    font-size: var(--small-font-size);
+    margin-left: 5px;
+    padding: 2px;
+    position: relative;
+}
+
+.icon-money {
+    position: absolute;
+    content: '';
+    width: 5px;
+    height: 5px;
+    top: -2px;
+    left: -7px;
+    font-size: var(--small-font-size);
+}
+
+.overlay-login {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-login.active {
+    display: flex;
+}
