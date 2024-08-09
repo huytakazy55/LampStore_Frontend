@@ -13,7 +13,7 @@ const FormActionLogin = ({toggleActionLogin, setToggleActionLogin, popupActionRe
                 <div className='border-avatar'>
                     <img src={avatar} alt="" />
                 </div>
-                <p>{email}</p>
+                <p>{email != 'undefined' && 'null' ? email : <a href=''>Cập nhật tài khoản</a>}</p>
             </div>
             <ul>
                 <li className='action_button'><i class='bx bx-user-pin' ></i>Thông Tin Tài Khoản</li>

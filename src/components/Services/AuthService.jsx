@@ -1,5 +1,6 @@
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
 const API_ENDPOINT = "https://localhost:7124";
 axios.defaults.withCredentials = true; // cho phép gửi cookie hay token
 
@@ -11,11 +12,8 @@ class AuthService {
             rememberme: rememberme
         }, { withCredentials: true });// cho phép gửi cookie hay token
     }
-    signup(fullname, email, phonenumber ,username, password) {
+    signup(username, password) {
         return axios.post(API_ENDPOINT+"/api/Account/SignUp", {
-            fullname: fullname,
-            email: email,
-            phonenumber: phonenumber,
             username: username,
             password: password
         });
@@ -31,12 +29,14 @@ class AuthService {
 
     async logout() {
         try {
-            await axios.post(API_ENDPOINT+"/api/Account/logout");
+            const token = localStorage.getItem("token");
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            await axios.post(API_ENDPOINT + "/api/Account/logout");
             localStorage.clear();
-            window.location.reload();
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
+            toast.success("Đã đăng xuất tài khoản!");
+          } catch (error) {
+            toast.error("Đã xảy ra lỗi khi đăng xuất!");
+          }
     }
 
     profile() {

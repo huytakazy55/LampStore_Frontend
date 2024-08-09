@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const [stateSignin, setStateSignin] = useState({ username: '', password: '', rememberMe: false });
-    const [stateSignup, setStateSignup] = useState({ fullname: '', email: '', phonenumber: '', username: '', password: '' });
+    const [stateSignup, setStateSignup] = useState({ username: '', password: '' });
     const [loginResponse, setLoginResponse] = useState(null);
     const [formErrors, setFormErrors] = useState({});
     const [changeForm, setChangeForm] = useState(false);
@@ -37,15 +37,6 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
 
     const validateFormSignup = () => {
         let errors = {};
-        if (!stateSignup.fullname) {
-            errors.fullname = 'Full name is required';
-        }
-        if (!stateSignup.email) {
-            errors.email = 'Email is required';
-        }
-        if (!stateSignup.phonenumber) {
-            errors.phonenumber = 'Phone number is required';
-        }
         if (!stateSignup.username) {
             errors.username = 'Username is required';
         }
@@ -63,7 +54,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 .then((res) => {
                     console.log(res);
                     AuthService.decodeAndStoreToken(res.data);
-                    showToast('Signin successfully!');
+                    showToast('Đăng nhập thành công!');
                     setToggleLogin(false);
                     //window.location.reload();
                     // window.location.href('/');
@@ -71,7 +62,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 .catch((err) => {
                     console.log(err);
                     setLoginResponse(err);
-                    showToast('Signin failed!', 'error');
+                    showToast('Đăng nhập thất bại!', 'Lỗi');
                 });
         }
     }
@@ -79,7 +70,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const handleSignup = (e) => {
         e.preventDefault();
         if (validateFormSignup()) {
-            AuthService.signup(stateSignup.fullname, stateSignup.email, stateSignup.phonenumber, stateSignup.username, stateSignup.password)
+            AuthService.signup(stateSignup.username, stateSignup.password)
                 .then((res) => {
                     console.log(res);
                     showToast('Signup successfully!');
@@ -150,18 +141,6 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 <form className={!changeForm ? 'Signup' : 'Signup active'} action="">
                     <div className='FormLogin-title'>Sign up</div>
                     <div className='border-input'>
-                        <div className='user-input'>
-                            <i className='bx bxs-user-rectangle'></i>
-                            <input type="text" name="fullname" value={stateSignup.fullname} onChange={HandleOnChangeStateSignup} id="SignupFullName" placeholder='Full name' />
-                        </div>
-                        <div className='user-input'>
-                            <i className='bx bxl-gmail'></i>
-                            <input type="text" name="email" value={stateSignup.email} onChange={HandleOnChangeStateSignup} id="SignupEmail" placeholder='Email' />
-                        </div>
-                        <div className='user-input'>
-                            <i className='bx bxs-phone'></i>
-                            <input type="text" name="phonenumber" value={stateSignup.phonenumber} onChange={HandleOnChangeStateSignup} id="SignupPhone" placeholder='Phone number' />
-                        </div>
                         <div className='user-input'>
                             <i className='bx bxs-user'></i>
                             <input type="text" name="username" value={stateSignup.username} onChange={HandleOnChangeStateSignup} id="SignupUsername" placeholder='Username' />
