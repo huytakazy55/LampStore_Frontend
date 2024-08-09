@@ -3,7 +3,7 @@
     height: 20rem;
     position: absolute;
     box-shadow: var(--darker-shadow);
-    right: -5rem;
+    right: -5.7rem;
     top: 3.5rem;
     z-index: 1000;
     border-top: 2px solid var(--hightlight-color);

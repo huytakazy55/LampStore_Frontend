@@ -1,4 +1,6 @@
 import './App.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import BannerProductCarousel from './components/BannerProductCarousel/BannerProductCarousel';
 import CategorySale from './components/CategorySale/CategorySale';
 import FeatureList from './components/FeatureList/FeatureList';
@@ -23,6 +25,7 @@ function App() {
       <BannerProductCarousel />
       <SectionProductCardCarousel />
       <TrendingProduct />
+      <ToastContainer />
     </>
   );
 }

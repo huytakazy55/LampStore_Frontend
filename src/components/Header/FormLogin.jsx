@@ -1,83 +1,191 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import './FormLogin.css'
+import AuthService from '../Services/AuthService';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const FormLogin = ({toggleLogin, setToggleLogin}) => {
+const FormLogin = ({ toggleLogin, setToggleLogin }) => {
+    const [stateSignin, setStateSignin] = useState({ username: '', password: '', rememberMe: false });
+    const [stateSignup, setStateSignup] = useState({ fullname: '', email: '', phonenumber: '', username: '', password: '' });
+    const [loginResponse, setLoginResponse] = useState(null);
+    const [formErrors, setFormErrors] = useState({});
     const [changeForm, setChangeForm] = useState(false);
+
+    const showToast = (message, type = 'success') => {
+        if (type === 'success') {
+            toast.success(message);
+        } else if (type === 'error') {
+            toast.error(message);
+        }
+    };
+
     const ChangeFormLogin = () => {
         setChangeForm(!changeForm);
     }
-  return (
-    <div onClick={(e) => e.stopPropagation()} className='FormLogin'>
-        <div className='FormLogin-content'>
-            <form className={changeForm ? 'Login' : 'Login active'} action="">
-                <div className='FormLogin-title'>Login</div>
-                <div className='border-input'>
-                    <div className='user-input'>
-                        <i class='bx bxs-user'></i>
-                        <input type="text" autoFocus name="Email" id="LoginEmail" placeholder='Email' />
+
+    const validateFormSignin = () => {
+        let errors = {};
+        if (!stateSignin.username) {
+            errors.username = 'Username is required';
+        }
+        if (!stateSignin.password) {
+            errors.password = 'Password is required';
+        }
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const validateFormSignup = () => {
+        let errors = {};
+        if (!stateSignup.fullname) {
+            errors.fullname = 'Full name is required';
+        }
+        if (!stateSignup.email) {
+            errors.email = 'Email is required';
+        }
+        if (!stateSignup.phonenumber) {
+            errors.phonenumber = 'Phone number is required';
+        }
+        if (!stateSignup.username) {
+            errors.username = 'Username is required';
+        }
+        if (!stateSignup.password) {
+            errors.password = 'Password is required';
+        }
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleSignin = (e) => {
+        e.preventDefault();
+        if (validateFormSignin()) {
+            AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
+                .then((res) => {
+                    console.log(res);
+                    AuthService.decodeAndStoreToken(res.data);
+                    showToast('Signin successfully!');
+                    setToggleLogin(false);
+                    //window.location.reload();
+                    // window.location.href('/');
+                })
+                .catch((err) => {
+                    console.log(err);
+                    setLoginResponse(err);
+                    showToast('Signin failed!', 'error');
+                });
+        }
+    }
+
+    const handleSignup = (e) => {
+        e.preventDefault();
+        if (validateFormSignup()) {
+            AuthService.signup(stateSignup.fullname, stateSignup.email, stateSignup.phonenumber, stateSignup.username, stateSignup.password)
+                .then((res) => {
+                    console.log(res);
+                    showToast('Signup successfully!');
+                })
+                .catch((err) => {
+                    console.log(err);
+                    setLoginResponse(err.response.data);
+                    showToast('Signup failed!', 'error');
+                });
+        }
+    }
+
+    const HandleOnChangeStateSignin = (e) => {
+        const { name, value, type, checked } = e.target;
+        setStateSignin((prevState) => ({
+            ...prevState,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    }
+
+    const HandleOnChangeStateSignup = (e) => {
+        const { name, value } = e.target;
+        setStateSignup((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    }
+
+    return (
+        <div onClick={(e) => e.stopPropagation()} className='FormLogin'>
+            <div className='FormLogin-content'>
+                <form className={changeForm ? 'Login' : 'Login active'} action="">
+                    <div className='FormLogin-title'>Login</div>
+                    <div className='border-input'>
+                        <div className='user-input'>
+                            <i className='bx bxs-user'></i>
+                            <input type="text" autoFocus name="username" value={stateSignin.username} onChange={HandleOnChangeStateSignin} id="LoginUsername" placeholder='Username' />
+                        </div>
+                        <div className='pass-input'>
+                            <i className='bx bxs-lock-alt'></i>
+                            <input type="password" name="password" value={stateSignin.password} onChange={HandleOnChangeStateSignin} id="LoginPass" placeholder='Password' />
+                            <i className='bx bx-low-vision'></i>
+                        </div>
                     </div>
-                    <div className='pass-input'>
-                        <i class='bx bxs-lock-alt' ></i>
-                        <input type="password" name="Password" id="LoginPass" placeholder='Password' />
-                        <i class='bx bx-low-vision'></i>
+                    <h5 className="errs">
+                        {formErrors.username && <p>{formErrors.username}</p>}
+                        {formErrors.password && <p>{formErrors.password}</p>}
+                    </h5>
+                    <div className='form-action'>
+                        <div className='remember-name'>
+                            <input type="checkbox" name="rememberMe" checked={stateSignin.rememberMe} onChange={HandleOnChangeStateSignin} id="LoginCheckbox" />
+                            <span>Remember me</span>
+                        </div>
+                        <div className='forget-pass'>
+                            <a href="#">Forget password!</a>
+                        </div>
                     </div>
-                </div>
-                <div className='form-action'>
-                    <div className='remember-name'>
-                        <input type="checkbox" name="" id="LoginCheckbox" />
-                        <span>remember me</span>
+                    <button type="submit" onClick={handleSignin}>Login</button>
+                    <div className='or'>Or</div>
+                    <div className='with-socialmedia'>
+                        <div className='Facebook'><i className='bx bxl-facebook-circle'></i> Facebook</div>
+                        <div className='Google'><i className='bx bxl-google'></i> Google</div>
                     </div>
-                    <div className='forget-pass'>
-                        <a href="#">Forget password!</a>
+                    <div className='dont-have-acc'>
+                        <p onClick={ChangeFormLogin}>Don't have an account? <a href="#">Register</a></p>
                     </div>
-                </div>
-                <button type="submit">Login</button>
-                <div className='or'>
-                    Or
-                </div>
-                <div className='with-socialmedia'>
-                    <div className='Facebook'><i class='bx bxl-facebook-circle' ></i> Facebook</div>
-                    <div className='Google'><i class='bx bxl-google' ></i> Google</div>
-                </div>
-                <div className='dont-have-acc'>
-                    <p onClick={ChangeFormLogin}>Don't have an account? <a href="#">Register</a></p>
-                </div>
-            </form>
-            <form className={!changeForm ? 'Signup' : 'Signup active'} action="">
-                <div className='FormLogin-title'>Sign up</div>
-                <div className='border-input'>
-                    <div className='user-input'>
-                        <i class='bx bxs-user'></i>
-                        <input type="text" autoFocus name="Username" id="SignupUsername" placeholder='Username' />
+                </form>
+                <form className={!changeForm ? 'Signup' : 'Signup active'} action="">
+                    <div className='FormLogin-title'>Sign up</div>
+                    <div className='border-input'>
+                        <div className='user-input'>
+                            <i className='bx bxs-user-rectangle'></i>
+                            <input type="text" name="fullname" value={stateSignup.fullname} onChange={HandleOnChangeStateSignup} id="SignupFullName" placeholder='Full name' />
+                        </div>
+                        <div className='user-input'>
+                            <i className='bx bxl-gmail'></i>
+                            <input type="text" name="email" value={stateSignup.email} onChange={HandleOnChangeStateSignup} id="SignupEmail" placeholder='Email' />
+                        </div>
+                        <div className='user-input'>
+                            <i className='bx bxs-phone'></i>
+                            <input type="text" name="phonenumber" value={stateSignup.phonenumber} onChange={HandleOnChangeStateSignup} id="SignupPhone" placeholder='Phone number' />
+                        </div>
+                        <div className='user-input'>
+                            <i className='bx bxs-user'></i>
+                            <input type="text" name="username" value={stateSignup.username} onChange={HandleOnChangeStateSignup} id="SignupUsername" placeholder='Username' />
+                        </div>
+                        <div className='pass-input'>
+                            <i className='bx bxs-lock-alt'></i>
+                            <input type="password" name="password" value={stateSignup.password} onChange={HandleOnChangeStateSignup} id="SignupPass" placeholder='Password' />
+                            <i className='bx bx-low-vision'></i>
+                        </div>
                     </div>
-                    <div className='user-input'>
-                        <i class='bx bxl-gmail' ></i>
-                        <input type="text" name="Email" id="SignupEmail" placeholder='Email' />
+                    <div className='form-action'>
+                        <div className='accept'>
+                            <input type="checkbox" name="acceptTerms" onChange={HandleOnChangeStateSignup} id="SignupAcceptTerms" />
+                            <span>I accept the personal data processing</span>
+                        </div>
                     </div>
-                    <div className='pass-input'>
-                        <i class='bx bxs-lock-alt' ></i>
-                        <input type="password" name="Password" id="SignupPass" placeholder='Password' />
-                        <i class='bx bx-low-vision'></i>
+                    <button type="submit" onClick={handleSignup}>Sign up</button>
+                    <div className='dont-have-acc'>
+                        <p onClick={ChangeFormLogin}>Have account? <a href="#">Login now</a></p>
                     </div>
-                    <div className='user-input'>
-                        <i class='bx bxs-phone' ></i>
-                        <input type="text" name="Phonenumber" id="SignupPhone" placeholder='Phone number' />
-                    </div>
-                </div>
-                <div className='form-action'>
-                    <div className='accept'>
-                        <input type="checkbox" name="" id="" />
-                        <span>i accept the personal data processing</span>
-                    </div>
-                </div>
-                <button type="submit">Sign up</button>
-                <div className='dont-have-acc'>
-                    <p onClick={ChangeFormLogin}>have account? <a href="#">Login now</a></p>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-  )
+    )
 }
 
-export default FormLogin
+export default FormLogin;

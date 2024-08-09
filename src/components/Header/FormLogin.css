@@ -44,7 +44,7 @@
     align-items: center;
     border-bottom: 2px solid var(--white-color);
     height: 2.5rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
 }
 
 input[type="password"]::-ms-reveal, 
@@ -58,6 +58,7 @@ input[type="password"]::-ms-clear {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    margin-top: 2rem;
 }
 
 .form-action span {

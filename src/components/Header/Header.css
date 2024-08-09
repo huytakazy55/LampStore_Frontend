@@ -72,7 +72,7 @@
 }
 
 .header-icons ul li i {
-    font-size: var(--h3-font-size);
+    font-size: var(--h2-font-size);
     line-height: 1;
     vertical-align: middle;
 }
@@ -80,6 +80,7 @@
 .header-icons ul li {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 5px;
     cursor: pointer;
 }
@@ -133,4 +134,18 @@
 
 .overlay-login.active {
     display: flex;
+}
+
+#LoginActionForm {
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    line-height: 2rem;
+    border: 2px solid var(--hightlight-color);
+    border-radius: 20%;
+    padding: 1px;
+}
+
+#LoginActionForm img {
+    border-radius: 20%;
 }
