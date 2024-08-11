@@ -58,7 +58,7 @@ input[type="password"]::-ms-clear {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    margin-top: 2rem;
+    margin-top: 4rem;
 }
 
 .form-action span {

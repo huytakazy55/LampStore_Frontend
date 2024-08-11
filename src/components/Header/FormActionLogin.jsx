@@ -1,12 +1,18 @@
 import React from 'react'
 import './FormActionLogin.css'
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../store/userSlice';
 import avatar from '../../assets/images/Avatar.jpg'
 import AuthService from '../Services/AuthService'
 
-
-
-const FormActionLogin = ({toggleActionLogin, setToggleActionLogin, popupActionRef}) => {
-    const email = localStorage.getItem('email');
+const FormActionLogin = ({toggleActionLogin, popupActionRef}) => {
+    const dispatch = useDispatch();
+    //const email = localStorage.getItem('email');
+    const email = useSelector((state) => state.user.email);
+    const handleLogout = () => {
+        AuthService.logout();
+        dispatch(logout());
+    }
     return (
         <div ref={popupActionRef} onClick={(e) => e.stopPropagation()} className={`FormActionLogin ${toggleActionLogin ? 'active' : ''}`} id='FormActionLogin'>
             <div className='avatar-info'>
@@ -21,7 +27,7 @@ const FormActionLogin = ({toggleActionLogin, setToggleActionLogin, popupActionRe
                 <li className='action_button'><i class='bx bx-cog' ></i>Thiết Lập Shop</li>
                 <li className='action_button'><i class='bx bx-message-square-detail' ></i>Phản hồi ý kiến</li>
             </ul>
-            <div onClick={() => AuthService.logout()} className='logout_bt action_button'><i class='bx bx-exit'></i>Đăng Xuất</div>
+            <div onClick={() => handleLogout()} className='logout_bt action_button'><i class='bx bx-exit'></i>Đăng Xuất</div>
         </div>
     )
 }

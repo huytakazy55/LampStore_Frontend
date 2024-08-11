@@ -61,8 +61,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 })
                 .catch((err) => {
                     console.log(err);
-                    setLoginResponse(err);
-                    showToast('Đăng nhập thất bại!', 'Lỗi');
+                    showToast(err.response.data, "error");
                 });
         }
     }
@@ -77,7 +76,6 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 })
                 .catch((err) => {
                     console.log(err);
-                    setLoginResponse(err.response.data);
                     showToast('Signup failed!', 'error');
                 });
         }

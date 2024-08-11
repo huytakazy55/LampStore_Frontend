@@ -33,7 +33,7 @@ class AuthService {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             await axios.post(API_ENDPOINT + "/api/Account/logout");
             localStorage.clear();
-            toast.success("Đã đăng xuất tài khoản!");
+            await toast.success("Đã đăng xuất tài khoản!");
           } catch (error) {
             toast.error("Đã xảy ra lỗi khi đăng xuất!");
           }
