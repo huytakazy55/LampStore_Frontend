@@ -52,9 +52,8 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         if (validateFormSignin()) {
             AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
                 .then((res) => {
-                    console.log(res);
-                    AuthService.decodeAndStoreToken(res.data);
                     showToast('Đăng nhập thành công!');
+                    localStorage.setItem("token", res.data);
                     setToggleLogin(false);
                     //window.location.reload();
                     // window.location.href('/');

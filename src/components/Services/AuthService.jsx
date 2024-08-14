@@ -18,14 +18,6 @@ class AuthService {
             password: password
         });
     }
-    decodeAndStoreToken = (token) => {
-        const decoded = jwtDecode(token);
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]);
-        localStorage.setItem('email', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]);
-        localStorage.setItem('username', decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]);
-        localStorage.setItem('isLogin', true);
-    }
 
     async logout() {
         try {

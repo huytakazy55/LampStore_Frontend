@@ -7,8 +7,8 @@ import AuthService from '../Services/AuthService'
 
 const FormActionLogin = ({toggleActionLogin, popupActionRef}) => {
     const dispatch = useDispatch();
-    //const email = localStorage.getItem('email');
     const email = useSelector((state) => state.user.email);
+
     const handleLogout = () => {
         AuthService.logout();
         dispatch(logout());

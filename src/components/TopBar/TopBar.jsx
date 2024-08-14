@@ -1,7 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import "./TopBar.css"
+import AuthService from '../Services/AuthService';
 
 const TopBar = () => {
+    const fetchProfile = async () => {
+        try {
+            const data = await AuthService.profile();
+            console.log(data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
     const username = localStorage.getItem('username');
     return (
         <div className='TopBar'>

@@ -15,10 +15,11 @@ const Header = () => {
   const popupActionRef = useRef(null);
   const buttonRef = useRef(null);
   const buttonActionRef = useRef(null);
-  const username = localStorage.getItem('username');
   const toggleLoginForm = () => {
     setToggleLogin(!toggleLogin);
   }
+
+  const token = localStorage.getItem('token');
 
   const toggleActionLoginForm = () => {
     setToggleActionLogin(!toggleActionLogin);
@@ -34,6 +35,7 @@ const Header = () => {
       toggleFunction(false);
     }
   };
+
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -83,7 +85,7 @@ const Header = () => {
             </div>
           </li>
           {
-            username ? 
+            token ? 
             <>
               <li onClick={toggleActionLoginForm} ref={buttonActionRef} id='LoginActionForm'>
                 <img src={avatar} alt="" />
