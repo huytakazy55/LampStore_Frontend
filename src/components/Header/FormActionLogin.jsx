@@ -1,28 +1,48 @@
-import React from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import './FormActionLogin.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/userSlice';
 import avatar from '../../assets/images/Avatar.jpg'
 import AuthService from '../Services/AuthService'
 
-const FormActionLogin = ({toggleActionLogin, popupActionRef}) => {
+const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef}) => {
+    const [email, setEmail] = useState('');
     const dispatch = useDispatch();
-    const email = useSelector((state) => state.user.email);
+    const token = localStorage.getItem("token");
+
+    useEffect(() => {
+        if (toggleActionLogin && token) { // Kiểm tra toggleActionLogin có giá trị true và token tồn tại
+            AuthService.profile()
+            .then((res) => {
+                setEmail(res.email); // Lưu email vào state
+            })
+            .catch((error) => {
+                console.error("Error fetching profile:", error);
+            });
+        }
+    }, [toggleActionLogin]);
 
     const handleLogout = () => {
         AuthService.logout();
         dispatch(logout());
     }
+    const handleProfileClick = () => {
+        setToggleActionLogin(false);
+        setToggleProfile(true);
+    }
+
     return (
         <div ref={popupActionRef} onClick={(e) => e.stopPropagation()} className={`FormActionLogin ${toggleActionLogin ? 'active' : ''}`} id='FormActionLogin'>
             <div className='avatar-info'>
                 <div className='border-avatar'>
                     <img src={avatar} alt="" />
                 </div>
-                <p>{email != 'undefined' && 'null' ? email : <a href=''>Cập nhật tài khoản</a>}</p>
+                <p>{email != '' ? email : <a href=''>Cập nhật tài khoản</a>}</p>
             </div>
             <ul>
-                <li className='action_button'><i class='bx bx-user-pin' ></i>Thông Tin Tài Khoản</li>
+                <li onClick={handleProfileClick} ref={buttonProfileRef} className='action_button'><i class='bx bx-user-pin' ></i>
+                    Thông Tin Tài Khoản
+                </li>
                 <li className='action_button'><i class='bx bx-globe'></i>Tiếng Việt (Vietnamese)</li>
                 <li className='action_button'><i class='bx bx-cog' ></i>Thiết Lập Shop</li>
                 <li className='action_button'><i class='bx bx-message-square-detail' ></i>Phản hồi ý kiến</li>

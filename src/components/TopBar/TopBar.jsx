@@ -1,17 +1,21 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import "./TopBar.css"
 import AuthService from '../Services/AuthService';
 
 const TopBar = () => {
-    const fetchProfile = async () => {
-        try {
-            const data = await AuthService.profile();
-            console.log(data);
-        } catch (err) {
-            console.log(err);
+    const [name, setName] = useState('');
+    const token = localStorage.getItem('token');
+    useEffect(() => {
+        if (token) {
+            AuthService.profile()
+            .then((res) => {
+                setName(res.fullName);
+            })
+            .catch((error) => {
+                console.error("Error fetching profile:", error);
+            });
         }
-    };
-    const username = localStorage.getItem('username');
+    }, [token]);
     return (
         <div className='TopBar'>
             <nav className='nav container'>
@@ -26,7 +30,7 @@ const TopBar = () => {
                         <li className='sepa'>|</li>
                         <li><i class='bx bx-shopping-bag' ></i> Shop</li>
                         <li className='sepa'>|</li>
-                        <li><i class='bx bx-user'></i> {username ? username : 'My Account'}</li>
+                        <li><i class='bx bx-user'></i> {name ? name : 'My Account'}</li>
                     </ul>
                 </div>
             </nav>

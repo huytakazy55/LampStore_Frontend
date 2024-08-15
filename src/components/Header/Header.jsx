@@ -6,15 +6,19 @@ import FormActionLogin from './FormActionLogin';
 import 'react-tooltip/dist/react-tooltip.css';
 import Logo from "../../assets/images/FIgureAZlogo.jpg"
 import avatar from '../../assets/images/Avatar.jpg'
+import FormProfile from './FormProfile';
 
 const Header = () => {
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
   const [toggleCart, setToggleCart] = useState(false)
+  const [toggleProfile, setToggleProfile] = useState(false);
   const popupRef = useRef(null);
   const popupActionRef = useRef(null);
+  const popupProfileRef = useRef(null);
   const buttonRef = useRef(null);
   const buttonActionRef = useRef(null);
+  const buttonProfileRef = useRef(null);
   const toggleLoginForm = () => {
     setToggleLogin(!toggleLogin);
   }
@@ -29,6 +33,10 @@ const Header = () => {
     setToggleCart(!toggleCart);
   }
 
+  const toggleFormProfile = () => {
+    setToggleProfile(!toggleProfile);
+  }
+
   const handleClickOutside = (event, ref, buttonRef, toggleFunction) => {
     if (ref.current && !ref.current.contains(event.target) &&
         buttonRef.current && !buttonRef.current.contains(event.target)) {
@@ -41,6 +49,7 @@ const Header = () => {
     const handleOutsideClick = (event) => {
       handleClickOutside(event, popupRef, buttonRef, setToggleCart);
       handleClickOutside(event, popupActionRef, buttonActionRef, setToggleActionLogin);
+      handleClickOutside(event, popupProfileRef, buttonProfileRef, setToggleProfile);
     };
 
     document.addEventListener('click', handleOutsideClick, true);
@@ -89,7 +98,7 @@ const Header = () => {
             <>
               <li onClick={toggleActionLoginForm} ref={buttonActionRef} id='LoginActionForm'>
                 <img src={avatar} alt="" />
-                <FormActionLogin popupActionRef={popupActionRef} toggleActionLogin={toggleActionLogin} setToggleActionLogin={setToggleActionLogin} />
+                <FormActionLogin toggleProfile={toggleProfile} setToggleProfile={setToggleProfile} buttonProfileRef={buttonProfileRef} popupActionRef={popupActionRef} toggleActionLogin={toggleActionLogin} setToggleActionLogin={setToggleActionLogin} />
               </li>
             </> : 
             <>
@@ -100,6 +109,9 @@ const Header = () => {
           }
           <div onClick={toggleLoginForm} className={`overlay-login ${toggleLogin ? 'active' : ''}`}>
             <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
+          </div>
+          <div onClick={toggleFormProfile} >
+              <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} />
           </div>
         </ul>
       </div>

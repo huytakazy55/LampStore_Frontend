@@ -4,7 +4,7 @@ import iphone14 from '../../assets/images/Iphone14.jpg'
 import laptop from '../../assets/images/laptop-2.jpg'
 import computer from '../../assets/images/computer.jpg'
 
-const FormCart = ({toggleCart, setToggleCart, popupRef}) => {
+const FormCart = ({toggleCart, popupRef}) => {
   return (
     <div ref={popupRef} onClick={(e) => e.stopPropagation()} className={`FormCart ${toggleCart ? 'active' : ''}`} id='FormCart'>
         <div className='cart-content'>

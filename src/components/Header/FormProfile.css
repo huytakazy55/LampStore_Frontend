@@ -1,0 +1,22 @@
+.FormProfile {
+    width: 60rem;
+    height: 30rem;
+    position: absolute;
+    box-shadow: var(--darker-shadow);
+    left: 50%;
+    top: 10rem;
+    z-index: 1000;
+    border-top: 2px solid var(--hightlight-color);
+    background-color: var(--white-color);
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(-50%, 1rem);
+    transition: all .3s ease-in-out;
+}
+
+.FormProfile.active {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0rem);
+    z-index: 1000;
+}
