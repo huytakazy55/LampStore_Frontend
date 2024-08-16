@@ -45,6 +45,7 @@
     border-bottom: 2px solid var(--white-color);
     height: 2.5rem;
     margin-bottom: 1.5rem;
+    position: relative;
 }
 
 input[type="password"]::-ms-reveal, 
@@ -160,4 +161,12 @@ input[type="password"]::-ms-clear {
 
 .Signup .FormLogin-title {
     margin-bottom: 5rem;
+}
+
+.requirePass {
+    position: absolute;
+    top: .8rem;
+    left: 8rem;
+    color: red;
+    font-weight: 900;
 }

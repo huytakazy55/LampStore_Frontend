@@ -11,10 +11,10 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
     const token = localStorage.getItem("token");
 
     useEffect(() => {
-        if (toggleActionLogin && token) { // Kiểm tra toggleActionLogin có giá trị true và token tồn tại
+        if (toggleActionLogin && token) {
             AuthService.profile()
             .then((res) => {
-                setEmail(res.email); // Lưu email vào state
+                setEmail(res.email);
             })
             .catch((error) => {
                 console.error("Error fetching profile:", error);

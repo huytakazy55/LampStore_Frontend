@@ -52,18 +52,25 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         if (validateFormSignin()) {
             AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
                 .then((res) => {
+                    console.log(res);
                     showToast('Đăng nhập thành công!');
                     localStorage.setItem("token", res.data);
                     setToggleLogin(false);
-                    //window.location.reload();
+                    // window.location.reload();
                     // window.location.href('/');
                 })
                 .catch((err) => {
-                    console.log(err);
-                    showToast(err.response.data, "error");
+                    if (err.response) {
+                        const errorMessage = err.response.data || "Có lỗi xảy ra!";
+                        console.log(err.response);
+                        showToast(errorMessage, "error");
+                    } else {
+                        console.log(err); // Log lỗi nếu không có phản hồi từ server
+                        showToast("Không thể kết nối tới máy chủ. Vui lòng thử lại sau.", "error");
+                    }
                 });
         }
-    }
+    };
 
     const handleSignup = (e) => {
         e.preventDefault();
@@ -86,6 +93,11 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
             ...prevState,
             [name]: type === 'checkbox' ? checked : value,
         }));
+
+        setFormErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
+        }));
     }
 
     const HandleOnChangeStateSignup = (e) => {
@@ -105,17 +117,15 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                         <div className='user-input'>
                             <i className='bx bxs-user'></i>
                             <input type="text" autoFocus name="username" value={stateSignin.username} onChange={HandleOnChangeStateSignin} id="LoginUsername" placeholder='Username' />
+                            <div className='requirePass'>{formErrors.username && <p>{formErrors.username}</p>}</div>
                         </div>
                         <div className='pass-input'>
                             <i className='bx bxs-lock-alt'></i>
                             <input type="password" name="password" value={stateSignin.password} onChange={HandleOnChangeStateSignin} id="LoginPass" placeholder='Password' />
                             <i className='bx bx-low-vision'></i>
+                            <div className='requirePass'>{formErrors.password && <p>{formErrors.password}</p>}</div>                   
                         </div>
                     </div>
-                    <h5 className="errs">
-                        {formErrors.username && <p>{formErrors.username}</p>}
-                        {formErrors.password && <p>{formErrors.password}</p>}
-                    </h5>
                     <div className='form-action'>
                         <div className='remember-name'>
                             <input type="checkbox" name="rememberMe" checked={stateSignin.rememberMe} onChange={HandleOnChangeStateSignin} id="LoginCheckbox" />

@@ -25,6 +25,7 @@ class AuthService {
             await axios.post(API_ENDPOINT + "/api/Account/logout");
             localStorage.clear();
             await toast.success("Đã đăng xuất tài khoản!");
+            window.location.href = '/';
           } catch (error) {
             toast.error("Đã xảy ra lỗi khi đăng xuất!");
           }

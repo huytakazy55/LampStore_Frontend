@@ -93,6 +93,12 @@ const Header = () => {
               10.000.000
             </div>
           </li>
+          <div onClick={toggleLoginForm} className={`overlay-login ${toggleLogin ? 'active' : ''}`}>
+            <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
+          </div>
+          <div onClick={toggleFormProfile} >
+              <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} />
+          </div>
           {
             token ? 
             <>
@@ -107,12 +113,6 @@ const Header = () => {
               </li>          
             </>
           }
-          <div onClick={toggleLoginForm} className={`overlay-login ${toggleLogin ? 'active' : ''}`}>
-            <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
-          </div>
-          <div onClick={toggleFormProfile} >
-              <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} />
-          </div>
         </ul>
       </div>
     </div>
