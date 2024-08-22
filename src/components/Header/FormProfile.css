@@ -8,8 +8,8 @@
     border-top: 2px solid var(--hightlight-color);
     /* box-shadow: var(--darker-shadow);
     background-color: var(--white-color); */
-    visibility: visible;
-    opacity: 1;
+    visibility: hidden;
+    opacity: 0;
     transform: translate(-50%, 1rem);
     transition: all .3s ease-in-out;
     display: flex;
@@ -167,4 +167,46 @@
 
 .info-body-tab .tab-body.active {
     display: block;
+}
+
+.row-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.Form-input {
+    width: 45%;
+}
+
+.Form-input p {
+    margin-bottom: .5rem;
+}
+
+.Form-input input {
+    border: 1px solid var(--layoutdarker-color);
+    outline: none;
+    width: 100%;
+    padding: 5px 10px;
+}
+
+.Form-input input:focus {
+    border: 1px solid var(--hightlight-color);
+}
+
+.FormProfileSubmit {
+    background-color: var(--hightlight-color);
+    padding: 5px 10px;
+    color: var(--white-color);
+    font-size: var(--h4-font-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2px;
+}
+
+.FormProfileSubmit i {
+    font-size: var(--h3-font-size);
+    padding: 0px 5px 2px 2px;
 }
