@@ -22,6 +22,14 @@ class ProfileService {
             address: address
         });
     }
+
+    UploadAvatar(id, formData) {
+        return axios.post(`${API_ENDPOINT}/api/UserProfiles/${id}/UploadAvatar`, formData,{
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    }
 }
 
 export default new ProfileService()

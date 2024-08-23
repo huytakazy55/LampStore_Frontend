@@ -4,18 +4,26 @@ import avatar from '../../assets/images/Avatar.jpg'
 import AuthService from '../Services/AuthService'
 import ProfileService from '../Services/ProfileService'
 import { jwtDecode } from 'jwt-decode'
+import { toast } from 'react-toastify'
 
 const FormProfile = ({popupProfileRef, toggleProfile}) => {
   const token = localStorage.getItem("token");
+  const API_ENDPOINT = "https://localhost:7124";
   const [infoSideActive, setInfoSideActive] = useState('info');
   const [profileData, setProfileData] = useState({
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    address: '',
+    FullName: '',
+    Email: '',
+    PhoneNumber: '',
+    UserId: '',
+    Address: '',
     username: '',
     password: '',
+    ProfileAvatar: ''
   });
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(avatar);
+
   useEffect(() => {
     if(toggleProfile && token) {
       AuthService.profile()
@@ -23,11 +31,12 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
           const userId = jwtDecode(token).nameid;
           setProfileData({
             id: res?.id,
-            fullName: res?.fullName,
-            userId: userId,
-            email: res?.email,
-            phoneNumber: res?.phoneNumber,
-            address: res?.address,
+            FullName: res?.fullName,
+            UserId: userId,
+            Email: res?.email,
+            PhoneNumber: res?.phoneNumber,
+            Address: res?.address,
+            ProfileAvatar: res?.profileAvatar
           });
         })
         .catch((error) => {
@@ -38,22 +47,37 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(profileData);
+    const formData = new FormData();
+    if (selectedFile) {
+      formData.append('ProfileAvatar', selectedFile);
+      ProfileService.UploadAvatar(profileData.id, formData)
+      .then((response) => {
+        toast.success("upload ảnh đại diện thành công.");
+        console.log(response);
+      })
+      .catch((error) => {
+        toast.error("upload ảnh không thành công.");
+        console.log(error);
+      })
+    }
+
     if(profileData.id) {
-      ProfileService.UpdateUserProfile(profileData.id, profileData.fullName, profileData.userId, profileData.email, profileData.phoneNumber, profileData.address)
+      ProfileService.UpdateUserProfile(profileData.id, profileData.FullName, profileData.UserId, profileData.Email, profileData.PhoneNumber, profileData.Address)
         .then((response) => {
-          console.log('Cập nhật hồ sơ thành công', response.data);
+          toast.success("Đã cập nhật thông tin hồ sơ.");
+          console.log(response.data);
         })
         .catch((error) => {
-          console.error('Lỗi cập nhật hồ sơ', error);
+          toast.error("Lỗi cập nhật hồ sơ.")
+          console.log(error);
         });
     } else {
-      ProfileService.CreateUserProfile(profileData.fullName, profileData.userId, profileData.email, profileData.phoneNumber, profileData.address)
+      ProfileService.CreateUserProfile(profileData.FullName, profileData.UserId, profileData.Email, profileData.PhoneNumber, profileData.Address)
       .then((res) => {
-        console.log('Thêm mới hồ sơ thành công', res.data)
+        toast.success("Thêm mới hồ sơ thành công.");
       })
       .catch((err) => {
-        console.error('Lỗi thêm mới hồ sơ', err);
+        toast.success("Có lỗi xảy ra khi thêm mới hồ sơ.");
       })
     }
   };
@@ -63,21 +87,56 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
     setProfileData({ ...profileData, [name]: value });
   };
 
+
   const handleInfoSideActive = (tab) => {
     setInfoSideActive(tab);
   }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  const handleDeleteAvatar = (e) => {
+    e.preventDefault();
+    setProfileData({
+      ProfileAvatar: ''
+    })
+    const formData = new FormData();
+    formData.append('ProfileAvatar', selectedFile);
+      ProfileService.UploadAvatar(profileData.id, formData)
+      .then((response) => {
+        toast.success("upload ảnh đại diện thành công.");
+        console.log(response);
+      })
+      .catch((error) => {
+        toast.error("upload ảnh không thành công.");
+        console.log(error);
+      })
+  };
   
   return (
     <div ref={popupProfileRef} onClick={(e) => e.stopPropagation()} className={`FormProfile ${toggleProfile ? 'active' : ''}`}>
         <div className='FormProfile-avatar'>
-          <p className='avar-fullname'>{profileData.fullName ? profileData.fullName : "--"}</p>
+          <p className='avar-fullname'>{profileData.FullName ? profileData.FullName : "--"}</p>
           <div className='border-avar'>
             <div className='avar-img'>
-              <img src={avatar} alt="" />
+              <img src={ profileData.ProfileAvatar ? `${API_ENDPOINT}${profileData.ProfileAvatar}` : avatar} alt="Avatar" />
             </div>
-            <div className='del-avar'><a href='#'><i class='bx bx-trash'></i></a></div>
+            <div className='del-avar' onClick={(e) => handleDeleteAvatar(e)} ><a href='#'><i class='bx bx-trash'></i></a></div>
           </div>
-          <button className='avar-upload-img'><i class='bx bx-upload' ></i>Tải lên ảnh mới</button>
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+          <button type="button" onClick={() => document.getElementById('fileInput').click()} className='avar-upload-img'>
+            <i class='bx bx-upload'></i> Tải lên ảnh mới
+          </button>
           <div className='upload-limit'>
             <p>Tải lên ảnh đại diện mới. Ảnh sẽ được tự động thay đổi kích thước.</p>
             <p>Ảnh có độ lớn không quá <b>1 MB</b></p>
@@ -98,31 +157,31 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
                   <div className='row-input'>
                     <div className='Form-input'>
                       <p>Tên người dùng</p>
-                      <input type="text" id='FullName' name='FullName' value={profileData.fullName} onClick={handleInputChange}/>
+                      <input type="text" id='FullName' name='FullName' value={profileData.FullName} onChange={handleInputChange}/>
                     </div>
                     <div className='Form-input'>
                       <p>Email</p>
-                      <input type="text" id='Email' name='Email' value={profileData.email} onClick={handleInputChange}/>
+                      <input type="text" id='Email' name='Email' value={profileData.Email} onChange={handleInputChange}/>
                     </div>
                   </div>
                   <div className='row-input'>
                     <div className='Form-input'>
                       <p>Số điện thoại</p>
-                      <input type="text" id='PhoneNumber' name='PhoneNumber' value={profileData.phoneNumber} onClick={handleInputChange}/>
+                      <input type="text" id='PhoneNumber' name='PhoneNumber' value={profileData.PhoneNumber} onChange={handleInputChange}/>
                     </div>
                     <div className='Form-input'>
                       <p>Địa chỉ</p>
-                      <input type="text" id='Address' name='Address' value={profileData.address} onClick={handleInputChange}/>
+                      <input type="text" id='Address' name='Address' value={profileData.Address} onChange={handleInputChange}/>
                     </div>
                   </div>
                   <div className='row-input'>
                     <div className='Form-input'>
                       <p>Tên đăng nhập</p>
-                      <input type="text" id='UserName' name='UserName' onClick={handleInputChange}/>
+                      <input type="text" id='UserName' name='UserName' onChange={handleInputChange}/>
                     </div>
                     <div className='Form-input'>
                       <p>Mật khẩu</p>
-                      <input type="password" id='PassWord' name='PassWord' onClick={handleInputChange}/>
+                      <input type="password" id='PassWord' name='PassWord' onChange={handleInputChange}/>
                     </div>
                   </div>
                   <button className='FormProfileSubmit' type='submit'><i class='bx bx-edit'></i>Cập nhật thông tin</button>
