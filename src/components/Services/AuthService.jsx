@@ -28,6 +28,7 @@ class AuthService {
             window.location.href = '/';
           } catch (error) {
             toast.error("Đã xảy ra lỗi khi đăng xuất!");
+            window.location.href = '/';
           }
     }
 

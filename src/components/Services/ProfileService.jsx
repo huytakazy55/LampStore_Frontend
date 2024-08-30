@@ -30,6 +30,10 @@ class ProfileService {
             },
         });
     }
+
+    DeleteAvatar(id){
+        return axios.delete(`${API_ENDPOINT}/api/UserProfiles/DeleteAvatar/${id}`);
+    }
 }
 
 export default new ProfileService()

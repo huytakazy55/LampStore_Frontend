@@ -77,7 +77,7 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
         toast.success("Thêm mới hồ sơ thành công.");
       })
       .catch((err) => {
-        toast.success("Có lỗi xảy ra khi thêm mới hồ sơ.");
+        toast.error("Có lỗi xảy ra khi thêm mới hồ sơ.");
       })
     }
   };
@@ -86,6 +86,21 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
     const { name, value } = e.target;
     setProfileData({ ...profileData, [name]: value });
   };
+
+  const handleDeleteAvatar = (e) => {
+    e.preventDefault();
+    if(profileData.ProfileAvatar) {
+      ProfileService.DeleteAvatar(profileData.id)
+      .then((res) => {
+        toast.success("Đã xóa ảnh đại diện.");
+      })
+      .catch((err) => {
+        toast.error("Có lỗi xảy ra.");
+      })
+    }else {
+      toast.error("Không tồn tại ảnh đại diện.");
+    }
+  }
 
 
   const handleInfoSideActive = (tab) => {
@@ -98,24 +113,6 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
       setSelectedFile(file);
       setPreviewImage(URL.createObjectURL(file));
     }
-  };
-
-  const handleDeleteAvatar = (e) => {
-    e.preventDefault();
-    setProfileData({
-      ProfileAvatar: ''
-    })
-    const formData = new FormData();
-    formData.append('ProfileAvatar', selectedFile);
-      ProfileService.UploadAvatar(profileData.id, formData)
-      .then((response) => {
-        toast.success("upload ảnh đại diện thành công.");
-        console.log(response);
-      })
-      .catch((error) => {
-        toast.error("upload ảnh không thành công.");
-        console.log(error);
-      })
   };
   
   return (
@@ -174,6 +171,9 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
                       <input type="text" id='Address' name='Address' value={profileData.Address} onChange={handleInputChange}/>
                     </div>
                   </div>
+                  <button className='FormProfileSubmit' type='submit'><i class='bx bx-edit'></i>Cập nhật thông tin</button>
+                </form>
+                <form id='FormUserAuth' action="" method='post'>
                   <div className='row-input'>
                     <div className='Form-input'>
                       <p>Tên đăng nhập</p>
@@ -184,7 +184,6 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
                       <input type="password" id='PassWord' name='PassWord' onChange={handleInputChange}/>
                     </div>
                   </div>
-                  <button className='FormProfileSubmit' type='submit'><i class='bx bx-edit'></i>Cập nhật thông tin</button>
                 </form>
             </div>
             <div className={`tab-body ${infoSideActive === 'bill' ? 'active' : ''}`}>

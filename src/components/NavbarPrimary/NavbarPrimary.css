@@ -38,7 +38,7 @@
     width: 100%;
     height: 300px;
     position: absolute;
-    top: 52px; /* Điều chỉnh top để đảm bảo vị trí cố định */
+    top: 51px; /* Điều chỉnh top để đảm bảo vị trí cố định */
     left: 0px;
     box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
     border-top: 2px double var(--hightlight-color);
