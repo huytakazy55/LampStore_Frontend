@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_ENDPOINT = 'https://localhost:7124';
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 axios.defaults.withCredentials = true; // cho phép gửi cookie hay token
 class ProfileService {
     UpdateUserProfile(id, fullName, userId, email, phoneNumber,address) {

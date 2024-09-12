@@ -3,27 +3,47 @@ import "./Header.css"
 import FormLogin from './FormLogin'
 import FormCart from './FormCart';
 import FormActionLogin from './FormActionLogin';
+import { useSelector } from 'react-redux';
 import 'react-tooltip/dist/react-tooltip.css';
-import Logo from "../../assets/images/FIgureAZlogo.jpg"
-import avatar from '../../assets/images/Avatar.jpg'
+import Logo from "../../assets/images/LogoLamp3D.jpg"
+import avatarimg from '../../assets/images/Avatar.jpg'
+import AuthService from '../Services/AuthService';
 import FormProfile from './FormProfile';
 
 const Header = () => {
+  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+  const token = localStorage.getItem('token');
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
   const [toggleCart, setToggleCart] = useState(false)
   const [toggleProfile, setToggleProfile] = useState(false);
+  const [avatar, setAvatar] = useState({ProfileAvatar: ''})
   const popupRef = useRef(null);
   const popupActionRef = useRef(null);
   const popupProfileRef = useRef(null);
   const buttonRef = useRef(null);
   const buttonActionRef = useRef(null);
   const buttonProfileRef = useRef(null);
+  const avatarURL = useSelector((state) => state.avatar.avatar);
+
+  useEffect(() => {
+    if(token) {
+      AuthService.profile()
+        .then((res) => {
+          setAvatar({
+            ProfileAvatar: res?.profileAvatar
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching profile:", error);
+        });
+    }
+  }, [token]);
+  
   const toggleLoginForm = () => {
     setToggleLogin(!toggleLogin);
   }
 
-  const token = localStorage.getItem('token');
 
   const toggleActionLoginForm = () => {
     setToggleActionLogin(!toggleActionLogin);
@@ -57,7 +77,7 @@ const Header = () => {
       document.removeEventListener('click', handleOutsideClick, true);
     };
   }, []);
-  
+
   return (
     <div className='header container'>
       <div className='logo'>
@@ -67,16 +87,18 @@ const Header = () => {
         <i class='bx bx-menu'></i>
       </div>
       <div className='navbar-search'>
-        <input type="text" placeholder='Search for Products' />
-        <select name="" id="select-category">
-          <option value="1">All Category</option>
-          <option value="1">All Category</option>
-          <option value="1">All Category</option>
-          <option value="1">All Category</option>
-          <option value="1">All Category</option>
-          <option value="1">All Category</option>
-          <option value="1">All Category</option>
-        </select>
+        <input className='navbar-search-input' autoFocus type="text" placeholder='Search for Products ...' />
+        <div class="custom-select">
+          <select name="" id="select-category">
+            <option selected value="1">All Categories</option>
+            <option value="1">All Category</option>
+            <option value="1">All Category</option>
+            <option value="1">All Category</option>
+            <option value="1">All Category</option>
+            <option value="1">All Category</option>
+            <option value="1">All Category</option>
+          </select>
+        </div>
         <button className='search-icon'><i class='bx bx-search' ></i></button>
       </div>
       <div className='header-icons'>
@@ -103,7 +125,7 @@ const Header = () => {
             token ? 
             <>
               <li onClick={toggleActionLoginForm} ref={buttonActionRef} id='LoginActionForm'>
-                <img src={avatar} alt="" />
+                <img src={ avatarURL ? avatarURL : (avatar.ProfileAvatar ? `${API_ENDPOINT}${avatar.ProfileAvatar}` : avatarimg)} alt="" />
                 <FormActionLogin toggleProfile={toggleProfile} setToggleProfile={setToggleProfile} buttonProfileRef={buttonProfileRef} popupActionRef={popupActionRef} toggleActionLogin={toggleActionLogin} setToggleActionLogin={setToggleActionLogin} />
               </li>
             </> : 

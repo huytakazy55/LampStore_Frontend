@@ -1,20 +1,23 @@
 import React, {useState, useEffect, useRef} from 'react'
 import './FormActionLogin.css'
-import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../store/userSlice';
 import avatar from '../../assets/images/Avatar.jpg'
 import AuthService from '../Services/AuthService'
 
 const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef}) => {
-    const [email, setEmail] = useState('');
-    const dispatch = useDispatch();
     const token = localStorage.getItem("token");
-
+    const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+    const [profileData, setProfileData] = useState({
+        Email: '',
+        ProfileAvatar: ''
+    });
     useEffect(() => {
         if (toggleActionLogin && token) {
             AuthService.profile()
             .then((res) => {
-                setEmail(res.email);
+                setProfileData({
+                    Email: res?.email,
+                    ProfileAvatar: res?.profileAvatar
+                });
             })
             .catch((error) => {
                 console.error("Error fetching profile:", error);
@@ -24,7 +27,6 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
 
     const handleLogout = () => {
         AuthService.logout();
-        dispatch(logout());
     }
     const handleProfileClick = () => {
         setToggleActionLogin(false);
@@ -35,9 +37,9 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
         <div ref={popupActionRef} onClick={(e) => e.stopPropagation()} className={`FormActionLogin ${toggleActionLogin ? 'active' : ''}`} id='FormActionLogin'>
             <div className='avatar-info'>
                 <div className='border-avatar'>
-                    <img src={avatar} alt="" />
+                    <img src={profileData.ProfileAvatar ? `${API_ENDPOINT}${profileData.ProfileAvatar}` : avatar} alt="" />
                 </div>
-                <p>{email != '' ? email : <a href=''>Cập nhật tài khoản</a>}</p>
+                <p>{profileData.Email != '' ? profileData.Email : <a href='#' onClick={handleProfileClick}>Cập nhật tài khoản</a>}</p>
             </div>
             <ul>
                 <li onClick={handleProfileClick} ref={buttonProfileRef} className='action_button'><i class='bx bx-user-pin' ></i>

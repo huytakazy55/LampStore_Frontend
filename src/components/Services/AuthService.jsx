@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from 'react-toastify';
-const API_ENDPOINT = "https://localhost:7124";
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 axios.defaults.withCredentials = true; // cho phép gửi cookie hay token
 
 class AuthService {
@@ -25,7 +25,9 @@ class AuthService {
             await axios.post(API_ENDPOINT + "/api/Account/logout");
             localStorage.clear();
             await toast.success("Đã đăng xuất tài khoản!");
-            window.location.href = '/';
+            setInterval(() => {
+                window.location.href = '/';                
+            }, 2000);
           } catch (error) {
             toast.error("Đã xảy ra lỗi khi đăng xuất!");
             window.location.href = '/';

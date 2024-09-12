@@ -53,7 +53,6 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         if (validateFormSignin()) {
             AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
                 .then((res) => {
-                    console.log(res);
                     showToast('Đăng nhập thành công!');
                     localStorage.setItem("token", res.data);
                     setToggleLogin(false);
@@ -63,7 +62,6 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 .catch((err) => {
                     if (err.response) {
                         const errorMessage = err.response.data || "Có lỗi xảy ra!";
-                        console.log(err.response);
                         showToast(errorMessage, "error");
                     } else {
                         console.log(err); // Log lỗi nếu không có phản hồi từ server
@@ -78,7 +76,6 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         if (validateFormSignup()) {
             AuthService.signup(stateSignup.username, stateSignup.password)
                 .then((res) => {
-                    console.log(res);
                     showToast('Signup successfully!');
                 })
                 .catch((err) => {
