@@ -1,0 +1,22 @@
+.BrandCarousel {
+    height: 7rem;
+    border-top: 1px solid var(--vertical-line-color);
+    border-bottom: 1px solid var(--vertical-line-color);
+    margin-top: 4rem;
+}
+
+.Border-BrandImage {
+    height: 7rem;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.Border-BrandImage img {
+    opacity: 0.5;
+}
+
+.Border-BrandImage:hover img {
+    opacity: 1;
+} 
+

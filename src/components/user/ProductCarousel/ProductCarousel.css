@@ -1,0 +1,178 @@
+.ProductCarousel {
+    width: 100%;
+    height: 35rem;
+}
+
+.nav-inline {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    font-size: var(--h3-font-size);
+    border-bottom: 1px solid var(--vertical-line-color);
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.nav-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.nav-item.active {
+    font-weight: 800;
+    border-bottom: 2px solid var(--hightlight-color);
+}
+
+.nav-item.active .choose-item {
+    display: block;
+}
+
+.choose-item {
+    content: '';
+    width: 5px;
+    height: 4px;
+    background-color: var(--hightlight-color);
+    border-radius: 10px;
+    position: absolute;
+    bottom: -6px;
+    display: none;
+}
+.tab-pane {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tab-pane.active {
+    display: flex;
+}
+
+
+.tab-pane-item {
+    position: relative;
+    width: 20%;
+    padding: 1.5rem;
+    height: 28rem;
+    transition: .2s ease-in-out;
+}
+
+.tab-pane-item:hover {
+    box-shadow: var(--darker-shadow);
+    cursor: pointer;
+}
+
+.tab-pane-item:hover > .tab-action {
+    display: flex;
+}
+
+.tab-pane-item:hover > .tab-pane-item:last-child::after {
+    content: none;
+}
+
+.tab-pane-item:hover .tab-addtocart-wrap {
+    background-color: var(--hightlight-color);
+    color: var(--white-color);
+}
+
+.tab-pane-item::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 50%;
+    width: 1px;
+    background-color: var(--vertical-line-color);
+}
+
+.tab-pane-item:last-child::after {
+    content: none;
+}
+
+.tab-category {
+    margin-bottom: 15px;
+}
+
+.tab-nameproduct {
+    color: var(--blue-text-color);
+    font-size: var(--normal-font-size);
+}
+
+.price-add-to-cart {
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tab-price {
+    font-size: var(--h3-font-size)
+}
+
+.tab-price-notsale {
+    font-size: var(--small-font-size);
+    text-decoration: line-through;
+}
+
+.tab-addtocart-wrap {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: var(--vertical-line-color);
+    margin-top: -1px;
+    cursor: pointer;
+}
+
+.tab-addtocart-wrap i {
+    width: 35px;
+    height: 35px;
+    font-size: var(--h2-font-size);
+    line-height: 1.6;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.tab-action {
+    display: none;
+    justify-content: space-around;
+    margin-top: .7rem;
+    border-top: 1px solid var(--vertical-line-color);
+    padding: 10px 0;
+    color: var(--dark-color);
+}
+
+.action-addwishlist {
+    display: flex;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: .1s ease-in-out;
+}
+
+.action-addwishlist:hover {
+    color: var(--darkness-color);
+}
+
+.action-addwishlist i {
+    vertical-align: middle;
+    font-size: var(--normal-font-size);
+    margin-right: 5px;
+}
+
+.action-compare {
+    display: flex;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.action-compare:hover {
+    color: var(--darkness-color);
+}
+
+.action-compare i {
+    vertical-align: middle;
+    font-size: var(--normal-font-size);
+    margin-right: 5px;
+}

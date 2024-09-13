@@ -1,0 +1,161 @@
+.TrendingProduct {
+    width: 100%;
+    height: 20rem;
+    border-bottom: 1px solid var();
+}
+
+.TrendingProduct-title h1 {
+    font-weight: 100;
+}
+
+.TrendingProduct-title {
+    position: relative;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--vertical-line-color);
+    margin-bottom: 2rem;
+}
+
+.TrendingProduct-title::after {
+    content: '';
+    width: 17%;
+    height: 1px;
+    position: absolute;
+    bottom: 0;
+    background-color: var(--hightlight-color);
+}
+
+.TrendingProduct-content {
+    height: 16rem;
+}
+
+.TrendingProduct-card {
+    width: 99% !important;
+    height: 12.2rem;
+    padding: 1rem;
+    cursor: pointer;
+    position: relative;
+    margin: 2px;
+}
+
+.TrendingProduct-card:hover::after {
+    content: none;
+}
+
+.TrendingProduct-card .card {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    height: 8.5rem;
+}
+
+.TrendingProduct-card:hover {
+    box-shadow: var(--darker-shadow);
+}
+
+.TrendingProduct-card .cart-content-title {
+    color: var(--blue-text-color);
+    font-size: var(--small-font-size);
+    font-weight: 700;
+}
+
+.TrendingProduct-card .card-img {
+    width: 60%;
+}
+
+.TrendingProduct-card .card-content {
+    display: flex;
+    flex-direction: column;
+    height: 8.5rem;
+    position: relative;
+    padding: 0 .5rem .5rem 1rem;
+}
+
+.TrendingProduct-card .cart-content-category {
+    font-size: var(--smaller-font-size);
+}
+
+.TrendingProduct-card .price-add-to-cart {
+    margin-top: auto;
+}
+
+.TrendingProduct-card .price-add-to-cart .price {
+    font-size: var(--normal-font-size);
+}
+
+.TrendingProduct-card .price-add-to-cart .add-to-cart {
+    font-size: var(--h2-font-size);
+    background-color: var(--vertical-line-color);
+    padding: 2px;
+    line-height: 1;
+    vertical-align: middle;
+    border-radius: 50%;
+    color: var(--white-color);
+}
+
+.TrendingProduct-card .price-add-to-cart .add-to-cart i {
+    width: 30px;
+    height: 30px;
+    line-height: 1.2;
+    vertical-align: middle;
+    padding-left: 1px;
+}
+
+.TrendingProduct-card:hover .add-to-cart {
+    background-color: var(--hightlight-color);
+
+}
+
+.TrendingProduct-card .hover-area {
+    display: flex;
+    margin-left: 41%;
+    border-top: 1px solid var(--vertical-line-color);
+    padding-top: .7rem;
+    justify-content: space-around;
+    align-items: center;
+    font-size: var(--small-font-size);
+    color: var(--dark-color);
+    visibility: hidden;
+    opacity: 0;
+    transition: all .2s ease-in-out;
+}
+
+.TrendingProduct-card:hover .hover-area {
+    visibility: visible;
+    opacity: 1;
+}
+
+.hover-area .add-to-wishlist,
+.hover-area .add-to-compare {
+    display: flex;
+    line-height: 1.4;
+    vertical-align: middle;
+    gap: 5px;
+}
+
+.hover-area .add-to-wishlist i,
+.hover-area .add-to-compare i {
+    font-size: var(--h3-font-size);
+}
+
+.TrendingProduct .slick-next:before, 
+.TrendingProduct .slick-prev:before {
+    color: var(--dark-color);
+    font-size: 2rem;
+}
+
+.TrendingProduct .slick-prev {
+    position: absolute;
+    top: -3.5rem;
+    left: unset;
+    right: 3.7rem;
+    width: 40px;
+    height: 40px;
+}
+
+.TrendingProduct .slick-next {
+    position: absolute;
+    top: -3.5rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+}

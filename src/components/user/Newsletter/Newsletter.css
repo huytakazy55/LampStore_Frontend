@@ -1,0 +1,59 @@
+.Newsletter {
+    height: 5rem;
+    background: var(--hightlight-color);
+    margin-top: 4rem;
+}
+
+.Newsletter-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 5rem;
+}
+
+.Newsletter-signup {
+    font-size: var(--h3-font-size);
+    font-weight: var(--font-medium);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.Newsletter-signup i {
+    font-size: var(--h1-font-size);
+}
+
+.Newsletter-receive {
+    font-size: var(--normal-font-size);
+}
+
+.Newsletter-input {
+    width: 35%;
+}
+
+.Border-newsletter-input {
+    background: var(--white-color);
+    height: 2.5rem;
+    padding: 0 0 0 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.Border-newsletter-input input {
+    height: 100%;
+    border: none;
+    outline: none;
+    width: 75%;
+}
+
+.Border-newsletter-input button {
+    width: 25%;
+    height: 100%;
+    font-weight: var(--font-medium);
+    background: var(--black-color);
+    color: var(--white-color);
+}
