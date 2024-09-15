@@ -1,0 +1,61 @@
+.LeftBar {
+    width: 13%;
+    height: 100%;
+    border-right: 1px solid var(--vertical-line-color);
+    background: linear-gradient(0deg, rgba(136,70,249,1) 0%, rgba(255,175,0,1) 100%);
+    transition: background 0.5s ease;
+    transition: width .5s ease-in-out;
+    overflow: hidden;
+}
+
+.LeftBar.minimize {
+    width: 4.5rem;
+    position: relative;
+}
+
+.LeftBar.minimize i {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.LeftBar.minimize ul li a {
+    position: absolute;
+    left: 200px;
+}
+
+.LeftBar ul {
+    padding: 1rem;
+    color: var(--white-color);
+}
+
+.LeftBar ul li {
+    position: relative;
+    padding: 10px;
+    height: 2.5rem;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: .5rem;
+    cursor: pointer;
+}
+
+.LeftBar ul li:hover {
+    background-color: rgba(103, 29, 193, 0.3);
+}
+
+.LeftBar ul li a {
+    position: absolute;
+    left: 2.7rem;
+    color: var(--white-color);
+    font-weight: var(--font-medium);
+    width: 200px;
+    transition: left 0.3s ease-in-out;
+}
+
+.LeftBar i {
+    font-size: var(--h3-font-size);
+    margin-top: -3px;
+    margin-right: 1rem;
+}

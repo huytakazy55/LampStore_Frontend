@@ -46,7 +46,7 @@
       /* ================= Font Weight =================== */
       --font-normal: 400;
       --font-medium: 500;
-      --font-semi-bold: 600;
+      --font-semi-bold: 700;
       /* ================== Margenes Botton =============== */
       /* 0.5rem = 8px | 1rem = 16px */
       --mb-0-25: 0.25rem;
@@ -108,6 +108,10 @@ h1, h2, h3, h4 {
 }
 
 ul {
+  list-style: none;
+}
+
+li {
   list-style: none;
 }
 

@@ -25,7 +25,6 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
     ProfileAvatar: ''
   });
 
-  const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState('');
 
   useEffect(() => {
@@ -51,18 +50,7 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const formData = new FormData();
-    // if (selectedFile) {
-    //   formData.append('ProfileAvatar', selectedFile);
-    //   ProfileService.UploadAvatar(profileData.id, formData)
-    //   .then((response) => {
-    //     toast.success("upload ảnh đại diện thành công.");
-    //   })
-    //   .catch((error) => {
-    //     toast.error("upload ảnh không thành công.");
-    //     console.log(error);
-    //   })
-    // }
+ 
     if(profileData.id) {
       ProfileService.UpdateUserProfile(profileData.id, profileData.FullName, profileData.UserId, profileData.Email, profileData.PhoneNumber, profileData.Address)
         .then((response) => {
