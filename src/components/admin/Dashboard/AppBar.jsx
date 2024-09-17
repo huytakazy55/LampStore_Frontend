@@ -9,6 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import './AppBar.css'
 import { useDispatch } from 'react-redux';
 import { setLeftBar } from '../../../redux/slices/leftBarAdminSlice';
+import { useTranslation } from 'react-i18next';
 
 const AppBar = () => {
     const dispatch = useDispatch();
@@ -58,6 +59,32 @@ const AppBar = () => {
         dispatch(setLeftBar(!leftbar));
     }
 
+    const [showLanguage, setShowLanguage] = useState(false);
+    const languageRef = useRef(null);
+
+    const toggleShowLanguage = () => {
+        setShowLanguage(!showLanguage);
+    }
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (languageRef.current && !languageRef.current.contains(event.target)) {
+                setShowLanguage(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [languageRef]);
+
+    const { i18n } = useTranslation();
+
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
+
     return (
         <div className='AppBar'>
             <div className='AppBar-logo'>
@@ -81,8 +108,18 @@ const AppBar = () => {
 
             </div>
             <div className='AppBar-service'>
-                <div className='language-icon'>
-                    <img src={VietNam} alt="" />
+                <div onClick={() => toggleShowLanguage()} className='language-icon'>
+                    <img src={i18n.language == 'vi' ? VietNam : England} alt="" />
+                    <div ref={languageRef} className={`AppBar-service-changelanguage ${showLanguage ? 'active' : ''}`}>
+                        <div onClick={() => changeLanguage('vi')} className='language-button'>
+                            <img src={VietNam} alt="" />
+                            Tiếng việt
+                        </div>
+                        <div onClick={() => changeLanguage('en')} className='language-button'>
+                            <img src={England} alt="" />
+                            English
+                        </div>
+                    </div>
                 </div>
                 <div className='noti-icon'>
                     <i class='bx bx-bell' ></i>

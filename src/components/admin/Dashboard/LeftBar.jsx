@@ -1,39 +1,41 @@
 import React from 'react'
 import './LeftBar.css'
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const LeftBar = () => {
+    const {t, i18n} = useTranslation();
     const leftBar = useSelector((state) => state.leftbar.leftbar);
   return (
     <div className={`LeftBar ${leftBar ? 'minimize' : ''}`}>
         <ul>
             <li>
                 <i class='bx bxs-home' ></i>
-                <a href="#">Home Page</a>
+                <a href="#">{(t('HomePage'))}</a>
             </li>
             <li>
                 <i class='bx bxs-user' ></i>
-                <a href="#">Accounts</a>
+                <a href="#">{(t('Users'))}</a>
             </li>
             <li>
                 <i class='bx bxs-category' ></i>
-                <a href="#">Categories</a>
+                <a href="#">{(t('Category'))}</a>
             </li>
             <li>
-                <i class='bx bxs-detail' ></i>
-                <a href="#">Your Products</a>
+                <i class='bx bxs-package' ></i>
+                <a href="#">{(t('Products'))}</a>
             </li>
             <li>
                 <i class='bx bxs-store-alt' ></i>
-                <a href="#">Selling Mode</a>
+                <a href="#">{(t('Orders'))}</a>
             </li>
             <li>
                 <i class='bx bxs-book-content' ></i>
-                <a href="#">Orders</a>
+                <a href="#">{(t('Delivery'))}</a>
             </li>
             <li>
                 <i class='bx bxs-cog' ></i>
-                <a href="#">Setting</a>
+                <a href="#">{(t('Setting'))}</a>
             </li>
         </ul>
     </div>

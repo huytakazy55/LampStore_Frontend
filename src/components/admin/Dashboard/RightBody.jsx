@@ -3,12 +3,13 @@ import './RightBody.css'
 import { Breadcrumbs, Link, Typography } from '@mui/material';
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
 import AnalyticOverview from './AnalyticOverview';
+import AnalyticChart from './AnalyticChart';
 
 const RightBody = () => {
   return (
     <div className='RightBody'>
         <div className='RightBody-title'>
-            Dashboard
+            Trang chủ
         </div>
         <div className='RightBody-breadcrumbs'>
             <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
@@ -22,6 +23,7 @@ const RightBody = () => {
             </Breadcrumbs>
         </div>
         <AnalyticOverview />
+        <AnalyticChart />
     </div>
   )
 }

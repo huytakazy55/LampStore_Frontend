@@ -19,40 +19,40 @@ const AnalyticOverview = () => {
         </div>
         <div className='analytic-card'>
             <div className='analytic-icon'>
-                <i class='bx bxs-user' ></i>
+                <i class="bx bxs-detail"></i>
             </div>
             <div className='analytic-content'>
                 <div className='analytic-count'>
-                    200+
+                    500+
                 </div>
                 <div className='analytic-name'>
-                    Number of users
+                    Stock Products
                 </div>
             </div>
         </div>
         <div className='analytic-card'>
             <div className='analytic-icon'>
-                <i class='bx bxs-user' ></i>
+                <i class='bx bxl-telegram' ></i>
             </div>
             <div className='analytic-content'>
                 <div className='analytic-count'>
-                    200+
+                    1000+
                 </div>
                 <div className='analytic-name'>
-                    Number of users
+                    Sales products
                 </div>
             </div>
         </div>
         <div className='analytic-card'>
             <div className='analytic-icon'>
-                <i class='bx bxs-user' ></i>
+                <i class='bx bxs-truck'></i>
             </div>
             <div className='analytic-content'>
                 <div className='analytic-count'>
-                    200+
+                    20+
                 </div>
                 <div className='analytic-name'>
-                    Number of users
+                    Products Delivery
                 </div>
             </div>
         </div>
