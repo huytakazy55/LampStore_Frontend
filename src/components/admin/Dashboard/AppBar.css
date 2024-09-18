@@ -20,7 +20,7 @@
 
 .AppBar-icon {
     font-size: var(--h2-font-size);
-    width: 5%;
+    width: 1;
     display: flex;
     justify-content: center;
     align-items: center;

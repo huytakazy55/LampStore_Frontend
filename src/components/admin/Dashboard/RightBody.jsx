@@ -4,6 +4,7 @@ import { Breadcrumbs, Link, Typography } from '@mui/material';
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
 import AnalyticOverview from './AnalyticOverview';
 import AnalyticChart from './AnalyticChart';
+import CalendarComponent from './Calendar';
 
 const RightBody = () => {
   return (
@@ -23,7 +24,17 @@ const RightBody = () => {
             </Breadcrumbs>
         </div>
         <AnalyticOverview />
-        <AnalyticChart />
+        <div className='RightBody-analyticchart'>
+            <AnalyticChart />
+        </div>
+        <div className='RightBody-bottom'>
+            <div className='RightBody-bottom-category'>
+
+            </div>
+            <div className='RightBody-bottom-calendar'>
+                <CalendarComponent />
+            </div>
+        </div>
     </div>
   )
 }

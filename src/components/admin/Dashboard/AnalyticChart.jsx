@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Paper, Typography } from '@mui/material';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, Legend, PieChart, Pie, Cell } from 'recharts';
 import './AnalyticChart.css';
 import { useTranslation } from 'react-i18next';
 
 const dataDaily = [
   { name: 'Thứ Hai', sale1: 100, sale2: 400 },
-  { name: 'THứ Ba', sale1: 320, sale2: 310 },
+  { name: 'Thứ Ba', sale1: 320, sale2: 310 },
   { name: 'Thứ Tư', sale1: 150, sale2: 310 },
   { name: 'Thứ Năm', sale1: 250, sale2: 210 },
   { name: 'Thứ Sáu', sale1: 120, sale2: 210 },
@@ -41,13 +41,13 @@ const dataTrafficByMonth = [
     { name: 'April', value: 200 },
     { name: 'May', value: 278 },
     { name: 'June', value: 189 },
-  ];
-  
-  // Colors for PieChart
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF00A0', '#A000FF'];
+];
+
+// Colors for PieChart
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF00A0', '#A000FF'];
 
 const AnalyticChart = () => {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const [timeRange, setTimeRange] = useState('daily');
     const data = timeRange === 'daily' ? dataDaily : timeRange === 'weekly' ? dataWeekly : dataMonthly;
 
@@ -56,22 +56,24 @@ const AnalyticChart = () => {
             <div className='Analytic-chart-line'>
                 <Paper sx={{ mt: 4, p: 2 }}>
                     <Typography variant="h6" gutterBottom>
-                        {(t('SaleOverTime'))} ({timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})
+                        Sale Over Time ({timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})
                         <div className='Analytic-timeRange'>
-                            <a href='#' style={{color: timeRange == 'daily' ? 'green' : ''}} onClick={() => setTimeRange('daily')}>Daily</a>
-                            <a href='#' style={{color: timeRange == 'weekly' ? 'green' : ''}} onClick={() => setTimeRange('weekly')}>Weekly</a>
-                            <a href='#' style={{color: timeRange == 'monthly' ? 'green' : ''}} onClick={() => setTimeRange('monthly')}>Monthly</a>
+                            <a href='#' style={{ color: timeRange === 'daily' ? 'green' : '' }} onClick={() => setTimeRange('daily')}>Daily</a>
+                            <a href='#' style={{ color: timeRange === 'weekly' ? 'green' : '' }} onClick={() => setTimeRange('weekly')}>Weekly</a>
+                            <a href='#' style={{ color: timeRange === 'monthly' ? 'green' : '' }} onClick={() => setTimeRange('monthly')}>Monthly</a>
                         </div>
                     </Typography>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={250}>
                         <LineChart data={data}>
-                            <Line type="monotone" dataKey="sale1" stroke="#ff00bd" />
-                            <Line type="monotone" dataKey="sale2" stroke="#0001ff" />
                             <CartesianGrid stroke="#ccc" />
                             <XAxis dataKey="name" />
                             <YAxis />
                             <Tooltip />
                             <Legend layout="horizontal" align="right" verticalAlign="top" height={30} />
+                            <Area type="monotone" dataKey="sale1" stroke="#ff00bd" fill="#ff00bd" fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="sale2" stroke="#0001ff" fill="#0001ff" fillOpacity={0.7} />
+                            <Line type="monotone" dataKey="sale1" stroke="#ff00bd" />
+                            <Line type="monotone" dataKey="sale2" stroke="#0001ff" />
                         </LineChart>
                     </ResponsiveContainer>
                 </Paper>
@@ -81,16 +83,16 @@ const AnalyticChart = () => {
                     <Typography variant="h6" gutterBottom>
                         Traffic by Month
                     </Typography>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={250}>
                         <PieChart>
                             <Pie
                                 data={dataTrafficByMonth}
                                 cx="50%"
                                 cy="50%"
-                                innerRadius={60}
-                                outerRadius={100}
+                                innerRadius={50}
+                                outerRadius={90}
                                 fill="#8884d8"
-                                paddingAngle={5}
+                                paddingAngle={3}
                                 dataKey="value"
                                 label
                             >

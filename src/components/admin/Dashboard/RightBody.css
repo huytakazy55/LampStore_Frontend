@@ -12,3 +12,22 @@
 .RightBody-breadcrumbs {
     margin-bottom: 1rem;
 }
+
+.RightBody-analyticchart {
+    margin-bottom: 2rem;
+}
+
+.RightBody-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.RightBody-bottom-category {
+    width: 65%;
+}
+
+.RightBody-bottom-calendar {
+    width: 30%;
+    height: 18rem;
+}
