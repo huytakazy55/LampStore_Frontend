@@ -7,11 +7,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './Services/CheckTokenStatus';
+import { ThemeProvider } from './ThemeContext.jsx'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-        <App />
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
     </Provider>,
 );
 
