@@ -18,7 +18,7 @@ const LeftBar = () => {
             </li>
             <li>
                 <i class='bx bxs-user'></i>
-                <Link to="/admin/user">{t('Users')}</Link>
+                <Link to="/admin/users">{t('Users')}</Link>
             </li>
             <li>
                 <i class='bx bxs-category'></i>
