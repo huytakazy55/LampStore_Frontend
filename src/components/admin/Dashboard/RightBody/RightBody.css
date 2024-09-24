@@ -1,0 +1,83 @@
+.RightBody {
+    flex: 1;
+    height: 100%;
+    padding: .5rem 2rem;
+}
+
+.RightBody-title {
+    font-size: var(--h2-font-size);
+    font-weight: var(--font-semi-bold);
+}
+
+.RightBody-breadcrumbs {
+    margin-bottom: 1rem;
+}
+
+.RightBody-analyticchart {
+    margin-bottom: 2rem;
+}
+
+.RightBody-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.RightBody-bottom-category {
+    width: 65%;
+}
+
+.RightBody-bottom-calendar {
+    width: 30%;
+    height: 18rem;
+}
+
+.RightBody-content {
+    position: relative;
+}
+
+table {
+    width: 100%;
+}
+
+table, tr, th, td {
+    border-collapse: collapse;
+    border: 1px solid var(--vertical-line-color);
+    text-align: center;
+    padding: 5px 10px;
+}
+
+table tr th {
+    background: var(--darkness-color);
+    color: var(--white-color);
+}
+
+table tr .combo-action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+table .bx-trash {
+    font-size: var(--h3-font-size);
+    color: red;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid red;
+    border-radius: 3px;
+    background-color: rgba(255, 0, 0, 0.2);
+}
+table .bx-edit {
+    font-size: var(--h3-font-size);
+    color: green;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid green;
+    border-radius: 3px;
+    background-color: rgba(0, 128, 0, 0.2);
+}
+
+table .bx-edit:hover {
+    background-color: rgba(0, 128, 0, 0.3);
+}

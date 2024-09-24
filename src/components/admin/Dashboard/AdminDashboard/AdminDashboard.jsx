@@ -1,7 +1,7 @@
 import React from 'react';
-import AppBar from './AppBar';
-import LeftBar from './LeftBar';
-import RightBody from './RightBody';
+import AppBar from '../AppBar/AppBar';
+import LeftBar from '../LeftBar/LeftBar';
+import RightBody from '../RightBody/RightBody';
 import './AdminDashboard.css'
 
 const AdminDashboard = () => {

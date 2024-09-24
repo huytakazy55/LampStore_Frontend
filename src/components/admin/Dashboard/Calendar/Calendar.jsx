@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box } from '@mui/material';
+import { ThemeContext } from '../../../../ThemeContext';
 
 const CalendarComponent = () => {
   const [selectedDate, setSelectedDate] = useState(null);
+  const {themeColors} = useContext(ThemeContext);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -30,10 +32,10 @@ const CalendarComponent = () => {
             backgroundColor: '#fff',
             '.MuiPickersDay-root': {
               fontWeight: 'bold',
-              color: '#fdad06',
+              color: `${themeColors.EndColorLinear}`,
             },
             '.Mui-selected': {
-              backgroundColor: '#8946f8 !important',
+              backgroundColor: '#000 !important',
               color: '#fff',
             },
             '.MuiPickersDay-root:hover': {
@@ -41,7 +43,7 @@ const CalendarComponent = () => {
             },
             '.MuiDayCalendar-header': {
                 justifyContent: 'space-around',
-                color: '#8946f8 !important'
+                color: `${themeColors.EndColorLinear} !important`
             },
             '.MuiDayCalendar-weekContainer': {
               justifyContent: 'space-around',
@@ -49,10 +51,13 @@ const CalendarComponent = () => {
             '.MuiPickersCalendarHeader-label': {
               fontWeight: '600',
               fontSize: '1.5rem',
-              color: '#8946f8'
+              color: `${themeColors.EndColorLinear}`
             },
             '.MuiPickersDay-today': {
-                border: '2px solid #8946f8 !important',
+                border: `2px solid ${themeColors.StartColorLinear} !important`,
+            },
+            '.MuiDateCalendar-root': {
+                background: `${themeColors.StartColorLinear} !important`
             },
             '.MuiButtonBase-root': {
                 lineHeight: '1',

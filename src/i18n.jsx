@@ -7,6 +7,7 @@ const resources = {
   en: {
     translation: {
       HomePage: 'Home Page',
+      Home: 'Home',
       Users: 'Users',
       Category: 'Category',
       Products: 'Products',
@@ -14,11 +15,14 @@ const resources = {
       Delivery: 'Delivery',
       Setting: 'Setting',
       SaleOverTime: 'Sales Over Time',
+      Create: 'Create',
+      CreateCategoryTitle: 'Create products category'
     },
   },
   vi: {
     translation: {
       HomePage: 'Trang chủ',
+      Home: 'Trang chủ',
       Users: 'Người dùng',
       Category: 'Danh mục',
       Products: 'Sản phẩm',
@@ -26,6 +30,8 @@ const resources = {
       Delivery: 'Vận chuyển',
       Setting: 'Cài đặt',
       SaleOverTime: 'Doanh thu bán hàng theo thời gian',
+      Create: 'Thêm mới',
+      CreateCategoryTitle: 'Thêm mới danh mục sản phẩm'
     },
   },
 };

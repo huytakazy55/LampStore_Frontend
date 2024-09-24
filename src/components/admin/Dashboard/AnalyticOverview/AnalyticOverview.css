@@ -16,7 +16,7 @@
     color: var(--white-color);
 }
 
-.analytic-card:first-child {
+/* .analytic-card:first-child {
     background-color: violet;
 }
 
@@ -30,7 +30,7 @@
 
 .analytic-card:last-child {
     background-color: orangered;
-}
+} */
 
 .analytic-card .analytic-icon {
     display: flex;

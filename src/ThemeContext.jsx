@@ -4,24 +4,31 @@ import { createContext, useState, useEffect } from 'react';
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [themeColor, setThemeColor] = useState('#ffffff');
+  const [themeColors, setThemeColors] = useState({
+    StartColorLinear: 'rgba(136,70,249,1)',
+    EndColorLinear: 'rgba(255,175,0,1)'
+  });
 
   // Lấy màu từ localStorage nếu có
   useEffect(() => {
-    const savedColor = localStorage.getItem('themeColor');
-    if (savedColor) {
-      setThemeColor(savedColor);
+    const savedColors = localStorage.getItem('themeColors') ? JSON.parse(localStorage.getItem('themeColors')) : null;
+    if (savedColors) {
+      setThemeColors(savedColors);
     }
   }, []);
 
   // Hàm thay đổi màu và lưu vào localStorage
-  const changeTheme = (color) => {
-    setThemeColor(color);
-    localStorage.setItem('themeColor', color);
+  const changeTheme = (colors) => {
+    if (typeof colors === 'object') {  // Đảm bảo 'colors' là object
+      setThemeColors(colors);
+      localStorage.setItem('themeColors', JSON.stringify(colors)); // Sửa lỗi tại đây
+    } else {
+      console.error('Invalid colors object', colors);
+    }
   };
 
   return (
-    <ThemeContext.Provider value={{ themeColor, changeTheme }}>
+    <ThemeContext.Provider value={{ themeColors, changeTheme }}>
       {children}
     </ThemeContext.Provider>
   );

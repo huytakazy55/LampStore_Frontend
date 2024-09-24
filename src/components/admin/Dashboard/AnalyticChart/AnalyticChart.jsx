@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Paper, Typography } from '@mui/material';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, Legend, PieChart, Pie, Cell } from 'recharts';
 import './AnalyticChart.css';
 import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../../../ThemeContext';
 
 const dataDaily = [
   { name: 'Thứ Hai', sale1: 100, sale2: 400 },
@@ -50,17 +51,18 @@ const AnalyticChart = () => {
     const { t } = useTranslation();
     const [timeRange, setTimeRange] = useState('daily');
     const data = timeRange === 'daily' ? dataDaily : timeRange === 'weekly' ? dataWeekly : dataMonthly;
+    const {themeColors} = useContext(ThemeContext);
 
     return (
         <div className='Analytic-chart'>
             <div className='Analytic-chart-line'>
                 <Paper sx={{ mt: 4, p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant="h6" gutterBottom style={{color: `${themeColors.EndColorLinear}`}}> 
                         Sale Over Time ({timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})
                         <div className='Analytic-timeRange'>
-                            <a href='#' style={{ color: timeRange === 'daily' ? 'green' : '' }} onClick={() => setTimeRange('daily')}>Daily</a>
-                            <a href='#' style={{ color: timeRange === 'weekly' ? 'green' : '' }} onClick={() => setTimeRange('weekly')}>Weekly</a>
-                            <a href='#' style={{ color: timeRange === 'monthly' ? 'green' : '' }} onClick={() => setTimeRange('monthly')}>Monthly</a>
+                            <a href='#' style={{ color: timeRange === 'daily' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('daily')}>Daily</a>
+                            <a href='#' style={{ color: timeRange === 'weekly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('weekly')}>Weekly</a>
+                            <a href='#' style={{ color: timeRange === 'monthly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('monthly')}>Monthly</a>
                         </div>
                     </Typography>
                     <ResponsiveContainer width="100%" height={250}>
@@ -70,17 +72,15 @@ const AnalyticChart = () => {
                             <YAxis />
                             <Tooltip />
                             <Legend layout="horizontal" align="right" verticalAlign="top" height={30} />
-                            <Area type="monotone" dataKey="sale1" stroke="#ff00bd" fill="#ff00bd" fillOpacity={0.7} />
-                            <Area type="monotone" dataKey="sale2" stroke="#0001ff" fill="#0001ff" fillOpacity={0.7} />
-                            <Line type="monotone" dataKey="sale1" stroke="#ff00bd" />
-                            <Line type="monotone" dataKey="sale2" stroke="#0001ff" />
+                            <Line type="monotone" dataKey="sale1" stroke={`${themeColors.StartColorLinear}`} />
+                            <Line type="monotone" dataKey="sale2" stroke={`${themeColors.EndColorLinear}`} />
                         </LineChart>
                     </ResponsiveContainer>
                 </Paper>
             </div>
             <div className='Analytic-chart-pie'>
                 <Paper sx={{ mt: 4, p: 2 }}>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant="h6" gutterBottom style={{color: `${themeColors.EndColorLinear}`}}>
                         Traffic by Month
                     </Typography>
                     <ResponsiveContainer width="100%" height={250}>

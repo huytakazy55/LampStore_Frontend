@@ -1,25 +1,28 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import './LeftBar.css'
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../../../ThemeContext';
 
 const LeftBar = () => {
-    const {t, i18n} = useTranslation();
+    const {t} = useTranslation();
     const leftBar = useSelector((state) => state.leftbar.leftbar);
+    const { themeColors } = useContext(ThemeContext);
   return (
-    <div className={`LeftBar ${leftBar ? 'minimize' : ''}`}>
+    <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`}} className={`LeftBar ${leftBar ? 'minimize' : ''}`}>
         <ul>
             <li>
-                <i class='bx bxs-home' ></i>
-                <a href="#">{(t('HomePage'))}</a>
+                <i class='bx bxs-home'></i>
+                <Link to="/admin">{t('HomePage')}</Link>
             </li>
             <li>
-                <i class='bx bxs-user' ></i>
-                <a href="#">{(t('Users'))}</a>
+                <i class='bx bxs-user'></i>
+                <Link to="/admin/user">{t('Users')}</Link>
             </li>
             <li>
-                <i class='bx bxs-category' ></i>
-                <a href="#">{(t('Category'))}</a>
+                <i class='bx bxs-category'></i>
+                <Link to="/admin/category">{t('Category')}</Link>
             </li>
             <li>
                 <i class='bx bxs-package' ></i>

@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import './AnalyticOverview.css'
+import { ThemeContext } from '../../../../ThemeContext'
 
 const AnalyticOverview = () => {
+    const {themeColors} = useContext(ThemeContext);
   return (
     <div className='AnalyticOverview'>
-        <div className='analytic-card'>
+        <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`, color: '#fff'}} className='analytic-card'>
             <div className='analytic-icon'>
                 <i class='bx bxs-user' ></i>
             </div>
@@ -17,7 +19,7 @@ const AnalyticOverview = () => {
                 </div>
             </div>
         </div>
-        <div className='analytic-card'>
+        <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`, color: '#fff'}} className='analytic-card'>
             <div className='analytic-icon'>
                 <i class="bx bxs-detail"></i>
             </div>
@@ -30,7 +32,7 @@ const AnalyticOverview = () => {
                 </div>
             </div>
         </div>
-        <div className='analytic-card'>
+        <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`, color: '#fff'}} className='analytic-card'>
             <div className='analytic-icon'>
                 <i class='bx bxl-telegram' ></i>
             </div>
@@ -43,7 +45,7 @@ const AnalyticOverview = () => {
                 </div>
             </div>
         </div>
-        <div className='analytic-card'>
+        <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`, color: '#fff'}} className='analytic-card'>
             <div className='analytic-icon'>
                 <i class='bx bxs-truck'></i>
             </div>
