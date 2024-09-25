@@ -16,7 +16,7 @@ const resources = {
       Setting: 'Setting',
       SaleOverTime: 'Sales Over Time',
       Create: 'Create',
-      CreateCategoryTitle: 'Create products category'
+      Update: 'Update',
     },
   },
   vi: {
@@ -31,7 +31,7 @@ const resources = {
       Setting: 'Cài đặt',
       SaleOverTime: 'Doanh thu bán hàng theo thời gian',
       Create: 'Thêm mới',
-      CreateCategoryTitle: 'Thêm mới danh mục sản phẩm'
+      Update: 'Chỉnh sửa',
     },
   },
 };

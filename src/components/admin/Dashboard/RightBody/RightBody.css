@@ -37,19 +37,20 @@
 }
 
 table {
+    border-collapse: collapse;
     width: 100%;
 }
 
-table, tr, th, td {
-    border-collapse: collapse;
+table tr th {
     border: 1px solid var(--vertical-line-color);
     text-align: center;
-    padding: 5px 10px;
+    padding: 7px 10px;
 }
 
-table tr th {
-    background: var(--darkness-color);
-    color: var(--white-color);
+table tr td {
+    border: 1px solid var(--vertical-line-color);
+    padding: 5px 10px;
+
 }
 
 table tr .combo-action {
@@ -60,7 +61,7 @@ table tr .combo-action {
 }
 
 table .bx-trash {
-    font-size: var(--h3-font-size);
+    font-size: var(--normal-font-size);
     color: red;
     cursor: pointer;
     padding: 3px;
@@ -69,7 +70,7 @@ table .bx-trash {
     background-color: rgba(255, 0, 0, 0.2);
 }
 table .bx-edit {
-    font-size: var(--h3-font-size);
+    font-size: var(--normal-font-size);
     color: green;
     cursor: pointer;
     padding: 3px;
@@ -78,6 +79,86 @@ table .bx-edit {
     background-color: rgba(0, 128, 0, 0.2);
 }
 
+table .bx-trash:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
 table .bx-edit:hover {
     background-color: rgba(0, 128, 0, 0.3);
+}
+
+/* Modal form */
+
+.Modal-header {
+    width: 100%;
+}
+
+.Modal-header .Header-title {
+    height: 100%;
+    display: flex;
+    justify-content: start;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 1rem;
+    font-size: var(--h2-font-size);
+    font-weight: var(--font-semi-bold);
+}
+
+.Modal-header .Header-title i {
+    font-size: var(--h1-font-size);
+}
+
+.Modal-body {
+    width: 100%;
+    background: var(--main-background-color);
+    padding: 1rem;
+    border-bottom: 1px solid var(--vertical-line-color);
+}
+
+.Modal-body .Modalborder-input {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.Modal-body .Modalborder-input:last-child {
+    margin-bottom: 0;
+}
+
+.Modalborder-input .input-label {
+    margin-bottom: 5px;
+    font-weight: var(--font-medium);
+}
+
+.Modalborder-input input,
+.Modalborder-input textarea {
+    width: 100%;
+    border: 1px solid var(--vertical-line-color);
+    outline: none;
+    padding: 5px 10px;
+    font-size: var(--small-font-size);
+}
+
+.Modal-footer {
+    padding: 1rem;
+    background: var(--main-background-color);
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.Modal-footer button {
+    border: 1px solid var(--vertical-line-color);
+    outline: none;
+    padding: 2px 10px;
+    border-radius: 3px;
+    color: var(--white-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3px;
+}
+
+.Modal-footer button i {
+    margin-top: -1px;
 }
