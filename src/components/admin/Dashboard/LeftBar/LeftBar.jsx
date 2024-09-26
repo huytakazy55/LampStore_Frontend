@@ -26,7 +26,7 @@ const LeftBar = () => {
             </li>
             <li>
                 <i class='bx bxs-package' ></i>
-                <a href="#">{(t('Products'))}</a>
+                <Link to="/admin/products">{t('Products')}</Link>
             </li>
             <li>
                 <i class='bx bxs-store-alt' ></i>

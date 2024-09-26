@@ -3,7 +3,8 @@ import './RightBody.css';
 import { useLocation } from 'react-router-dom';
 import Category from '../Category-manage/Category';
 import RightBodyContent from './RightBodyContent';
-import Users from '../User-manage/Users';
+import Users from '../Users-manage/Users';
+import Products from '../Products-manage/Products';
 
 const RightBody = () => {
   const location = useLocation();
@@ -15,6 +16,8 @@ const RightBody = () => {
       return <Category />;
     } else if(location.pathname === '/admin/users'){
       return <Users />
+    } else if(location.pathname === '/admin/products'){
+      return <Products />
     }
     return null;
   };
