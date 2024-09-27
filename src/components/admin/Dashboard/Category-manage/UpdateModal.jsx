@@ -8,12 +8,12 @@ import {ThemeContext} from '../../../../ThemeContext';
 
 const UpdateModal = ({openUpdate, handleUpdateClose, setCategoryData, style, updateId}) => {
     const {themeColors} = useContext(ThemeContext);
+    const {t} = useTranslation();
     const [updateData, setUpdateData] = useState({
         id: '',
         name: '',
         description: ''
     });
-    const {t} = useTranslation();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

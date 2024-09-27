@@ -3,23 +3,23 @@ import { Breadcrumbs, Link } from '@mui/material';
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import Modal from '@mui/material/Modal';
 import './Products.css'
 import {ThemeContext} from '../../../../ThemeContext';
 import { toast } from 'react-toastify';
 import ProductManage from '../../../../Services/ProductManage';
 import CategoryManage from '../../../../Services/CategoryManage';
 import CreateModal from './CreateModal';
+import UpdateModal from './UpdateModal';
+import UploadModal from './UploadModal';
 
 const style = {
   position: 'absolute',
-  top: '30%',
+  top: '35%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 700,
+  width: 750,
   bgcolor: 'background.paper',
   boxShadow: 10,
   border: 'none',
@@ -43,6 +43,10 @@ const Products = () => {
   });
   const handleUpdateOpen = () => setOpenUpdate(true);
   const handleUpdateClose = () => setOpenUpdate(false);
+  //Modal Upload
+  const handleUploadOpen = () => setOpenUpload(true);
+  const handleUploadClose = () => setOpenUpload(false);
+  const [openUpload, setOpenUpload] = React.useState(false);
   //Pagination
   const [page, setPage] = useState(1);
   const itemsPerPage = 20;
@@ -50,7 +54,12 @@ const Products = () => {
   const [productData, setProductData] = useState([]);
   const [productCreate, setProductCreate] = useState({
     name: '',
-    description: ''
+    description: '',
+    price: '',
+    quantity: '',
+    categoryId: '',
+    dateAdded: '',
+    isAvailable: ''
   });
   //Category
   const [categories, setCategories] = useState([]);
@@ -75,14 +84,22 @@ const Products = () => {
       });
   }, []);
 
-  // Giới hạn số từ có trong 1 hàng của bảng dữ liệu
-  // const truncateWords = (text, maxWords) => {
-  //   const words = text.split(' ');
-  //   if (words.length > maxWords) {
-  //     return words.slice(0, maxWords).join(' ') + ' . . .';
-  //   }
-  //   return text;
-  // };
+  //Giới hạn số từ có trong 1 hàng của bảng dữ liệu
+  const truncateWords = (text, maxWords) => {
+    const words = text.split(' ');
+    if (words.length > maxWords) {
+      return words.slice(0, maxWords).join(' ') + ' . . .';
+    }
+    return text;
+  };
+
+  // Định dạng số theo ngôn nguwxx hiện tại
+  const { i18n } = useTranslation();
+  const language = i18n.language;
+  const formattedNumber = (number, language) => {
+    return new Intl.NumberFormat(language).format(number);
+  };
+
   const handleChangePage = (event, value) => {
     setPage(value);
   };
@@ -107,9 +124,13 @@ const Products = () => {
     setUpdateId(id);
   }
 
+  const handleUploadClick = (id) => {
+    handleUploadOpen();
+    setUpdateId(id);
+  }
+
   const GetCategoryById = (id) => {
     const category = categories.find(category => category.id === id);
-    console.log(category);
     return category ? category.name : ''
   }
 
@@ -141,7 +162,7 @@ const Products = () => {
                 <th>Số lượng</th>
                 <th>Danh mục</th>
                 <th>Ngày tạo</th>
-                <th>Hoạt động</th>
+                <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
@@ -152,14 +173,15 @@ const Products = () => {
                     <tr key={product.id}>
                       <td style={{textAlign: 'center', width: '2%'}}>{index + 1}</td>
                       <td style={{width: '20%'}}>{product.name}</td>
-                      <td style={{width: '20%'}}>{product.description}</td>
-                      <td style={{width: '7%', textAlign: 'center'}}>{product.price}</td>
+                      <td style={{width: '20%'}}>{truncateWords(product.description, 10)}</td>
+                      <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.price, language)}</td>
                       <td style={{width: '5%', textAlign: 'center'}}>{product.quantity}</td>
                       <td style={{width: '10%'}}>{GetCategoryById(product.categoryId)}</td>
                       <td style={{width: '7%', textAlign: 'center'}}>{new Date(product.dateAdded).toLocaleDateString()}</td>
-                      <td style={{width: '7%', color: `${product.isAvailable ? 'green' : 'red'}`, textAlign: 'center'}}>{product.isAvailable ? 'Còn hàng' : 'Hết hàng'}</td>
+                      <td style={{width: '7%', color: `${product.isAvailable ? 'green' : 'red'}`, textAlign: 'center'}}>{product.isAvailable ? 'Sẵn sàng' : 'Đang cập nhật'}</td>
                       <td style={{width: '10%'}}>
                         <div className='combo-action'>
+                          <i onClick={() => handleUploadClick(product.id)} class='bx bx-image-add'></i>
                           <i onClick={() => handleUpdateClick(product.id)} class='bx bx-edit'></i>
                           <i onClick={() => DeleteProduct(product.id,product.name)} class='bx bx-trash' ></i>
                         </div>
@@ -196,6 +218,24 @@ const Products = () => {
           setProductData={setProductData} 
           setProductCreate={setProductCreate} 
           style={style} 
+          categories={categories}
+        />
+        {/* Modal Update */}
+        <UpdateModal
+          openUpdate={openUpdate}
+          handleUpdateClose={handleUpdateClose}
+          setProductData={setProductData}
+          style={style}
+          updateData={updateData}
+          updateId={updateId}
+          categories={categories}
+        />
+        {/* Modal Upload avatar */}
+        <UploadModal
+          openUpload={openUpload}
+          handleUploadClose={handleUploadClose}
+          updateId={updateId}
+          style={style}
         />
     </div>
   )

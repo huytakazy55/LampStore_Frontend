@@ -79,13 +79,28 @@ table .bx-edit {
     background-color: rgba(0, 128, 0, 0.2);
 }
 
-table .bx-trash:hover {
-    background-color: rgba(255, 0, 0, 0.3);
+table .bx-image-add {
+    font-size: var(--normal-font-size);
+    color: blue;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid blue;
+    border-radius: 3px;
+    background-color: rgba(14, 1, 247, 0.2);
+}
+
+table .bx-image-add:hover {
+    background-color: rgba(14, 1, 247, 0.3);
 }
 
 table .bx-edit:hover {
     background-color: rgba(0, 128, 0, 0.3);
 }
+
+table .bx-trash:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
 
 /* Modal form */
 
@@ -130,7 +145,8 @@ table .bx-edit:hover {
 }
 
 .Modalborder-input input,
-.Modalborder-input textarea {
+.Modalborder-input textarea,
+.Modalborder-input select {
     width: 100%;
     border: 1px solid var(--vertical-line-color);
     outline: none;

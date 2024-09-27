@@ -17,6 +17,7 @@ const resources = {
       SaleOverTime: 'Sales Over Time',
       Create: 'Create',
       Update: 'Update',
+      Upload: 'Upload',
     },
   },
   vi: {
@@ -32,6 +33,7 @@ const resources = {
       SaleOverTime: 'Doanh thu bán hàng theo thời gian',
       Create: 'Thêm mới',
       Update: 'Chỉnh sửa',
+      Upload: 'Tải lên',
     },
   },
 };
