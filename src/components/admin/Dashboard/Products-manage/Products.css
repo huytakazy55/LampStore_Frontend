@@ -19,6 +19,32 @@
     margin-top: -1px;
 }
 
+.Search-product {
+    position: absolute;
+    top: 1rem;
+    right: 7rem;
+    display: flex;
+    border: 1px solid var(--vertical-line-color);
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 3px;
+}
+
+.Search-product i {
+    font-size: var(--h2-font-size);
+    padding: 0 20px;
+    color: var(--white-color);
+}
+
+.Search-product input {
+    border: none;
+    outline: none;
+    padding: 5px 10px;
+    font-size: var(--small-font-size);
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
 /* Upload css */
 
 .preview-section {

@@ -27,7 +27,7 @@ const RightBodyContent = () => {
             </div>
             <div className='RightBody-bottom'>
                 <div className='RightBody-bottom-category'>
-
+                  
                 </div>
                 <div className='RightBody-bottom-calendar'>
                     <CalendarComponent />

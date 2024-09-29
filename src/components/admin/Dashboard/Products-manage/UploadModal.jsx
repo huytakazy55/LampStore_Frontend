@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 import Compressor from 'compressorjs';
 
-const UploadModal = ({style, openUpload, handleUploadClose, updateId}) => {
+const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProductData}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
 
@@ -48,19 +48,26 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId}) => {
                     if (uploadCount === selectedImages.length) {
                         const formData = new FormData();
                         compressedImages.forEach((compressedImage) => {
-                            formData.append('imageFiles', compressedImage); // Thêm ảnh nén vào FormData
+                            formData.append('imageFiles', compressedImage, compressedImage.name); // Thêm ảnh nén vào FormData
                         });
     
                         // Gọi API upload với formData
                         ProductManage.UploadImageProduct(updateId, formData)
                             .then((res) => {
                                 toast.success("Upload ảnh thành công!");
-                                setSelectedImages([]); // Reset danh sách ảnh đã chọn
-                                handleUploadClose(); // Đóng modal
+                                setSelectedImages([]);
+                                ProductManage.GetProduct()
+                                .then((res) => {
+                                    setProductData(res.data.$values); 
+                                })
+                                .catch((err) => {
+                                    toast.error("Có lỗi khi lấy dữ liệu sản phẩm!");
+                                });
+                                handleUploadClose();
                             })
                             .catch((err) => {
                                 toast.error(`Có lỗi khi upload ảnh! ${err.response.data}`);
-                                handleUploadClose(); // Đóng modal
+                                handleUploadClose();
                             });
                     }
                 },

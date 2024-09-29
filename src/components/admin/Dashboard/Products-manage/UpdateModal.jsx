@@ -18,7 +18,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       quantity: '',
       categoryId: '',
       dateAdded: '',
-      isAvailable: ''
+      isAvailable: '',
   });
 
 
@@ -37,9 +37,16 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       )
         .then((res) => {
           const updatedData = JSON.parse(res.config.data);
-          setProductData((prevData) =>
-            prevData.map((item) => (item.id === updatedData.id ? updatedData : item))
-          );
+          ProductManage.GetProductById(updatedData.id)
+          .then((res) => {
+            const refreshedProductData = res.data;
+            setProductData((prevData) =>
+              prevData.map((item) => (item.id === refreshedProductData.id ? refreshedProductData : item))
+            );
+          })
+          .catch((err) => {
+            toast.error("Có lỗi khi lấy thông tin sản phẩm mới.");
+          });
           toast.success("Cập nhật bản ghi thành công");
           handleUpdateClose();
         })

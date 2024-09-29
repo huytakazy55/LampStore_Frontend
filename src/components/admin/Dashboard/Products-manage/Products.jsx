@@ -13,6 +13,7 @@ import CategoryManage from '../../../../Services/CategoryManage';
 import CreateModal from './CreateModal';
 import UpdateModal from './UpdateModal';
 import UploadModal from './UploadModal';
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
 const style = {
   position: 'absolute',
@@ -49,7 +50,7 @@ const Products = () => {
   const [openUpload, setOpenUpload] = React.useState(false);
   //Pagination
   const [page, setPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 10;
   //Data
   const [productData, setProductData] = useState([]);
   const [productCreate, setProductCreate] = useState({
@@ -63,6 +64,8 @@ const Products = () => {
   });
   //Category
   const [categories, setCategories] = useState([]);
+  //Search
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect( () => {
     ProductManage.GetProduct()
@@ -74,6 +77,11 @@ const Products = () => {
     })
   },[])
 
+  const GetCategoryById = (id) => {
+    const category = categories.find(category => category.id === id);
+    return category ? category.name : ''
+  }
+
   useEffect(() => {
     CategoryManage.GetCategory()
       .then((res) => {
@@ -83,6 +91,27 @@ const Products = () => {
         toast.error("Có lỗi xảy ra khi tải danh mục.");
       });
   }, []);
+
+  //Search Service
+  const highlightedText = (text, highlight) => {
+    if (!highlight) return text;
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
+      ) : part
+    );
+  };
+
+  const filteredProducts = useMemo(() => {
+    return productData.filter(product => {
+      const categoryName = GetCategoryById(product.categoryId).toLowerCase();
+      return (
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        categoryName.includes(searchTerm.toLowerCase())
+      );
+    });
+  }, [productData, searchTerm]);
 
   //Giới hạn số từ có trong 1 hàng của bảng dữ liệu
   const truncateWords = (text, maxWords) => {
@@ -105,8 +134,8 @@ const Products = () => {
   };
   //Pagination
   const currentItems = useMemo(() => {
-    return productData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-  }, [productData, page, itemsPerPage]);
+    return filteredProducts.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  }, [filteredProducts, page, itemsPerPage]);
 
   const DeleteProduct = (id, name) => {
     ProductManage.DeleteProduct(id, name)
@@ -129,15 +158,19 @@ const Products = () => {
     setUpdateId(id);
   }
 
-  const GetCategoryById = (id) => {
-    const category = categories.find(category => category.id === id);
-    return category ? category.name : ''
-  }
-
   return (
     <div>
         <div className='RightBody-title'>
           {t('Product')}
+        </div>
+        <div style={{background: `${themeColors.EndColorLinear}`}} className='Search-product'>
+          <i class='bx bx-search-alt-2' ></i>
+          <input 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            style={{color: `${themeColors.StartColorLinear}`}} type="text" 
+            placeholder="tên, danh mục ..." 
+          />
         </div>
         <div onClick={handleCreateOpen} className='Create-Product' style={{background: `${themeColors.EndColorLinear}`}}>
             <i class='bx bx-duplicate'></i>
@@ -156,6 +189,7 @@ const Products = () => {
             <thead>
               <tr style={{background: `${themeColors.EndColorLinear}`, color: `${themeColors.StartColorLinear}`}}>
                 <th>STT</th>
+                <th>Hình ảnh</th>
                 <th>Tên sản phẩm</th>
                 <th>Mô tả</th>
                 <th>Giá bán</th>
@@ -172,14 +206,21 @@ const Products = () => {
                   currentItems.map((product, index) => (
                     <tr key={product.id}>
                       <td style={{textAlign: 'center', width: '2%'}}>{index + 1}</td>
-                      <td style={{width: '20%'}}>{product.name}</td>
+                      <td style={{ width: '6%' }}>
+                        {product.images && product.images.$values.length > 0 ? (
+                          <img src={`${API_ENDPOINT}${product.images.$values[0].imagePath}`} alt="Product" style={{ width: '100%', height: '4rem', display: 'flex' }} />
+                        ) : (
+                          'No Image'
+                        )}
+                      </td>
+                      <td style={{width: '15%'}}>{highlightedText(product.name, searchTerm)}</td>
                       <td style={{width: '20%'}}>{truncateWords(product.description, 10)}</td>
                       <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.price, language)}</td>
                       <td style={{width: '5%', textAlign: 'center'}}>{product.quantity}</td>
-                      <td style={{width: '10%'}}>{GetCategoryById(product.categoryId)}</td>
+                      <td style={{width: '10%', textAlign: 'center'}}>{highlightedText(GetCategoryById(product.categoryId), searchTerm)}</td>
                       <td style={{width: '7%', textAlign: 'center'}}>{new Date(product.dateAdded).toLocaleDateString()}</td>
-                      <td style={{width: '7%', color: `${product.isAvailable ? 'green' : 'red'}`, textAlign: 'center'}}>{product.isAvailable ? 'Sẵn sàng' : 'Đang cập nhật'}</td>
-                      <td style={{width: '10%'}}>
+                      <td style={{width: '7%', color: `${product.isAvailable ? 'green' : 'red'}`, textAlign: 'center'}}>{product.isAvailable ? 'Hoạt động' : 'Ẩn'}</td>
+                      <td style={{width: '8%'}}>
                         <div className='combo-action'>
                           <i onClick={() => handleUploadClick(product.id)} class='bx bx-image-add'></i>
                           <i onClick={() => handleUpdateClick(product.id)} class='bx bx-edit'></i>
@@ -234,6 +275,7 @@ const Products = () => {
         <UploadModal
           openUpload={openUpload}
           handleUploadClose={handleUploadClose}
+          setProductData={setProductData}
           updateId={updateId}
           style={style}
         />
