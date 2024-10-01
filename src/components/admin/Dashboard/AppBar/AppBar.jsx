@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 import { setLeftBar } from '../../../../redux/slices/leftBarAdminSlice';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
+import AuthService from '../../../../Services/AuthService';
+import { toast } from 'react-toastify';
 
 const AppBar = () => {
     const dispatch = useDispatch();
@@ -19,12 +21,20 @@ const AppBar = () => {
     }
 
     const [showLanguage, setShowLanguage] = useState(false);
+    const [showUserService, setShowUserService] = useState(false);
     const [showColor, setShowColor] = useState(false);
     const {themeColors, changeTheme } = useContext(ThemeContext);
     const languageRef = useRef(null);
     const colorRef = useRef(null);
+    const serviceRef = useRef(null);
     const buttonColorRef = useRef(null);
     const buttonLanguageRef = useRef(null);
+    const buttonServiceRef = useRef(null);
+    const { i18n } = useTranslation();
+
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
 
     const toggleShowLanguage = () => {
         setShowLanguage(!showLanguage);
@@ -32,6 +42,10 @@ const AppBar = () => {
 
     const toggleShowColor = () => {
         setShowColor(!showColor);
+    }
+
+    const toggleShowUserService = () => {
+        setShowUserService(!showUserService);
     }
 
     const handleClickOutside = (event, ref, buttonRef, functionRef) => {
@@ -43,6 +57,7 @@ const AppBar = () => {
         const handleClickOutsideClick = (event) => {
             handleClickOutside(event, colorRef, buttonColorRef, setShowColor);
             handleClickOutside(event, languageRef, buttonLanguageRef, setShowLanguage);
+            handleClickOutside(event, serviceRef, buttonServiceRef, setShowUserService);
         }
 
         document.addEventListener('click', handleClickOutsideClick, true);
@@ -51,11 +66,9 @@ const AppBar = () => {
         };
     }, []);
 
-    const { i18n } = useTranslation();
-
-    const changeLanguage = (lng) => {
-        i18n.changeLanguage(lng);
-    };
+    const Logout = () => {
+        AuthService.logout()
+    }
 
     return (
         <div className='AppBar'>
@@ -118,8 +131,16 @@ const AppBar = () => {
                 <div className='mail-icon'>
                     <i class='bx bx-envelope' ></i>
                 </div>
-                <div className='user-icon'>
+                <div className='user-icon' ref={buttonServiceRef} onClick={toggleShowUserService}> 
                     <i class='bx bx-user'></i>
+                    <div ref={serviceRef} className={`service-user ${showUserService ? 'active' : ''}`} style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`}}>
+                        <ul>
+                            <li onClick={() => Logout()}>
+                                <i class="bx bx-exit"></i>
+                                <a href="#">Đăng xuất</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

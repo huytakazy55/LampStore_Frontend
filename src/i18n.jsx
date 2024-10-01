@@ -18,6 +18,7 @@ const resources = {
       Create: 'Create',
       Update: 'Update',
       Upload: 'Upload',
+      Product: 'Product',
     },
   },
   vi: {
@@ -34,6 +35,7 @@ const resources = {
       Create: 'Thêm mới',
       Update: 'Chỉnh sửa',
       Upload: 'Tải lên',
+      Product: 'Sản phẩm',
     },
   },
 };

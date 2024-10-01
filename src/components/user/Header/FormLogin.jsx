@@ -3,11 +3,11 @@ import './FormLogin.css'
 import AuthService from '../../../Services/AuthService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { jwtDecode } from 'jwt-decode';
 
 const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const [stateSignin, setStateSignin] = useState({ username: '', password: '', rememberMe: false });
     const [stateSignup, setStateSignup] = useState({ username: '', password: '' });
-    const [loginResponse, setLoginResponse] = useState(null);
     const [formErrors, setFormErrors] = useState({});
     const [changeForm, setChangeForm] = useState(false);
 
@@ -49,21 +49,28 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
 
     const handleSignin = (e) => {
         e.preventDefault();
+        
         if (validateFormSignin()) {
             AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
                 .then((res) => {
                     showToast('Đăng nhập thành công!');
                     localStorage.setItem("token", res.data);
                     setToggleLogin(false);
-                    // window.location.reload();
-                    // window.location.href('/');
+    
+                    const role = jwtDecode(res.data).role;
+    
+                    if (role === 'Customer') {
+                        window.location.href = '/';
+                    } else if (role === 'Administrator') {
+                        window.location.href = '/admin';
+                    }
                 })
                 .catch((err) => {
                     if (err.response) {
                         const errorMessage = err.response.data || "Có lỗi xảy ra!";
                         showToast(errorMessage, "error");
                     } else {
-                        console.log(err); // Log lỗi nếu không có phản hồi từ server
+                        console.log(err);
                         showToast("Không thể kết nối tới máy chủ. Vui lòng thử lại sau.", "error");
                     }
                 });

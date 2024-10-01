@@ -1,7 +1,4 @@
 .Create-Product {
-    position: absolute;
-    top: 1rem;
-    right: 0;
     border: 1px solid var(--vertical-line-color);
     padding: 5px 10px;
     font-weight: var(--font-medium);
@@ -20,9 +17,6 @@
 }
 
 .Search-product {
-    position: absolute;
-    top: 1rem;
-    right: 7rem;
     display: flex;
     border: 1px solid var(--vertical-line-color);
     justify-content: space-between;
@@ -45,6 +39,17 @@
     border-bottom-right-radius: 3px;
 }
 
+.Right-button {
+    position: absolute;
+    right: 0;
+    top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+}
+
+
 /* Upload css */
 
 .preview-section {
@@ -65,7 +70,7 @@
 
 .image-container {
     position: relative;
-    width: 100px;
+    width: 135px;
     height: 100px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -112,4 +117,45 @@
 
 .image-container .removeImg:focus {
     outline: none;
+}
+
+.current-image-label,
+.input-label {
+    font-size: var(--normal-font-size);
+    font-weight: var(--font-medium);
+    margin-bottom: 0.2rem;
+}
+
+.current-image .border-product-image {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.border-product-image .border-Img {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.border-product-image .border-Img img {
+    border-radius: 8px;
+}
+
+.border-product-image .border-Img:hover {
+    transform: scale(1.05);
+}
+
+.border-product-image .Delete-button {
+    position: absolute;
+    top: -12px;
+    right: -10px;
+    color: red;
+    font-size: var(--h2-font-size);
+}
+
+.border-product-image .Delete-button:hover {
+    transform: scale(1.1);
 }

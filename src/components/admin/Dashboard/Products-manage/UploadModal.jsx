@@ -6,13 +6,18 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 import Compressor from 'compressorjs';
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
 const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProductData}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
 
+    //Get ảnh 
+    const [ImagePath, setImagePath] = useState([]);
     //Upload ảnh 
     const [selectedImages, setSelectedImages] = useState([]);
+    //Xác nhận upload thành công
+    const [uploadSuccess, setUploadSuccess] = useState(false);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
@@ -56,14 +61,15 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                             .then((res) => {
                                 toast.success("Upload ảnh thành công!");
                                 setSelectedImages([]);
+                                setUploadSuccess(true);
                                 ProductManage.GetProduct()
                                 .then((res) => {
-                                    setProductData(res.data.$values); 
+                                    setProductData(res.data.$values);
                                 })
                                 .catch((err) => {
                                     toast.error("Có lỗi khi lấy dữ liệu sản phẩm!");
                                 });
-                                handleUploadClose();
+                                //handleUploadClose();
                             })
                             .catch((err) => {
                                 toast.error(`Có lỗi khi upload ảnh! ${err.response.data}`);
@@ -72,13 +78,42 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                     }
                 },
                 error(err) {
-                    // Xử lý lỗi nén ảnh
                     toast.error("Có lỗi xảy ra khi nén ảnh.");
                 }
             });
         });
     };
 
+    // Get images product
+    useEffect(() => {
+        if(openUpload) {
+            ProductManage.GetProductImageById(updateId)
+            .then((res) => {
+                if (res.data && res.data.$values) {
+                    setImagePath(res.data.$values);
+                } else {
+                    setImagePath([]);
+                }
+                setUploadSuccess(false);
+            })
+            .catch((err) => {
+                toast.error("Có lỗi xảy ra!");
+            });
+        }
+    }, [updateId, uploadSuccess]);
+
+    //Delete image
+    const toggleDeleteProductImage = (imageId, indexRemove) => {
+        ProductManage.DeleteProductImage(imageId)
+        .then((res) => {
+            toast.success(`Đã xóa hình ảnh thành công`);
+            setImagePath( prevImg => prevImg.filter((_, index) => index !== indexRemove));
+        })
+        .catch((err) => {
+            toast.error("Có lỗi xảy ra khi xóa hình ảnh");
+        })
+    }
+        
     return (
         <Modal
             open={openUpload}
@@ -93,8 +128,34 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                 </div>
                 <div className='Modal-body'>
                     <form onSubmit={handleImageUploadSubmit}>
+                        {
+                            ImagePath.length > 0 ? (
+                                <div className='current-image'>
+                                    <div className='current-image-label'>Hình ảnh sản phẩm</div>
+                                    <div className='border-product-image'>
+                                        {
+                                            ImagePath.map((image, index) => (
+                                                <div key={index} className='border-Img'>
+                                                    <img                                                        
+                                                        src={`${API_ENDPOINT}${image.imagePath}`}
+                                                        alt={`image-${index}`}
+                                                        className='image-item'
+                                                        style={{ width: '135px', height: '100px' }}
+                                                    />
+                                                    <div onClick={() => toggleDeleteProductImage(image.id, index)} className='Delete-button'><i class='bx bxs-message-square-x' ></i></div>
+                                                </div>                                
+                                            ))
+                                        }
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className='current-image'>
+                                    Không có dữ liệu
+                                </div>
+                            )
+                        }                        
                         <div className='upload-image-section'>
-                            <div className='input-label'>Chọn hình ảnh</div>
+                            <div className='input-label'>Tải thêm hình ảnh</div>
                             <input 
                                 type="file" 
                                 accept="image/*" 
@@ -112,7 +173,7 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                                                     src={URL.createObjectURL(image)} 
                                                     alt={`Preview ${index}`} 
                                                     className='preview-img' 
-                                                    style={{maxWidth: '100px', maxHeight: '100px'}}
+                                                    style={{maxWidth: '150px', maxHeight: '100px'}}
                                                 />
                                                 <button className='removeImg' type="button" onClick={() => handleRemoveImage(index)}>Xóa</button>
                                             </div>
@@ -126,7 +187,7 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                 <div className='Modal-footer'>
                     <button type="submit" onClick={handleImageUploadSubmit} style={{background: `${themeColors.EndColorLinear}`}}>
                         <i className='bx bx-save'></i>
-                        Lưu lại
+                        {t("Upload")}
                     </button>
                     <button onClick={handleUploadClose} style={{background: 'red'}}>Đóng</button>
                 </div>

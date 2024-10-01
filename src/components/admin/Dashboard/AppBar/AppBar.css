@@ -139,6 +139,10 @@
     height: 100%;
 }
 
+.user-icon {
+    position: relative;
+}
+
 .user-icon i {
     display: flex;
     margin-left: 3rem;
@@ -199,4 +203,44 @@
 
 .change-color-select span {
     position: absolute;
+}
+
+.service-user {
+    position: absolute;
+    z-index: 1000;
+    width: 10rem;
+    top: 2rem;
+    right: 0;
+    padding: 5px 10px;
+    border-top-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: none;
+}
+
+.service-user.active {
+    display: block;
+}
+
+.service-user ul li {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    color: var(--white-color);
+}
+
+.service-user ul li:hover {
+    background-color: var(--vertical-line-color);
+}
+
+.service-user ul li i {
+    margin-left: 0;
+    margin-top: 0;
+}
+
+.service-user ul li a {
+    font-weight: var(--font-medium);
+    color: inherit;
 }

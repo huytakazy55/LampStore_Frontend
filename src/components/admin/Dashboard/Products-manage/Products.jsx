@@ -20,7 +20,7 @@ const style = {
   top: '35%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 750,
+  width: 800,
   bgcolor: 'background.paper',
   boxShadow: 10,
   border: 'none',
@@ -102,7 +102,6 @@ const Products = () => {
       ) : part
     );
   };
-
   const filteredProducts = useMemo(() => {
     return productData.filter(product => {
       const categoryName = GetCategoryById(product.categoryId).toLowerCase();
@@ -163,19 +162,21 @@ const Products = () => {
         <div className='RightBody-title'>
           {t('Product')}
         </div>
-        <div style={{background: `${themeColors.EndColorLinear}`}} className='Search-product'>
-          <i class='bx bx-search-alt-2' ></i>
-          <input 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)} 
-            style={{color: `${themeColors.StartColorLinear}`}} type="text" 
-            placeholder="tên, danh mục ..." 
-          />
-        </div>
-        <div onClick={handleCreateOpen} className='Create-Product' style={{background: `${themeColors.EndColorLinear}`}}>
-            <i class='bx bx-duplicate'></i>
-            {t('Create')}
+        <div className='Right-button'>
+          <div style={{background: `${themeColors.EndColorLinear}`}} className='Search-product'>
+            <i class='bx bx-search-alt-2' ></i>
+            <input 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              style={{color: `${themeColors.StartColorLinear}`}} type="text" 
+              placeholder="tên, danh mục ..." 
+            />
           </div>
+          <div onClick={handleCreateOpen} className='Create-Product' style={{background: `${themeColors.EndColorLinear}`}}>
+              <i class='bx bx-duplicate'></i>
+              {t('Create')}
+          </div>
+        </div>
         <div className='RightBody-breadcrumbs'>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Link component={RouterLink} to="/admin" color="inherit">

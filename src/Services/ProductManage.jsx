@@ -12,6 +12,10 @@ class ProductManage {
         return axios.get(`${API_ENDPOINT}/api/Products/${id}`);
     }
 
+    GetProductImageById(id) {
+        return axios.get(`${API_ENDPOINT}/api/Products/${id}/images`);
+    }
+
     UpdateProduct(id, name, description, price, quantity, categoryId, dateAdded, isAvailable) {
         return axios.put(`${API_ENDPOINT}/api/Products/${id}`, {
             id: id,
@@ -43,6 +47,10 @@ class ProductManage {
                 'Content-Type': 'multipart/form-data'
             }
         });
+    }
+
+    DeleteProductImage(imageId) {
+        return axios.delete(`${API_ENDPOINT}/api/Products/image/${imageId}`);
     }
 
     DeleteProduct(id) {
