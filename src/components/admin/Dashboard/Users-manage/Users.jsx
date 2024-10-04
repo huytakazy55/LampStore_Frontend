@@ -34,6 +34,10 @@ const Users = () => {
    const [page, setPage] = useState(1);
    const itemsPerPage = 20;
 
+  //Search
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleData, setRoleData] = useState({});
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -45,16 +49,28 @@ const Users = () => {
     .catch((err) => {
       toast.error("Có lỗi xảy ra!");
     })
-
-    
   },[]);
 
+  useEffect(() => {
+    if (userData.length > 0) {
+      userData.forEach(user => {
+        UserManage.GetRoleById(user.id)
+          .then((res) => {
+            setRoleData(prevState => ({
+              ...prevState,
+              [user.id]: res.data.$values,
+            }));
+          })
+          .catch((err) => {
+            toast.error(`Lỗi khi lấy role của ${user.userName}`);
+          });
+      });
+    }
+  }, [userData]);
 
-  console.log(userData);
   const LockUser = (userId, username) => {
     UserManage.LockUser(userId, username)
       .then((res) => {
-        setUserData(prevData => prevData.filter(user => user.id !== userId));
         toast.success(`Đã khóa tài khoản ${username}`);
       })
       .catch((err) => {
@@ -63,9 +79,8 @@ const Users = () => {
   };
 
   const UnLockUser = (userId, username) => {
-    UserManage.LockUser(userId, username)
+    UserManage.UnLockUser(userId, username)
       .then((res) => {
-        setUserData(prevData => prevData.filter(user => user.id !== userId));
         toast.success(`Đã mở khóa tài khoản ${username}`);
       })
       .catch((err) => {
@@ -81,18 +96,26 @@ const Users = () => {
     return userData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   }, [userData, page, itemsPerPage]);
 
-  console.log(userData);
-
-
   return (
     <div>
         <div className='RightBody-title'>
           {t('Users')}
         </div>
-        <div onClick={handleOpen} className='Create-Users' style={{background: `${themeColors.EndColorLinear}`}}>
-            <i class='bx bx-duplicate'></i>
-            {t('Create')}
+        <div className='Right-button'>
+          <div style={{background: `${themeColors.EndColorLinear}`}} className='Search-User'>
+            <i class='bx bx-search-alt-2' ></i>
+            <input 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              style={{color: `${themeColors.StartColorLinear}`}} type="text" 
+              placeholder="tên, danh mục ..." 
+            />
           </div>
+          <div className='Create-User' style={{background: `${themeColors.EndColorLinear}`}}>
+              <i class='bx bx-duplicate'></i>
+              {t('Create')}
+          </div>
+        </div>
         <div className='RightBody-breadcrumbs'>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Link component={RouterLink} to="/admin" color="inherit">
@@ -101,15 +124,15 @@ const Users = () => {
             <Typography color="textPrimary">{t('Users')}</Typography>
           </Breadcrumbs>
         </div>
-        <div className='Users'>
+        <div className='User'>
           <table>
             <thead>
               <tr style={{background: `${themeColors.EndColorLinear}`, color: `${themeColors.StartColorLinear}`}}>
-                <th>STT</th>
-                <th>Id</th>
-                <th>Tên người dùng</th>
-                <th>Nhóm quyền</th>
-                <th>Thao tác</th>
+                <th style={{width: '5%'}}>STT</th>
+                <th style={{width: '25%'}}>Id</th>
+                <th style={{width: '40%'}}>Tên người dùng</th>
+                <th style={{width: '10%'}}>Nhóm quyền</th>
+                <th style={{width: '10%'}}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -118,13 +141,18 @@ const Users = () => {
                     currentItems.map((user, index) => (
                       <tr key={user.id}>
                         <td style={{textAlign: 'center', width: '5%'}}>{index + 1}</td>
-                        <td style={{width: '25%'}}>{user.id}</td>
-                        <td style={{width: '60%'}}>{user.userName}</td>
-                        <td style={{width: '10%'}}>
-                          <div className='combo-action'>
-                            {/* <i onClick={() => handleUpdateClick(user.id)} class='bx bx-edit'></i> */}
-                            <i onClick={() => LockUser(user.id,user.userName)} class='bx bx-lock' ></i>
-                            <i onClick={() => UnLockUser(user.id,user.userName)} class='bx bx-lock-open' ></i>
+                        <td>{user.id}</td>
+                        <td>{user.userName}</td>
+                        <td style={{textAlign: 'center'}}>{roleData[user.id] ? roleData[user.id] : 'Loading...'}</td>
+                        <td>
+                          <div className='combo-action'>                        
+                          {user.lockoutEnd && new Date(user.lockoutEnd) > new Date() ? (
+                            // Tài khoản bị khóa, hiển thị nút "Mở khóa"
+                            <i onClick={() => UnLockUser(user.id, user.userName)} className='bx bx-lock-open' ></i>
+                          ) : (
+                            // Tài khoản không bị khóa, hiển thị nút "Khóa"
+                            <i onClick={() => LockUser(user.id, user.userName)} className='bx bx-lock' ></i>
+                          )}
                           </div>
                         </td>
                       </tr>

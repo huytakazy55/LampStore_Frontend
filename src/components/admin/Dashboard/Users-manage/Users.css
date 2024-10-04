@@ -1,7 +1,4 @@
-.Create-Users {
-    position: absolute;
-    top: 1rem;
-    right: 0;
+.Create-User {
     border: 1px solid var(--vertical-line-color);
     padding: 5px 10px;
     font-weight: var(--font-medium);
@@ -14,7 +11,40 @@
     cursor: pointer;
 }
 
-.Create-Users i {
+.Create-User i {
     font-size: var(--h3-font-size);
     margin-top: -1px;
+}
+
+.Search-User {
+    display: flex;
+    border: 1px solid var(--vertical-line-color);
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 3px;
+}
+
+.Search-User i {
+    font-size: var(--h2-font-size);
+    padding: 0 20px;
+    color: var(--white-color);
+}
+
+.Search-User input {
+    border: none;
+    outline: none;
+    padding: 5px 10px;
+    font-size: var(--small-font-size);
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.Right-button {
+    position: absolute;
+    right: 0;
+    top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
 }

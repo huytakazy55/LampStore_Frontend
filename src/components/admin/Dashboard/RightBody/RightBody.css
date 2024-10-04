@@ -89,6 +89,27 @@ table .bx-image-add {
     background-color: rgba(14, 1, 247, 0.2);
 }
 
+table .bx-lock {
+    font-size: var(--normal-font-size);
+    color: red;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid red;
+    border-radius: 3px;
+    background-color: rgba(255, 8, 0, 0.2);
+}
+
+table .bx-lock-open {
+    font-size: var(--normal-font-size);
+    color: red;
+    cursor: pointer;
+    padding: 3px;
+    border: 1px solid red;
+    border-radius: 3px;
+    background-color: rgba(255, 8, 0, 0.2);
+}
+
+
 table .bx-image-add:hover {
     background-color: rgba(14, 1, 247, 0.3);
 }
@@ -98,6 +119,10 @@ table .bx-edit:hover {
 }
 
 table .bx-trash:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+}
+
+table .bx-lock:hover {
     background-color: rgba(255, 0, 0, 0.3);
 }
 
