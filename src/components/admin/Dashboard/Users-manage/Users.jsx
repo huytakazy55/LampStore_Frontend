@@ -29,7 +29,7 @@ const Users = () => {
   const {themeColors} = useContext(ThemeContext);
   const {t} = useTranslation();
   const [open, setOpen] = React.useState(false);
-  const [userData, setUserData] = useState('');
+  const [userData, setUserData] = useState([]);
    //Pagination
    const [page, setPage] = useState(1);
    const itemsPerPage = 20;
@@ -87,14 +87,34 @@ const Users = () => {
         toast.error("Có lỗi xảy ra");
       });
   };
+
+  //Search Service
+  const highlightedText = (text, highlight) => {
+    if (!highlight) return text;
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
+      ) : part
+    );
+  };
+  const filteredUsers = useMemo(() => {
+    return userData.filter(user => {
+      //const categoryName = GetCategoryById(user.categoryId).toLowerCase();
+      return (
+        user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+        //categoryName.includes(searchTerm.toLowerCase())
+      );
+    });
+  }, [userData, searchTerm]);
   
   const handleChangePage = (event, value) => {
     setPage(value);
   };
   //Pagination
   const currentItems = useMemo(() => {
-    return userData.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-  }, [userData, page, itemsPerPage]);
+    return filteredUsers.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  }, [filteredUsers, page, itemsPerPage]);
 
   return (
     <div>
@@ -142,8 +162,8 @@ const Users = () => {
                       <tr key={user.id}>
                         <td style={{textAlign: 'center', width: '5%'}}>{index + 1}</td>
                         <td>{user.id}</td>
-                        <td>{user.userName}</td>
-                        <td style={{textAlign: 'center'}}>{roleData[user.id] ? roleData[user.id] : 'Loading...'}</td>
+                        <td>{highlightedText(user.userName, searchTerm)}</td>
+                        <td style={{textAlign: 'center'}}>{highlightedText(roleData[user.id] ? roleData[user.id] : 'Loading...', searchTerm)}</td>
                         <td>
                           <div className='combo-action'>                        
                           {user.lockoutEnd && new Date(user.lockoutEnd) > new Date() ? (
