@@ -17,10 +17,10 @@ const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
 const style = {
   position: 'absolute',
-  top: '35%',
+  top: '47%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 800,
+  width: 1200,
   bgcolor: 'background.paper',
   boxShadow: 10,
   border: 'none',
@@ -54,13 +54,22 @@ const Products = () => {
   //Data
   const [productData, setProductData] = useState([]);
   const [productCreate, setProductCreate] = useState({
-    name: '',
-    description: '',
-    price: '',
+    name: '', 
+    description: '', 
+    originalprice: '',
+    discount: '',     
+    saleprice: '',           
     quantity: '',
-    categoryId: '',
-    dateAdded: '',
-    isAvailable: ''
+    weight: '',
+    materials: '',
+    categoryId: '', 
+    tags: '',
+    rating: '',
+    viewcount: '',
+    reviewcount: '',
+    favorites: '',
+    dateAdded: '', 
+    isAvailable: '' 
   });
   //Category
   const [categories, setCategories] = useState([]);
@@ -114,6 +123,9 @@ const Products = () => {
 
   //Giới hạn số từ có trong 1 hàng của bảng dữ liệu
   const truncateWords = (text, maxWords) => {
+    if (!text) {
+      return '';
+    }
     const words = text.split(' ');
     if (words.length > maxWords) {
       return words.slice(0, maxWords).join(' ') + ' . . .';
@@ -216,10 +228,16 @@ const Products = () => {
                       </td>
                       <td style={{width: '15%'}}>{highlightedText(product.name, searchTerm)}</td>
                       <td style={{width: '20%'}}>{truncateWords(product.description, 10)}</td>
-                      <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.price, language)}</td>
+                      <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.salePrice, language)}</td>
                       <td style={{width: '5%', textAlign: 'center'}}>{product.quantity}</td>
                       <td style={{width: '10%', textAlign: 'center'}}>{highlightedText(GetCategoryById(product.categoryId), searchTerm)}</td>
-                      <td style={{width: '7%', textAlign: 'center'}}>{new Date(product.dateAdded).toLocaleDateString()}</td>
+                      <td style={{ width: '7%', textAlign: 'center' }}>
+                        {new Date(product.dateAdded).toLocaleDateString('vi-VN', {
+                          day: '2-digit', // NN
+                          month: '2-digit', // TT
+                          year: 'numeric' // NNNN
+                        }).replace(/\//g, '-')}
+                      </td>
                       <td style={{width: '7%', color: `${product.isAvailable ? 'green' : 'red'}`, textAlign: 'center'}}>{product.isAvailable ? 'Hoạt động' : 'Ẩn'}</td>
                       <td style={{width: '8%'}}>
                         <div className='combo-action'>

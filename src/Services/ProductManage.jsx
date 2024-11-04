@@ -16,26 +16,44 @@ class ProductManage {
         return axios.get(`${API_ENDPOINT}/api/Products/${id}/images`);
     }
 
-    UpdateProduct(id, name, description, price, quantity, categoryId, dateAdded, isAvailable) {
+    UpdateProduct(id, name, description, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, dateAdded, isAvailable) {
         return axios.put(`${API_ENDPOINT}/api/Products/${id}`, {
             id: id,
             name: name,
             description: description,
-            price: price,
+            originalprice: originalprice,
+            discount: discount,
+            saleprice: saleprice,
             quantity: quantity,
+            weight: weight,
+            materials: materials,
             categoryId: categoryId,
+            tags: tags,
+            rating: rating,
+            viewcount: viewcount,
+            reviewcount: reviewcount,
+            favorites: favorites,
             dateAdded: dateAdded,
             isAvailable: isAvailable
         });
     }
 
-    CreateProduct(name, description, price, quantity, categoryId, dateAdded, isAvailable) {
+    CreateProduct(name, description, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, dateAdded, isAvailable) {
         return axios.post(`${API_ENDPOINT}/api/Products`,{
             name: name,
             description: description,
-            price: price,
+            originalprice: originalprice,
+            discount: discount,
+            saleprice: saleprice,
             quantity: quantity,
+            weight: weight,
+            materials: materials,
             categoryId: categoryId,
+            tags: tags,
+            rating: rating,
+            viewcount: viewcount,
+            reviewcount: reviewcount,
+            favorites: favorites,
             dateAdded: dateAdded,
             isAvailable: isAvailable
         });

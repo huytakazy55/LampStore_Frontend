@@ -12,13 +12,22 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
     const {t} = useTranslation();
     const [updateData, setUpdateData] = useState({
       id: '',
-      name: '',
-      description: '',
-      price: '',
+      name: '', 
+      description: '', 
+      originalprice: '',
+      discount: '',     
+      saleprice: '',           
       quantity: '',
-      categoryId: '',
-      dateAdded: '',
-      isAvailable: '',
+      weight: '',
+      materials: '',
+      categoryId: '', 
+      tags: '',
+      rating: '',
+      viewcount: '',
+      reviewcount: '',
+      favorites: '',
+      dateAdded: '', 
+      isAvailable: '' 
   });
 
 
@@ -29,9 +38,18 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         updateData.id, 
         updateData.name, 
         updateData.description, 
-        updateData.price,
+        updateData.originalprice,
+        updateData.discount,
+        updateData.saleprice,
         updateData.quantity,
+        updateData.weight,
+        updateData.materials,
         updateData.categoryId,
+        updateData.tags,
+        updateData.rating,
+        updateData.viewcount,
+        updateData.reviewcount,
+        updateData.favorites,
         updateData.dateAdded,
         updateData.isAvailable
       )
@@ -60,13 +78,23 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       if(updateId) {
         ProductManage.GetProductById(updateId)
         .then((res) => {
+          console.log(res.data);
           setUpdateData({
             id: res?.data.id,
             name: res?.data.name,
             description: res?.data.description,
-            price: res?.data.price,
+            originalprice: res?.data.originalPrice,
+            discount: res?.data.discount,
+            saleprice: res?.data.salePrice,
             quantity: res?.data.quantity,
+            weight: res?.data.weight,
+            materials: res?.data.materials,
             categoryId: res?.data.categoryId,
+            tags: res?.data.tags,
+            rating: res?.data.rating,
+            viewcount: res?.data.viewCount,
+            reviewcount: res?.data.reviewCount,
+            favorites: res?.data.favorites,
             dateAdded: res?.data.dateAdded,
             isAvailable: res?.data.isAvailable
           })
@@ -86,9 +114,21 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
 
-      const fieldValue = type === 'checkbox' ? checked : value;
+      let fieldValue = type === 'checkbox' ? checked : value;
+      const updatedProduct = { ...updateData, [name]: fieldValue };
 
+      if (name === 'discount') {
+        fieldValue = Math.max(0, Math.min(100, Number(fieldValue)));
+      }
+      
+      if(name === 'originalprice' || name === 'discount'){
+        const originalPrice = parseFloat(updatedProduct.originalprice || 0);
+        const discount = parseFloat(updatedProduct.discount || 0);
+        updateData.saleprice = originalPrice - (originalPrice * discount / 100);
+      }
+      
       setUpdateData({ ...updateData, [name]: fieldValue });
+
     };
     const handleCategoryChange = (e) => {
         setUpdateData({ ...updateData, categoryId: e.target.value });
@@ -120,7 +160,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
-                  <div style={{width: '40%'}}>
+                  <div style={{width: '36%'}}>
                     <div className='input-label'>Danh mục sản phẩm</div>
                     <select style={{padding: '6.5px 10px'}} name="categoryId" value={updateData.categoryId} onChange={handleCategoryChange}>
                       <option value={updateData.categoryId} selected>{GetCategoryById(updateData.categoryId)}</option>
@@ -134,12 +174,36 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                     </select>
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Giá bán</div>
-                    <input name='price' autoFocus required value={updateData.price} type="number" onChange={handleInputChange} />
+                    <div className='input-label'>Khối lượng</div>
+                    <input name='weight' required value={updateData.weight} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
                     <div className='input-label'>Số lượng</div>
-                    <input name='quantity' autoFocus required value={updateData.quantity} type="number" onChange={handleInputChange} />
+                    <input name='quantity' required value={updateData.quantity} type="number" onChange={handleInputChange} />
+                  </div>
+                </div>
+                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                  <div style={{width: '36%'}}>
+                    <div className='input-label'>Giá bán</div>
+                    <input name='originalprice' required value={updateData.originalprice} type="number" onChange={handleInputChange} />                    
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='input-label'>Khuyến mãi</div>
+                    <input name='discount' required value={updateData.discount} type="number" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='input-label'>Giá khuyến mãi</div>
+                    <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
+                  </div>
+                </div>
+                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                  <div style={{width: '36%'}}>
+                    <div className='input-label'>Chất liệu sản phẩm</div>
+                    <input name='materials' required value={updateData.materials} type="text" onChange={handleInputChange} />                    
+                  </div>
+                  <div style={{width: '62%'}}>
+                    <div className='input-label'>Tags name</div>
+                    <input name='tags' required value={updateData.tags} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div className='Modalborder-input'>
@@ -156,6 +220,25 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                       onChange={handleInputChange}
                   />
                   <label htmlFor="isAvailable">Hoạt động</label>
+                </div>
+
+                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                  <div style={{width: '25%'}}>
+                    <div className='input-label'>Giá bán</div>
+                    <input name='originalprice' required value={updateData.originalprice} type="number" onChange={handleInputChange} />                    
+                  </div>
+                  <div style={{width: '25%'}}>
+                    <div className='input-label'>Khuyến mãi</div>
+                    <input name='discount' required value={updateData.discount} type="number" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '25%'}}>
+                    <div className='input-label'>Giá khuyến mãi</div>
+                    <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '25%'}}>
+                    <div className='input-label'>Giá khuyến mãi</div>
+                    <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
+                  </div>
                 </div>
                 <input type="hidden" name='dateAdded' value={updateData.dateAdded} readOnly />
               </form>

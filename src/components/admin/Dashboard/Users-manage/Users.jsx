@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState, useMemo} from 'react'
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { Breadcrumbs, Link } from '@mui/material';
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
@@ -7,8 +7,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import Modal from '@mui/material/Modal';
-import './Users.css'
-import {ThemeContext} from '../../../../ThemeContext';
+import './Users.css';
+import { ThemeContext } from '../../../../ThemeContext';
 import UserManage from '../../../../Services/UserManage';
 import { toast } from 'react-toastify';
 
@@ -34,7 +34,7 @@ const Users = () => {
    const [page, setPage] = useState(1);
    const itemsPerPage = 20;
 
-  //Search
+  // Search
   const [searchTerm, setSearchTerm] = useState('');
   const [roleData, setRoleData] = useState({});
 
@@ -43,13 +43,13 @@ const Users = () => {
 
   useEffect(() => {
     UserManage.GetUserAccount()
-    .then((res) => {
-      setUserData(res.$values);
-    })
-    .catch((err) => {
-      toast.error("Có lỗi xảy ra!");
-    })
-  },[]);
+      .then((res) => {
+        setUserData(res.$values);
+      })
+      .catch((err) => {
+        toast.error("Có lỗi xảy ra!");
+      });
+  }, []);
 
   useEffect(() => {
     if (userData.length > 0) {
@@ -68,10 +68,19 @@ const Users = () => {
     }
   }, [userData]);
 
+  const updateUserLockStatus = (userId, isLocked) => {
+    setUserData(prevData => 
+      prevData.map(user => 
+        user.id === userId ? { ...user, lockoutEnd: isLocked ? new Date(Date.now() + 1000 * 60 * 60) : null } : user
+      )
+    );
+  };
+
   const LockUser = (userId, username) => {
     UserManage.LockUser(userId, username)
       .then((res) => {
         toast.success(`Đã khóa tài khoản ${username}`);
+        updateUserLockStatus(userId, true); // Cập nhật trạng thái khóa
       })
       .catch((err) => {
         toast.error("Có lỗi xảy ra");
@@ -82,6 +91,7 @@ const Users = () => {
     UserManage.UnLockUser(userId, username)
       .then((res) => {
         toast.success(`Đã mở khóa tài khoản ${username}`);
+        updateUserLockStatus(userId, false); // Cập nhật trạng thái mở khóa
       })
       .catch((err) => {
         toast.error("Có lỗi xảy ra");
@@ -111,7 +121,8 @@ const Users = () => {
   const handleChangePage = (event, value) => {
     setPage(value);
   };
-  //Pagination
+
+  // Pagination
   const currentItems = useMemo(() => {
     return filteredUsers.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   }, [filteredUsers, page, itemsPerPage]);
@@ -203,4 +214,4 @@ const Users = () => {
   )
 }
 
-export default Users
+export default Users;

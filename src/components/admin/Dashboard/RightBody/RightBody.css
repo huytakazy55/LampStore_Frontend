@@ -101,12 +101,12 @@ table .bx-lock {
 
 table .bx-lock-open {
     font-size: var(--normal-font-size);
-    color: red;
+    color: green;
     cursor: pointer;
     padding: 3px;
-    border: 1px solid red;
+    border: 1px solid green;
     border-radius: 3px;
-    background-color: rgba(255, 8, 0, 0.2);
+    background-color: rgba(0, 128, 0, 0.2);
 }
 
 
@@ -157,7 +157,7 @@ table .bx-lock:hover {
 
 .Modal-body .Modalborder-input {
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .Modal-body .Modalborder-input:last-child {
