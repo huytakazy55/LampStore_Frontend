@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './FormCart.css'
-import iphone14 from '../../../assets/images/Iphone14.jpg'
-import laptop from '../../../assets/images/laptop-2.jpg'
-import computer from '../../../assets/images/computer.jpg'
+import iphone14 from '../../../../assets/images/Iphone14.jpg'
+import laptop from '../../../../assets/images/laptop-2.jpg'
+import computer from '../../../../assets/images/computer.jpg'
 
 const FormCart = ({toggleCart, popupRef}) => {
   return (

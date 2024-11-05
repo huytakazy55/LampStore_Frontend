@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react'
 import './FormActionLogin.css'
-import avatar from '../../../assets/images/Avatar.jpg'
-import AuthService from '../../../Services/AuthService'
+import avatar from '../../../../assets/images/Avatar.jpg'
+import AuthService from '../../../../Services/AuthService'
 
 const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef}) => {
     const token = localStorage.getItem("token");

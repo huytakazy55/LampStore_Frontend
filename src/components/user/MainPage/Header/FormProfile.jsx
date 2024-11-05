@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import './FormProfile.css'
 import { useDispatch } from 'react-redux';
-import { setAvatar } from '../../../redux/slices/avatarSlice';
-import avatar from '../../../assets/images/Avatar.jpg'
-import AuthService from '../../../Services/AuthService'
-import ProfileService from '../../../Services/ProfileService'
+import { setAvatar } from '../../../../redux/slices/avatarSlice';
+import avatar from '../../../../assets/images/Avatar.jpg'
+import AuthService from '../../../../Services/AuthService'
+import ProfileService from '../../../../Services/ProfileService'
 import { jwtDecode } from 'jwt-decode'
 import { toast } from 'react-toastify'
 import Compressor from 'compressorjs';

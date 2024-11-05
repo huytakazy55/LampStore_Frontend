@@ -1,9 +1,9 @@
 import React from 'react'
 import './SiteContent.css'
 import Slider from "react-slick";
-import Banner1 from '../../../assets/images/Banner_DenNgu01.jpg'
-import Banner2 from '../../../assets/images/Banner_Denngu02.jpg'
-import Banner3 from '../../../assets/images/Banner_DenNgu03.jpg'
+import Banner1 from '../../../../assets/images/Banner_DenNgu01.jpg'
+import Banner2 from '../../../../assets/images/Banner_Denngu02.jpg'
+import Banner3 from '../../../../assets/images/Banner_DenNgu03.jpg'
 
 export const SiteContent = () => {
   var settings = {

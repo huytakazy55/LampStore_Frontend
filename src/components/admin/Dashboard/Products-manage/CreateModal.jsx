@@ -113,13 +113,13 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
               <form action="" onSubmit={handleSubmitCreate} method='post'>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '100%'}}>
-                    <div className='input-label'>Tên sản phẩm</div>
+                    <div className='input-label'>Tên sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='name' required autoFocus value={productCreate.name} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Danh mục sản phẩm</div>
+                    <div className='input-label'>Danh mục sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <select style={{padding: '6.5px 10px'}} name="categoryId" value={productCreate.categoryId} onChange={handleCategoryChange}>
                       <option value="" disabled>-- Chọn danh mục --</option>
                       {
@@ -132,35 +132,39 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                     </select>
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Khối lượng <span style={{fontSize: '14px'}}>(Gram)</span></div>
+                    <div className='input-label'>Khối lượng <span style={{fontSize: '14px'}}>(Gram)</span><span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='weight' autoFocus required value={productCreate.weight} min={0} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Số lượng</div>
+                    <div className='input-label'>Số lượng <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='quantity' autoFocus required value={productCreate.quantity} min={0} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Giá bán</div>
+                    <div className='input-label'>Giá bán <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='originalprice' autoFocus required value={productCreate.originalprice} min={0} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Khuyến mãi <span style={{fontSize: '14px'}}>(%)</span></div>
+                    <div className='input-label'>Khuyến mãi <span style={{fontSize: '14px'}}>(%)</span> <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='discount' autoFocus required value={productCreate.discount} min={0} max={100} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Giá khuyến mãi</div>
+                    <div className='input-label'>Giá khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='saleprice' autoFocus required value={productCreate.saleprice} min={0} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Chất liệu sản phẩm</div>
+                    <div className='input-label'>Chất liệu sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='materials' autoFocus required value={productCreate.materials} type="text" onChange={handleInputChange} />
                   </div>
-                  <div style={{width: '62%'}}>
-                    <div className='input-label'>Tags name</div>
+                  <div style={{width: '30%'}}>
+                    <div className='input-label'>Loại sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
+                    <input name='materials' autoFocus required value={productCreate.materials} type="text" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='input-label'>Tags name <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='tags' autoFocus required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 import React from 'react'
 import './BrandCarousel.css'
 import Slider from "react-slick";
-import Brand from '../../../assets/images/Brand.png'
+import Brand from '../../../../assets/images/Brand.png'
 
 const BrandCarousel = () => {
     var settings = {

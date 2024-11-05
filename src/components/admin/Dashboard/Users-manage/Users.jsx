@@ -100,6 +100,7 @@ const Users = () => {
 
   //Search Service
   const highlightedText = (text, highlight) => {
+    if (!text || typeof text !== 'string') return text;
     if (!highlight) return text;
     const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
     return parts.map((part, index) =>
@@ -110,10 +111,8 @@ const Users = () => {
   };
   const filteredUsers = useMemo(() => {
     return userData.filter(user => {
-      //const categoryName = GetCategoryById(user.categoryId).toLowerCase();
       return (
         user.userName.toLowerCase().includes(searchTerm.toLowerCase())
-        //categoryName.includes(searchTerm.toLowerCase())
       );
     });
   }, [userData, searchTerm]);
@@ -190,7 +189,7 @@ const Users = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" style={{textAlign: 'center', color:'red'}}>Không có dữ liệu</td>
+                      <td colSpan="5" style={{textAlign: 'center', color:'red'}}>Không có dữ liệu</td>
                     </tr>
                   )
               }

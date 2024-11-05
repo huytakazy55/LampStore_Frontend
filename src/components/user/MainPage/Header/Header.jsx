@@ -5,9 +5,9 @@ import FormCart from './FormCart';
 import FormActionLogin from './FormActionLogin';
 import { useSelector } from 'react-redux';
 import 'react-tooltip/dist/react-tooltip.css';
-import Logo from "../../../assets/images/LogoLamp3D.jpg"
-import avatarimg from '../../../assets/images/Avatar.jpg'
-import AuthService from '../../../Services/AuthService';
+import Logo from "../../../../assets/images/LogoLamp3D.jpg"
+import avatarimg from '../../../../assets/images/Avatar.jpg'
+import AuthService from '../../../../Services/AuthService';
 import FormProfile from './FormProfile';
 
 const Header = () => {

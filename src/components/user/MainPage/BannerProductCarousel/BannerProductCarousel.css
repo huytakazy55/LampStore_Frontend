@@ -1,7 +1,7 @@
 .BannerProductCarousel {
     width: 100%;
     height: 36rem;
-    background-image: url("../../../assets/images/HomeV3ProductBackground.jpg");
+    background-image: url("../../../../assets/images/HomeV3ProductBackground.jpg");
     background-size: cover;
     background-position: center center;
     margin-bottom: 2.5rem;

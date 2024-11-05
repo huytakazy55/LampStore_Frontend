@@ -1,20 +1,20 @@
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
-import BannerProductCarousel from '../components/user/BannerProductCarousel/BannerProductCarousel';
-import CategorySale from '../components/user/CategorySale/CategorySale';
-import FeatureList from '../components/user/FeatureList/FeatureList';
-import Header from '../components/user/Header/Header';
-import NavbarPrimary from '../components/user/NavbarPrimary/NavbarPrimary';
-import ProductCarousel from '../components/user/ProductCarousel/ProductCarousel';
-import SectionProductCardCarousel from '../components/user/SectionProductCardCarousel/SectionProductCardCarousel';
-import { SiteContent } from '../components/user/SiteContent/SiteContent';
-import TopBar from '../components/user/TopBar/TopBar';
-import TrendingProduct from '../components/user/TrendingProduct/TrendingProduct';
+import BannerProductCarousel from '../components/user/MainPage/BannerProductCarousel/BannerProductCarousel';
+import CategorySale from '../components/user/MainPage/CategorySale/CategorySale';
+import FeatureList from '../components/user/MainPage/FeatureList/FeatureList';
+import Header from '../components/user/MainPage/Header/Header';
+import NavbarPrimary from '../components/user/MainPage/NavbarPrimary/NavbarPrimary';
+import ProductCarousel from '../components/user/MainPage/ProductCarousel/ProductCarousel';
+import SectionProductCardCarousel from '../components/user/MainPage/SectionProductCardCarousel/SectionProductCardCarousel';
+import { SiteContent } from '../components/user/MainPage/SiteContent/SiteContent';
+import TopBar from '../components/user/MainPage/TopBar/TopBar';
+import TrendingProduct from '../components/user/MainPage/TrendingProduct/TrendingProduct';
 import Footer from '../components/user/Footer/Footer';
-import BestSeller from '../components/user/BestSeller/BestSeller';
-import BannerImage from '../components/user/BannerImage/BannerImage';
-import BrandCarousel from '../components/user/BrandCarousel/BrandCarousel';
-import Newsletter from '../components/user/Newsletter/Newsletter';
+import BestSeller from '../components/user/MainPage/BestSeller/BestSeller';
+import BannerImage from '../components/user/MainPage/BannerImage/BannerImage';
+import BrandCarousel from '../components/user/MainPage/BrandCarousel/BrandCarousel';
+import Newsletter from '../components/user/MainPage/Newsletter/Newsletter';
 
 const HomePage = () => {
   return (

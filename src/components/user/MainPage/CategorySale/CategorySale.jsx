@@ -1,9 +1,9 @@
 import React from 'react'
 import './CategorySale.css'
-import Product1 from '../../../assets/images/cameras-2.jpg'
-import Product2 from '../../../assets/images/360-camers.jpg'
-import Product3 from '../../../assets/images/laptop-2.jpg'
-import Product4 from '../../../assets/images/computer.jpg'
+import Product1 from '../../../../assets/images/cameras-2.jpg'
+import Product2 from '../../../../assets/images/360-camers.jpg'
+import Product3 from '../../../../assets/images/laptop-2.jpg'
+import Product4 from '../../../../assets/images/computer.jpg'
 
 const CategorySale = () => {
   return (

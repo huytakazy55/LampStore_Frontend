@@ -78,7 +78,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       if(updateId) {
         ProductManage.GetProductById(updateId)
         .then((res) => {
-          console.log(res.data);
           setUpdateData({
             id: res?.data.id,
             name: res?.data.name,
@@ -155,15 +154,15 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
               <form action="" onSubmit={handleSubmitUpdate} method='post'>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '100%'}}>
-                    <div className='input-label'>Tên sản phẩm</div>
+                    <div className='input-label'>Tên sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='name' required autoFocus value={updateData.name} type="text" spellCheck="false" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Danh mục sản phẩm</div>
+                    <div className='input-label'>Danh mục sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <select style={{padding: '6.5px 10px'}} name="categoryId" value={updateData.categoryId} onChange={handleCategoryChange}>
-                      <option value={updateData.categoryId} selected>{GetCategoryById(updateData.categoryId)}</option>
+                      {/* <option value={updateData.categoryId} selected>{GetCategoryById(updateData.categoryId)}</option> */}
                       {
                           categories.length > 0 ? (
                             categories.map((category, index) => (
@@ -174,35 +173,35 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                     </select>
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Khối lượng</div>
+                    <div className='input-label'>Khối lượng <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='weight' required value={updateData.weight} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Số lượng</div>
+                    <div className='input-label'>Số lượng <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='quantity' required value={updateData.quantity} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Giá bán</div>
+                    <div className='input-label'>Giá bán <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='originalprice' required value={updateData.originalprice} type="number" onChange={handleInputChange} />                    
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Khuyến mãi</div>
+                    <div className='input-label'>Khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='discount' required value={updateData.discount} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Giá khuyến mãi</div>
+                    <div className='input-label'>Giá khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Chất liệu sản phẩm</div>
+                    <div className='input-label'>Chất liệu sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='materials' required value={updateData.materials} type="text" onChange={handleInputChange} />                    
                   </div>
                   <div style={{width: '62%'}}>
-                    <div className='input-label'>Tags name</div>
+                    <div className='input-label'>Tags name <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <input name='tags' required value={updateData.tags} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
@@ -224,20 +223,20 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
 
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Giá bán</div>
-                    <input name='originalprice' required value={updateData.originalprice} type="number" onChange={handleInputChange} />                    
+                    <div className='input-label'>Số lượt thích</div>
+                    <input name='favorites' readOnly value={updateData.favorites} type="number" onChange={handleInputChange} />                    
                   </div>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Khuyến mãi</div>
-                    <input name='discount' required value={updateData.discount} type="number" onChange={handleInputChange} />
+                    <div className='input-label'>Đánh giá</div>
+                    <input name='rating' readOnly value={updateData.rating} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Giá khuyến mãi</div>
-                    <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
+                    <div className='input-label'>Số lượt đánh giá</div>
+                    <input name='reviewcount' readOnly value={updateData.reviewcount} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Giá khuyến mãi</div>
-                    <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
+                    <div className='input-label'>Số lượt xem sản phẩm</div>
+                    <input name='viewcount' readOnly value={updateData.viewcount} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
                 <input type="hidden" name='dateAdded' value={updateData.dateAdded} readOnly />

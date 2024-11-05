@@ -39,8 +39,24 @@ const Products = () => {
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [updateData, setUpdateData] = useState({
     id: '',
-    name: '',
-    description: ''
+    name: '', 
+    description: '',
+    productType: '',
+    originalprice: '',
+    discount: '',     
+    saleprice: '',           
+    quantity: '',
+    weight: '',
+    materials: '',
+    categoryId: '', 
+    tags: '',
+    rating: '',
+    viewcount: '',
+    reviewcount: '',
+    favorites: '',
+    sellCount: '',
+    dateAdded: '', 
+    isAvailable: ''
   });
   const handleUpdateOpen = () => setOpenUpdate(true);
   const handleUpdateClose = () => setOpenUpdate(false);
@@ -55,7 +71,8 @@ const Products = () => {
   const [productData, setProductData] = useState([]);
   const [productCreate, setProductCreate] = useState({
     name: '', 
-    description: '', 
+    description: '',
+    productType: '',
     originalprice: '',
     discount: '',     
     saleprice: '',           
@@ -68,6 +85,7 @@ const Products = () => {
     viewcount: '',
     reviewcount: '',
     favorites: '',
+    sellCount: '',
     dateAdded: '', 
     isAvailable: '' 
   });

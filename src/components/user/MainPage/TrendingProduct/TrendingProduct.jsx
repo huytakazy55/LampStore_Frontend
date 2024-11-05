@@ -1,12 +1,12 @@
 import React from 'react'
 import Slider3 from "react-slick";
 import './TrendingProduct.css'
-import iphone14 from '../../../assets/images/Iphone14.jpg'
-import tablet from '../../../assets/images/apptablet.jpg'
-import camera from '../../../assets/images/camera2.jpg'
-import camera2 from '../../../assets/images/cameras-2.jpg'
-import consal from '../../../assets/images/consalGame.jpg'
-import printer from '../../../assets/images/printer.jpg'
+import iphone14 from '../../../../assets/images/Iphone14.jpg'
+import tablet from '../../../../assets/images/apptablet.jpg'
+import camera from '../../../../assets/images/camera2.jpg'
+import camera2 from '../../../../assets/images/cameras-2.jpg'
+import consal from '../../../../assets/images/consalGame.jpg'
+import printer from '../../../../assets/images/printer.jpg'
 
 const TrendingProduct = () => {
   var settings = {

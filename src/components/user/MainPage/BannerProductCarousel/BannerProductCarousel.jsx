@@ -1,13 +1,13 @@
 import React from 'react'
 import Slider from "react-slick";
 import './BannerProductCarousel.css'
-import imgBlock from '../../../assets/images/TVbanner.jpg'
-import consal from '../../../assets/images/consalGame.jpg'
-import speaker from '../../../assets/images/WirelessSound.jpg'
-import printer from '../../../assets/images/printer.jpg'
-import camera360 from '../../../assets/images/360-camers.jpg'
-import camera from '../../../assets/images/camera2.jpg'
-import laptop from '../../../assets/images/laptop-2.jpg'
+import imgBlock from '../../../../assets/images/TVbanner.jpg'
+import consal from '../../../../assets/images/consalGame.jpg'
+import speaker from '../../../../assets/images/WirelessSound.jpg'
+import printer from '../../../../assets/images/printer.jpg'
+import camera360 from '../../../../assets/images/360-camers.jpg'
+import camera from '../../../../assets/images/camera2.jpg'
+import laptop from '../../../../assets/images/laptop-2.jpg'
 
 
 const BannerProductCarousel = () => {

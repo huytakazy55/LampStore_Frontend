@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import './ProductCarousel.css';
-import speaker from '../../../assets/images/WirelessSound.jpg';
-import tablet from '../../../assets/images/apptablet.jpg';
-import headphone from '../../../assets/images/headphone.jpg';
-import ultrabooks from '../../../assets/images/Ultrabooks.jpg';
-import iphone from '../../../assets/images/Iphone14.jpg';
+import speaker from '../../../../assets/images/WirelessSound.jpg';
+import tablet from '../../../../assets/images/apptablet.jpg';
+import headphone from '../../../../assets/images/headphone.jpg';
+import ultrabooks from '../../../../assets/images/Ultrabooks.jpg';
+import iphone from '../../../../assets/images/Iphone14.jpg';
 
 
 const ProductCarousel = () => {

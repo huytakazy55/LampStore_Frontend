@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import "./TopBar.css"
-import AuthService from '../../../Services/AuthService';
+import AuthService from '../../../../Services/AuthService';
 
 const TopBar = () => {
     const [name, setName] = useState('');
