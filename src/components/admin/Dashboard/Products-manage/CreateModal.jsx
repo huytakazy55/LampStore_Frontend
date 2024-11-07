@@ -5,6 +5,7 @@ import ProductManage from '../../../../Services/ProductManage';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
+import SummernoteEditor from '../../../../Services/SummernoteEditor';
 
 
 const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductData, setProductCreate, style, categories}) => {

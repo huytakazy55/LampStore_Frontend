@@ -26,6 +26,8 @@
       --layoutdarker-color : #dad7d7;
       --gray-layout-color: #f4f4f4;
       --layoutlight-color : #39c7ff7d;
+      --layout-sale-color : #FEEEEA;
+      --crimson-color: crimson;
       --violet-layout-color: rgba(0, 0, 0, 0.4);
       --vertical-line-color: #00000023;
       --box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
@@ -38,7 +40,7 @@
 
       /* 0.5rem = 8px | 1rem = 16px */
       --big-font-size: 3.5rem;
-      --h1-font-size: 2.5rem;
+      --h1-font-size: 2rem;
       --h2-font-size: 1.5rem;
       --h3-font-size: 1.25rem;
       --normal-font-size: 1rem;
@@ -48,7 +50,7 @@
       /* ================= Font Weight =================== */
       --font-normal: 400;
       --font-medium: 500;
-      --font-semi-bold: 800;
+      --font-semi-bold: 700;
       /* ================== Margenes Botton =============== */
       /* 0.5rem = 8px | 1rem = 16px */
       --mb-0-25: 0.25rem;

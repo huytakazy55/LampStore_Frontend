@@ -10,7 +10,7 @@ import SectionProductCardCarousel from '../components/user/MainPage/SectionProdu
 import { SiteContent } from '../components/user/MainPage/SiteContent/SiteContent';
 import TopBar from '../components/user/MainPage/TopBar/TopBar';
 import TrendingProduct from '../components/user/MainPage/TrendingProduct/TrendingProduct';
-import Footer from '../components/user/Footer/Footer';
+import Footer from '../components/user/MainPage/Footer/Footer';
 import BestSeller from '../components/user/MainPage/BestSeller/BestSeller';
 import BannerImage from '../components/user/MainPage/BannerImage/BannerImage';
 import BrandCarousel from '../components/user/MainPage/BrandCarousel/BrandCarousel';
