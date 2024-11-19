@@ -150,6 +150,25 @@ const ProductDetail = () => {
                 <div className='PD-description-detaildescription'>
                     <div className='PD-description-detailtitle'>Mô tả sản phẩm</div>
                     <div className='PD-description-detaildescriptioncontent'>
+                        QUY CÁCH ĐÓNG GÓI
+                        - Gấu Bông được đựng trong hộp hoặc túi đóng gói cẩn thận.
+                        - Nếu sản phẩm cỡ to, sẽ được hút chân không nhỏ gọn để đảm bảo vận chuyển dễ dàng. 
+                        - Sau khi nhận hàng bạn vỗ đều SP để bông gòn được căng phồng như ban đầu. 
+                        - Gấu Bông có thể chênh lệch về màu sắc và size do ánh sáng và cách đo khác nhau. 
+                        GẤU BÔNG MIYU CAM KẾT VỚI KHÁCH HÀNG
+                        - Miễn phí vận chuyển theo chính sách của Shopee
+                        - Miễn phí trả hàng trong 15 ngày theo chính sách của Shopee
+                        - Sản phẩm 100% giống mô tả - có video quay sản phẩm
+                        - Đảm bảo chất lượng, dịch vụ tốt nhất, hàng được giao từ 1-5 ngày kể từ ngày đặt hàng 
+                        - Giao hàng toàn quốc, nhận hàng kiểm tra thanh toán
+                        Bán Sỉ, lẻ và CTV toàn quốc, chiết khấu cực cao. Hàng luôn có sẵn đầy kho, đặt là ship ngay!
+                        ===========================
+                        #capybara #gaubongchuot #lonnhoibong #gaubongmiyu #gaubonghanoi  #gaubong #quatang #phukien #gift #xuonggaubong #gaubonglon #nguamotsung #nguapony #bupbe #quatangbangai #dochoibong #gaubongteddy #choshiba #gauteddy #gauaolen #teddy
+                    </div>
+                </div>
+                <div className='PD-description-feedback'>
+                    <div className='PD-description-detailtitle'>Đánh giá sản phẩm</div>
+                    <div className='PD-description-feedbackcontent'>
                         
                     </div>
                 </div>

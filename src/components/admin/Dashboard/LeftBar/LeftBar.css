@@ -17,12 +17,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-right: 10rem;
 }
 
-.LeftBar.minimize ul li a {
-    position: absolute;
-    left: 200px;
+/* .LeftBar ul li span {
+
 }
+
+.LeftBar.minimize ul li span {
+    
+} */
 
 .LeftBar ul {
     padding: 1rem;
@@ -45,8 +49,7 @@
     background-color: var(--violet-layout-color);
 }
 
-.LeftBar ul li a {
-    position: absolute;
+.LeftBar ul a {
     left: 2.7rem;
     color: var(--white-color);
     font-weight: var(--font-medium);
@@ -58,4 +61,5 @@
     font-size: var(--h3-font-size);
     margin-top: -3px;
     margin-right: 1rem;
+    transition: margin .5s ease-in-out;
 }
