@@ -97,7 +97,13 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                 setUploadSuccess(false);
             })
             .catch((err) => {
-                toast.error("Có lỗi xảy ra!");
+                if(err.response.status == '404')
+                {
+                    toast.error("Hình ảnh sản phẩm chưa được upload!");
+                } else 
+                {
+                    toast.error("Có lỗi xảy ra!");
+                }
             });
         }
     }, [updateId, uploadSuccess]);

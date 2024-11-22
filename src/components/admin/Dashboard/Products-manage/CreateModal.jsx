@@ -7,10 +7,28 @@ import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 import SummernoteEditor from '../../../../Services/SummernoteEditor';
 
-
 const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductData, setProductCreate, style, categories}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
+
+    const [options, setOptions] = useState(['']);
+
+    const handleOptionChange = (index, value) => {
+      setOptions((prevOptions) => {
+        const updatedOptions = [...prevOptions];
+        updatedOptions[index] = value;
+  
+        if (value && index === prevOptions.length - 1) {
+          return [...updatedOptions, ''];
+        }
+        return updatedOptions;
+      });
+    };
+
+    const handleRemoveOption = (index) => {
+      const updatedOptions = options.filter((_, i) => i !== index);
+      setOptions(updatedOptions);
+    };
 
     //Submit form
     const handleSubmitCreate = (e) => {
@@ -115,7 +133,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '100%'}}>
                     <div className='input-label'>Tên sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='name' required autoFocus value={productCreate.name} type="text" onChange={handleInputChange} />
+                    <input name='name' required autoComplete="off" autoFocus value={productCreate.name} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
@@ -158,17 +176,57 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
                     <div className='input-label'>Chất liệu sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='materials' autoFocus required value={productCreate.materials} type="text" onChange={handleInputChange} />
+                    <input name='materials' autoComplete="off" autoFocus required value={productCreate.materials} type="text" onChange={handleInputChange} />
                   </div>
-                  <div style={{width: '30%'}}>
-                    <div className='input-label'>Loại sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='materials' autoFocus required value={productCreate.materials} type="text" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '30%'}}>
+                  <div style={{width: '62%'}}>
                     <div className='input-label'>Tags name <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='tags' autoFocus required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
+                    <input name='tags' autoComplete="off" autoFocus required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
+                {/* <div style={{ border: `1px solid ${themeColors.StartColorLinear}`, padding: '8px 15px', borderRadius: '2px'}} className='Modalborder-input'>
+                  <div style={{width: '36%'}}>
+                    <div className='input-label'>Phân loại sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
+                    <input name='Type' autoFocus required value={productVariantCreate.type} type="text" />
+                  </div>
+                  <div style={{}}>
+                    <div style={{width: '36%'}}>
+                      <div className='input-label'>Tùy chọn</div>
+                      <div style={{display: 'flex', justifyContent: 'start', alignItems: 'center', gap: '5px', width: '55%' }}>
+                        <input name='Value' autoFocus value={productVariantCreate.value} type="text" />
+                        <i style={{fontSize: '20px', color: '#111', cursor: 'pointer'}}  class='bx bx-trash'></i>
+                      </div>
+                    </div>
+                  </div>
+                </div> */}
+
+                <div style={{ border: `1px solid #ccc`, padding: '8px 15px', borderRadius: '2px', display: 'flex', justifyContent: 'start', gap: '2%' }} className="Modalborder-input" >
+                  <div style={{ marginBottom: '10px', width: '35.7%' }}>
+                    <div className="input-label">
+                      Phân loại sản phẩm{' '}
+                      <span style={{ color: 'red', fontSize: '15px' }}>*</span>
+                    </div>
+                    <input autoComplete="off" name="Type" required type="text" placeholder="Tên phân loại" />
+                  </div>
+
+                  <div style={{ marginBottom: '10px', width: '62%' }}>
+                    <div className="input-label">Tùy chọn</div>
+                    <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap'}}>
+                      {options.map((option, index) => (
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', width: '48%'}} >
+                          <input name={`Option-${index}`} autoComplete="off" value={option} type="text" placeholder={`Tùy chọn ${index + 1}`} onChange={(e) => handleOptionChange(index, e.target.value)}
+                            style={{ flex: 1 }}
+                          />
+                            {index !== options.length - 1 && (
+                              <i style={{ fontSize: '20px', color: '#111', cursor: 'pointer', color: 'red' }} className="bx bx-trash" onClick={() => handleRemoveOption(index)} ></i>
+                            )}
+                          </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <button>Thêm phân loại</button>
+
+
                 <div className='Modalborder-input'>
                   <div className='input-label'>Mô tả</div>
                   <textarea name="description" type="text" value={productCreate.description} rows={4} id="" onChange={handleInputChange}></textarea>
