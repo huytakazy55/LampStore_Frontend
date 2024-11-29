@@ -85,7 +85,8 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                     showToast('Signup successfully!');
                 })
                 .catch((err) => {
-                    console.log(err.response.data.errors.$values);
+                    console.log(err);
+                    //console.log(err.response.data.errors.$values);
                     toast.error(err.response.data.errors.$values[0] || "Có lỗi xảy ra!");
                 });
         }

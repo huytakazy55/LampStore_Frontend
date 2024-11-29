@@ -176,6 +176,8 @@
     display: none;
     justify-content: center;
     align-items: center;
+    max-height: 100vh;
+    
 }
 
 .overlay-login.active {

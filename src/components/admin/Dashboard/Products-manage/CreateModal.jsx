@@ -12,6 +12,8 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
     const {t} = useTranslation();
 
     const [options, setOptions] = useState(['']);
+    //Thêm phân loại
+    const [productTypes, setProductTypes] = useState([{ typeName: '', options: [''] }]);
 
     const handleOptionChange = (index, value) => {
       setOptions((prevOptions) => {
@@ -28,6 +30,37 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
     const handleRemoveOption = (index) => {
       const updatedOptions = options.filter((_, i) => i !== index);
       setOptions(updatedOptions);
+    };
+    //Phân loại add
+    const handleAddProductType = () => {
+      setProductTypes([...productTypes, { typeName: '', options: [''] }]);
+    };
+
+    const handleTypeChange = (index, value) => {
+      const updatedTypes = [...productTypes];
+      updatedTypes[index].typeName = value;
+      setProductTypes(updatedTypes);
+    };
+    
+    const handleOptionChangeByType = (typeIndex, optionIndex, value) => {
+      const updatedTypes = [...productTypes];
+      updatedTypes[typeIndex].options[optionIndex] = value;
+    
+      if (value && optionIndex === updatedTypes[typeIndex].options.length - 1) {
+        updatedTypes[typeIndex].options.push('');
+      }
+      setProductTypes(updatedTypes);
+    };
+    
+    const handleRemoveOptionByType = (typeIndex, optionIndex) => {
+      const updatedTypes = [...productTypes];
+      updatedTypes[typeIndex].options = updatedTypes[typeIndex].options.filter((_, i) => i !== optionIndex);
+      setProductTypes(updatedTypes);
+    };
+
+    const handleRemoveProductType = (index) => {
+      const updatedTypes = productTypes.filter((_, i) => i !== index);
+      setProductTypes(updatedTypes);
     };
 
     //Submit form
@@ -128,7 +161,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                 {t('Create')}
               </div>
             </div>
-            <div className='Modal-body'>
+            <div className='Modal-body' style={{maxHeight: '80vh', overflow: 'auto'}}>
               <form action="" onSubmit={handleSubmitCreate} method='post'>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '100%'}}>
@@ -183,56 +216,57 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                     <input name='tags' autoComplete="off" autoFocus required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
-                {/* <div style={{ border: `1px solid ${themeColors.StartColorLinear}`, padding: '8px 15px', borderRadius: '2px'}} className='Modalborder-input'>
-                  <div style={{width: '36%'}}>
-                    <div className='input-label'>Phân loại sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='Type' autoFocus required value={productVariantCreate.type} type="text" />
-                  </div>
-                  <div style={{}}>
-                    <div style={{width: '36%'}}>
-                      <div className='input-label'>Tùy chọn</div>
-                      <div style={{display: 'flex', justifyContent: 'start', alignItems: 'center', gap: '5px', width: '55%' }}>
-                        <input name='Value' autoFocus value={productVariantCreate.value} type="text" />
-                        <i style={{fontSize: '20px', color: '#111', cursor: 'pointer'}}  class='bx bx-trash'></i>
+                <div className='Modalborder-input' style={{border: '1px solid #aaa', padding: '5px 10px', marginTop: '15px'}}>
+                  {productTypes.map((type, typeIndex) => (
+                    <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
+                      <div style={{ width: '36%'}}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div className="input-label">Phân loại sản phẩm {typeIndex + 1}</div>
+                          {productTypes.length > 1 && (
+                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} class='bx bxs-x-square'></i>
+                          )}
+                        </div>
+                        <input autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)}
+                          style={{ width: '100%', marginBottom: '10px' }}
+                        />
+                      </div>
+                      <div style={{width: '62%'}}>
+                        <div className="input-label">Tùy chọn</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>  
+                          {type.options.map((option, optionIndex) => (
+                            <div key={optionIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px', width: '48%' }}>
+                              <input
+                                name={`Option-${typeIndex}-${optionIndex}`}
+                                autoComplete="off"
+                                value={option}
+                                type="text"
+                                placeholder={`Tùy chọn ${optionIndex + 1}`}
+                                onChange={(e) => handleOptionChangeByType(typeIndex, optionIndex, e.target.value)}
+                                style={{ flex: 1 }}
+                              />
+                              {optionIndex !== type.options.length - 1 && (
+                                <i
+                                  className="bx bx-trash"
+                                  style={{ fontSize: '20px', color: 'red', cursor: 'pointer' }}
+                                  onClick={() => handleRemoveOptionByType(typeIndex, optionIndex)}
+                                ></i>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div> */}
-
-                <div style={{ border: `1px solid #ccc`, padding: '8px 15px', borderRadius: '2px', display: 'flex', justifyContent: 'start', gap: '2%' }} className="Modalborder-input" >
-                  <div style={{ marginBottom: '10px', width: '35.7%' }}>
-                    <div className="input-label">
-                      Phân loại sản phẩm{' '}
-                      <span style={{ color: 'red', fontSize: '15px' }}>*</span>
-                    </div>
-                    <input autoComplete="off" name="Type" required type="text" placeholder="Tên phân loại" />
-                  </div>
-
-                  <div style={{ marginBottom: '10px', width: '62%' }}>
-                    <div className="input-label">Tùy chọn</div>
-                    <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap'}}>
-                      {options.map((option, index) => (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', width: '48%'}} >
-                          <input name={`Option-${index}`} autoComplete="off" value={option} type="text" placeholder={`Tùy chọn ${index + 1}`} onChange={(e) => handleOptionChange(index, e.target.value)}
-                            style={{ flex: 1 }}
-                          />
-                            {index !== options.length - 1 && (
-                              <i style={{ fontSize: '20px', color: '#111', cursor: 'pointer', color: 'red' }} className="bx bx-trash" onClick={() => handleRemoveOption(index)} ></i>
-                            )}
-                          </div>
-                      ))}
-                    </div>
-                  </div>
+                  ))}
+                  <button type="button" onClick={handleAddProductType} style={{ marginTop: '10px', padding: '3px 10px', border: `1px solid ${themeColors.StartColorLinear}`, background: `${themeColors.EndColorLinear}`, color: 'white', borderRadius: '2px' }}>
+                    Thêm phân loại <i class='bx bxs-layer-plus' ></i>
+                  </button>
                 </div>
-                <button>Thêm phân loại</button>
-
-
                 <div className='Modalborder-input'>
                   <div className='input-label'>Mô tả</div>
                   <textarea name="description" type="text" value={productCreate.description} rows={4} id="" onChange={handleInputChange}></textarea>
                 </div>
                 <div style={{display:'flex', justifyContent: 'start', alignItems: 'center', gap: '5px', fontWeight: 'bold'}} className='Modalborder-input'>
-                  <input 
+                  <input
                       style={{width: '2%'}} 
                       type="checkbox" 
                       id='isAvailable' 

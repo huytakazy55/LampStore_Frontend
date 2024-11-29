@@ -119,7 +119,7 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
           // Nén ảnh thành công
           const formData = new FormData();
           formData.append('ProfileAvatar', result, result.name);
-  
+
           ProfileService.UploadAvatar(profileData.id, formData)
             .then((response) => {
               const avatarURL = URL.createObjectURL(result);

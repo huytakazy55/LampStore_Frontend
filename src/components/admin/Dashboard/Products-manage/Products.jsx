@@ -17,10 +17,10 @@ const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
 const style = {
   position: 'absolute',
-  top: '47%',
+  top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 1200,
+  width: 1300,
   bgcolor: 'background.paper',
   boxShadow: 10,
   border: 'none',
