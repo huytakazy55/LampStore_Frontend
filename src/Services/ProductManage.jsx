@@ -40,11 +40,10 @@ class ProductManage {
         });
     }
 
-    CreateProduct(name, description, producttype, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, sellcount, dateAdded, isAvailable) {
+    CreateProduct(name, description, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, sellcount, dateAdded, isAvailable) {
         return axios.post(`${API_ENDPOINT}/api/Products`,{
             name: name,
             description: description,
-            producttype: producttype,
             originalprice: originalprice,
             discount: discount,
             saleprice: saleprice,
@@ -69,6 +68,18 @@ class ProductManage {
                 'Content-Type': 'multipart/form-data'
             }
         });
+    }
+
+    CreateVariantproduct(productId, variants) {
+        try {
+            const response = axios.post(`${API_ENDPOINT}/api/Products/${productId}/variants`, {
+                variants
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error while creating product variant:", error);
+            throw error;
+        }
     }
 
     DeleteProductImage(imageId) {

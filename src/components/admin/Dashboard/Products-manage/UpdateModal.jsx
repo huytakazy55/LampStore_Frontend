@@ -137,7 +137,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       const category = categories.find(category => category.id === id);
       return category ? category.name : ''
     }
-    console.log(updateData);
 
   return (
     <Modal

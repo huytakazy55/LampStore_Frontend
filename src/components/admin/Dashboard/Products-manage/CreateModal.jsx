@@ -5,33 +5,14 @@ import ProductManage from '../../../../Services/ProductManage';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
-import SummernoteEditor from '../../../../Services/SummernoteEditor';
 
 const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductData, setProductCreate, style, categories}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
 
-    const [options, setOptions] = useState(['']);
     //Thêm phân loại
     const [productTypes, setProductTypes] = useState([{ typeName: '', options: [''] }]);
 
-    const handleOptionChange = (index, value) => {
-      setOptions((prevOptions) => {
-        const updatedOptions = [...prevOptions];
-        updatedOptions[index] = value;
-  
-        if (value && index === prevOptions.length - 1) {
-          return [...updatedOptions, ''];
-        }
-        return updatedOptions;
-      });
-    };
-
-    const handleRemoveOption = (index) => {
-      const updatedOptions = options.filter((_, i) => i !== index);
-      setOptions(updatedOptions);
-    };
-    //Phân loại add
     const handleAddProductType = () => {
       setProductTypes([...productTypes, { typeName: '', options: [''] }]);
     };
@@ -64,59 +45,78 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
     };
 
     //Submit form
-    const handleSubmitCreate = (e) => {
+    const handleSubmitCreate = async (e) => {
         e.preventDefault();
-        if(!productCreate.name || !productCreate.originalprice || !productCreate.quantity) {
-          toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc!");
-          return;
+    
+        if (!productCreate.name || !productCreate.originalprice || !productCreate.quantity) {
+            toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc!");
+            return;
         }
-        ProductManage.CreateProduct(
-            productCreate.name, 
-            productCreate.description || null, 
-            productCreate.originalprice,
-            productCreate.discount,
-            productCreate.saleprice || null,
-            productCreate.quantity, 
-            productCreate.weight || null,
-            productCreate.materials || null,            
-            productCreate.categoryId || null,
-            productCreate.tags || null,
-            productCreate.rating || null,
-            productCreate.viewcount || null,
-            productCreate.reviewcount || null,
-            productCreate.favorites || null, 
-            productCreate.dateAdded, 
-            productCreate.isAvailable || false
-        )
-        .then((res) => {
-            toast.success("Thêm mới sản phẩm thành công!");
-        
-            setProductData(prevData => [...prevData, res.data]);
-            setProductCreate(
-              { 
-                name: '', 
-                description: '', 
+    
+        try {
+            // Tạo sản phẩm trước
+            const createProductResponse = await ProductManage.CreateProduct(
+                productCreate.name,
+                productCreate.description || null,
+                productCreate.originalprice,
+                productCreate.discount,
+                productCreate.saleprice || null,
+                productCreate.quantity,
+                productCreate.weight || null,
+                productCreate.materials || null,
+                productCreate.categoryId || null,
+                productCreate.tags || null,
+                productCreate.rating || null,
+                productCreate.viewcount || null,
+                productCreate.reviewcount || null,
+                productCreate.favorites || null,
+                productCreate.sellcount || null,
+                productCreate.dateAdded,
+                productCreate.isAvailable || false
+            );
+    
+            const createdProduct = createProductResponse.data;
+    
+            const variantData = productTypes.flatMap(type =>
+              type.options
+                  .filter(option => option.trim() !== '')
+                  .map(option => ({ type: type.typeName, value: option }))
+            );
+            
+            if (variantData.length > 0) {
+              await ProductManage.CreateVariantproduct(createdProduct.id, variantData);
+            }
+    
+            // Đợi cả API tạo sản phẩm và biến thể hoàn thành
+            toast.success("Thêm mới sản phẩm và các biến thể thành công!");
+            setProductData(prevData => [...prevData, createdProduct]);
+    
+            // Reset form
+            setProductCreate({
+                name: '',
+                description: '',
                 originalprice: '',
-                discount: '',     
-                saleprice: '',           
+                discount: '',
+                saleprice: '',
                 quantity: '',
                 weight: '',
                 materials: '',
-                categoryId: '', 
+                categoryId: '',
                 tags: '',
                 rating: '',
                 viewcount: '',
                 reviewcount: '',
                 favorites: '',
-                dateAdded: '', 
-                isAvailable: false 
-
-              });
+                sellcount: '',
+                dateAdded: '',
+                isAvailable: false
+            });
+            setProductTypes([{ typeName: '', options: [''] }]);
             handleCreateClose();
-        })
-        .catch((err) => {
-            toast.error("Có lỗi xảy ra!");
-        });
+        } catch (error) {
+            console.error(error);
+            toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!");
+        }
     };
 
     //handle input
@@ -219,7 +219,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                 <div className='Modalborder-input' style={{border: '1px solid #aaa', padding: '5px 10px', marginTop: '15px'}}>
                   {productTypes.map((type, typeIndex) => (
                     <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
-                      <div style={{ width: '36%'}}>
+                      <div style={{ width: '35.8%'}}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <div className="input-label">Phân loại sản phẩm {typeIndex + 1}</div>
                           {productTypes.length > 1 && (
@@ -292,6 +292,10 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                   <div style={{width: '25%'}}>
                     <div className='input-label'>Số lượt xem sản phẩm</div>
                     <input name='viewcount' readOnly value={productCreate.viewcount} min={0} type="text" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '25%'}}>
+                    <div className='input-label'>Số lượt mua sản phẩm</div>
+                    <input name='sellcount' readOnly value={productCreate.sellcount} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
                 <input type="hidden" name='dateAdded' value={productCreate.dateAdded} readOnly />
