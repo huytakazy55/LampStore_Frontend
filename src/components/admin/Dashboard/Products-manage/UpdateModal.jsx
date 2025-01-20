@@ -10,6 +10,83 @@ import {ThemeContext} from '../../../../ThemeContext';
 const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, categories, updateId}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
+
+    //Thêm phân loại
+    const [productTypes, setProductTypes] = useState([{ typeName: '', options: [''] }]);
+
+    const handleAddProductType = () => {
+      setProductTypes([...productTypes, { typeName: '', options: [''] }]);
+    };
+
+    const handleTypeChange = (index, value) => {
+      const updatedTypes = [...productTypes];
+      updatedTypes[index].typeName = value;
+      setProductTypes(updatedTypes);
+    };
+    
+    const handleOptionChangeByType = (typeIndex, optionIndex, value) => {
+      const updatedTypes = [...productTypes];
+      updatedTypes[typeIndex].options[optionIndex] = value;
+    
+      if (value && optionIndex === updatedTypes[typeIndex].options.length - 1) {
+        updatedTypes[typeIndex].options.push('');
+      }
+      setProductTypes(updatedTypes);
+    };
+    
+    const handleRemoveOptionByType = (typeIndex, optionIndex) => {
+      const updatedTypes = [...productTypes];
+      updatedTypes[typeIndex].options = updatedTypes[typeIndex].options.filter((_, i) => i !== optionIndex);
+      setProductTypes(updatedTypes);
+    };
+
+    const handleRemoveProductType = (index) => {
+      const updatedTypes = productTypes.filter((_, i) => i !== index);
+      setProductTypes(updatedTypes);
+    };
+
+    useEffect(() => {
+      if (updateId) {
+          ProductManage.GetVariantByProductId(updateId)
+              .then((variants) => {
+                  const variantList = variants?.data?.$values || [];
+  
+                  const groupedVariants = variantList.reduce((acc, variant) => {
+                      const typeName = variant?.type || "Unknown";
+                      
+                      const options = Array.isArray(variant.value)
+                          ? variant.value
+                          : (variant.value || "").split(",").map(option => option.trim());
+  
+                      if (!acc[typeName]) {
+                          acc[typeName] = [];
+                      }
+                      
+                      acc[typeName] = [...acc[typeName], ...options];
+                      return acc;
+                  }, {});
+  
+                  // Chuyển từ object sang array
+                  const groupedArray = Object.entries(groupedVariants).map(([typeName, options]) => ({
+                      typeName,
+                      options: [...new Set(options), '']
+                  }));
+  
+                  // Nếu không có dữ liệu, set mặc định 1 cặp
+                  if (groupedArray.length === 0) {
+                      setProductTypes([{ typeName: '', options: [''] }]);
+                  } else {
+                      setProductTypes(groupedArray);
+                  }
+              })
+              .catch((err) => {
+                  // Khi lỗi, đặt giá trị mặc định
+                  setProductTypes([{ typeName: '', options: [''] }]);
+                  console.error("Lỗi khi lấy phân loại sản phẩm:", err);
+              });
+      } 
+    }, [updateId]);
+
     const [updateData, setUpdateData] = useState({
       id: '',
       name: '', 
@@ -28,8 +105,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       favorites: '',
       dateAdded: '', 
       isAvailable: '' 
-  });
-
+    });
 
     const handleSubmitUpdate = (e) => {
       e.preventDefault();
@@ -50,6 +126,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         updateData.viewcount,
         updateData.reviewcount,
         updateData.favorites,
+        updateData.sellCount,
         updateData.dateAdded,
         updateData.isAvailable
       )
@@ -58,6 +135,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
           ProductManage.GetProductById(updatedData.id)
           .then((res) => {
             const refreshedProductData = res.data;
+            console.log(refreshedProductData);
             setProductData((prevData) =>
               prevData.map((item) => (item.id === refreshedProductData.id ? refreshedProductData : item))
             );
@@ -73,7 +151,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         });
     };
 
-    // Lấy dữ liệu vào form
     useEffect(() => {
       if(updateId) {
         ProductManage.GetProductById(updateId)
@@ -94,6 +171,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
             viewcount: res?.data.viewCount,
             reviewcount: res?.data.reviewCount,
             favorites: res?.data.favorites,
+            sellCount: res?.data.sellCount,
             dateAdded: res?.data.dateAdded,
             isAvailable: res?.data.isAvailable
           })
@@ -133,11 +211,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         setUpdateData({ ...updateData, categoryId: e.target.value });
     };
 
-    const GetCategoryById = (id) => {
-      const category = categories.find(category => category.id === id);
-      return category ? category.name : ''
-    }
-
   return (
     <Modal
           open={openUpdate}
@@ -150,7 +223,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                 {t('Update')}
               </div>
             </div>
-            <div className='Modal-body'>
+            <div className='Modal-body' style={{maxHeight: '80vh', overflow: 'auto'}}>
               <form action="" onSubmit={handleSubmitUpdate} method='post'>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '100%'}}>
@@ -162,7 +235,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                   <div style={{width: '36%'}}>
                     <div className='input-label'>Danh mục sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
                     <select style={{padding: '6.5px 10px'}} name="categoryId" value={updateData.categoryId} onChange={handleCategoryChange}>
-                      {/* <option value={updateData.categoryId} selected>{GetCategoryById(updateData.categoryId)}</option> */}
                       {
                           categories.length > 0 ? (
                             categories.map((category, index) => (
@@ -205,6 +277,53 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                     <input name='tags' required value={updateData.tags} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
+
+                <div className='Modalborder-input' style={{padding: '5px 0px', marginTop: '15px'}}>
+                  {productTypes.map((type, typeIndex) => (
+                    <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
+                      <div style={{ width: '35.8%'}}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div className="input-label">Phân loại sản phẩm {typeIndex + 1}</div>
+                          {productTypes.length > 1 && (
+                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} class='bx bxs-x-square'></i>
+                          )}
+                        </div>
+                        <input autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)}
+                          style={{ width: '100%', marginBottom: '10px' }}
+                        />
+                      </div>
+                      <div style={{width: '62%'}}>
+                        <div className="input-label">Tùy chọn</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>  
+                          {type.options.map((option, optionIndex) => (
+                            <div key={optionIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px', width: '48%' }}>
+                              <input
+                                name={`Option-${typeIndex}-${optionIndex}`}
+                                autoComplete="off"
+                                value={option}
+                                type="text"
+                                placeholder={`Tùy chọn ${optionIndex + 1}`}
+                                onChange={(e) => handleOptionChangeByType(typeIndex, optionIndex, e.target.value)}
+                                style={{ flex: 1 }}
+                              />
+                              {optionIndex !== type.options.length - 1 && (
+                                <i
+                                  className="bx bx-trash"
+                                  style={{ fontSize: '20px', color: 'red', cursor: 'pointer' }}
+                                  onClick={() => handleRemoveOptionByType(typeIndex, optionIndex)}
+                                ></i>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button type="button" onClick={handleAddProductType} style={{ marginTop: '10px', padding: '3px 10px', border: `1px solid ${themeColors.StartColorLinear}`, background: `${themeColors.EndColorLinear}`, color: 'white', borderRadius: '2px' }}>
+                    Thêm phân loại <i class='bx bxs-layer-plus' ></i>
+                  </button>
+                </div>
+
                 <div className='Modalborder-input'>
                   <div className='input-label'>Mô tả</div>
                   <textarea name="description" type="text" value={updateData.description} spellCheck="false" rows={4} id="" onChange={handleInputChange}></textarea>
@@ -222,21 +341,25 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                 </div>
 
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
-                  <div style={{width: '25%'}}>
+                  <div style={{width: '20%'}}>
                     <div className='input-label'>Số lượt thích</div>
                     <input name='favorites' readOnly value={updateData.favorites} type="number" onChange={handleInputChange} />                    
                   </div>
-                  <div style={{width: '25%'}}>
+                  <div style={{width: '20%'}}>
                     <div className='input-label'>Đánh giá</div>
                     <input name='rating' readOnly value={updateData.rating} type="number" onChange={handleInputChange} />
                   </div>
-                  <div style={{width: '25%'}}>
+                  <div style={{width: '20%'}}>
                     <div className='input-label'>Số lượt đánh giá</div>
                     <input name='reviewcount' readOnly value={updateData.reviewcount} type="number" onChange={handleInputChange} />
                   </div>
-                  <div style={{width: '25%'}}>
+                  <div style={{width: '20%'}}>
                     <div className='input-label'>Số lượt xem sản phẩm</div>
                     <input name='viewcount' readOnly value={updateData.viewcount} type="number" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '20%'}}>
+                    <div className='input-label'>Số lượt mua sản phẩm</div>
+                    <input name='sellcount' readOnly value={updateData.sellCount} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
                 <input type="hidden" name='dateAdded' value={updateData.dateAdded} readOnly />

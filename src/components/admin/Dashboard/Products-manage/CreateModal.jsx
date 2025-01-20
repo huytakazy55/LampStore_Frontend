@@ -56,23 +56,18 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
         try {
             // Tạo sản phẩm trước
             const createProductResponse = await ProductManage.CreateProduct(
-                productCreate.name,
+                productCreate.name || null,
                 productCreate.description || null,
-                productCreate.originalprice,
-                productCreate.discount,
-                productCreate.saleprice || null,
-                productCreate.quantity,
-                productCreate.weight || null,
-                productCreate.materials || null,
-                productCreate.categoryId || null,
+                productCreate.rating,
+                productCreate.reviewCount,
                 productCreate.tags || null,
-                productCreate.rating || null,
-                productCreate.viewcount || null,
-                productCreate.reviewcount || null,
-                productCreate.favorites || null,
-                productCreate.sellcount || null,
+                productCreate.viewCount,
+                productCreate.favorites,
+                productCreate.sellCount,
+                productCreate.categoryId,
                 productCreate.dateAdded,
-                productCreate.isAvailable || false
+                productCreate.isAvailable || true,
+
             );
     
             const createdProduct = createProductResponse.data;
@@ -87,29 +82,21 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
               await ProductManage.CreateVariantproduct(createdProduct.id, variantData);
             }
     
-            // Đợi cả API tạo sản phẩm và biến thể hoàn thành
             toast.success("Thêm mới sản phẩm và các biến thể thành công!");
             setProductData(prevData => [...prevData, createdProduct]);
-    
-            // Reset form
+
             setProductCreate({
                 name: '',
                 description: '',
-                originalprice: '',
-                discount: '',
-                saleprice: '',
-                quantity: '',
-                weight: '',
-                materials: '',
-                categoryId: '',
-                tags: '',
                 rating: '',
-                viewcount: '',
-                reviewcount: '',
+                reviewCount: '',
+                tags: '',
+                viewCount: '',
                 favorites: '',
-                sellcount: '',
+                sellCount: '',
+                categoryId: '',
                 dateAdded: '',
-                isAvailable: false
+                isAvailable: false                
             });
             setProductTypes([{ typeName: '', options: [''] }]);
             handleCreateClose();
@@ -118,7 +105,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
             toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!");
         }
     };
-
+    
     //handle input
     useEffect(() => {
       const currentDate = new Date().toISOString();
@@ -216,7 +203,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                     <input name='tags' autoComplete="off" autoFocus required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
-                <div className='Modalborder-input' style={{border: '1px solid #aaa', padding: '5px 10px', marginTop: '15px'}}>
+                <div className='Modalborder-input' style={{padding: '5px 0px', marginTop: '15px'}}>
                   {productTypes.map((type, typeIndex) => (
                     <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
                       <div style={{ width: '35.8%'}}>

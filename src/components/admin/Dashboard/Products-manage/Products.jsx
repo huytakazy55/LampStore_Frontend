@@ -72,21 +72,14 @@ const Products = () => {
   const [productCreate, setProductCreate] = useState({
     name: '', 
     description: '',
-    productType: '',
-    originalprice: '',
-    discount: '',     
-    saleprice: '',           
-    quantity: '',
-    weight: '',
-    materials: '',
-    categoryId: '', 
-    tags: '',
     rating: '',
-    viewcount: '',
-    reviewcount: '',
+    reviewCount: '',
+    tags: '',     
+    viewCount: '',           
     favorites: '',
     sellCount: '',
-    dateAdded: '', 
+    categoryId: '', 
+    dateAdded: '',
     isAvailable: '' 
   });
   //Category
@@ -139,7 +132,6 @@ const Products = () => {
     });
   }, [productData, searchTerm]);
 
-  //Giới hạn số từ có trong 1 hàng của bảng dữ liệu
   const truncateWords = (text, maxWords) => {
     if (!text) {
       return '';
@@ -246,7 +238,7 @@ const Products = () => {
                       </td>
                       <td style={{width: '15%'}}>{highlightedText(product.name, searchTerm)}</td>
                       <td style={{width: '20%'}}>{truncateWords(product.description, 10)}</td>
-                      <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.salePrice, language)}</td>
+                      <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.minPrice, language)} - {formattedNumber(product.maxPrice, language)}</td>
                       <td style={{width: '5%', textAlign: 'center'}}>{product.quantity}</td>
                       <td style={{width: '10%', textAlign: 'center'}}>{highlightedText(GetCategoryById(product.categoryId), searchTerm)}</td>
                       <td style={{ width: '7%', textAlign: 'center' }}>
