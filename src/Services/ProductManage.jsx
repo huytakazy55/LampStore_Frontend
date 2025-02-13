@@ -39,38 +39,10 @@ class ProductManage {
         });
     }
 
-    CreateProduct(name, description, rating, reviewCount, tags, viewCount, favorites, sellCount, categoryId, dateAdded, isAvailable, nameType, productvariantid, typeId, nameValue) {
+    async CreateProduct(productData) {
         try {
-            const AddProduct = axios.post(`${API_ENDPOINT}/api/Products`,{
-                name: name,
-                description: description,
-                rating: rating,
-                reviewcount: reviewCount,
-                tags: tags,
-                viewcount: viewCount,
-                favorites: favorites,
-                sellcount: sellCount,
-                categoryId: categoryId,
-                dateadded: dateAdded,
-                isAvailable: isAvailable
-            });
-    
-            const CreateType = axios.post(`${API_ENDPOINT}/api/Products/AddVariantType`,{
-                name: nameType,
-                productvariantid: productvariantid
-            });
-            
-            const CreateValue = axios.post(`${API_ENDPOINT}/api/Products/AddVariantValue`, {
-                typeId: typeId, 
-                value: nameValue
-            })
-
-            const result = Promise.all([AddProduct, CreateType, CreateValue]);
-            return {
-                success: true,
-                data: result.map(res => res.data)
-            }
-
+            const reponse = await axios.post(`${API_ENDPOINT}/api/Products/CreateProduct`, productData);
+            return reponse.data;
         } catch (error) {
             return {
                 success: false,
@@ -87,26 +59,6 @@ class ProductManage {
         });
     }
 
-    CreateVariantproduct(productId, variants) {
-        try {
-            const response = axios.post(`${API_ENDPOINT}/api/Products/${productId}/variants`,
-                variants
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error while creating product variant:", error);
-            throw error;
-        }
-    }
-
-    GetVariantByProductId(productId) {
-        try {
-            return axios.get(`${API_ENDPOINT}/api/Products/${productId}/variants`);
-        } catch (error) {
-            console.log("Error get variants");
-            throw error;
-        }
-    }
 
     DeleteProductImage(imageId) {
         return axios.delete(`${API_ENDPOINT}/api/Products/image/${imageId}`);

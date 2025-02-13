@@ -9,6 +9,14 @@ import {ThemeContext} from '../../../../ThemeContext';
 const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductData, setProductCreate, style, categories}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
+    const [productVariant, setProductVariant] = useState({
+      price: 0,
+      discountPrice: 0,
+      stock: 0,
+      weight: 0,
+      materials: "",
+      sku: ""
+    })
 
     //Thêm phân loại
     const [productTypes, setProductTypes] = useState([{ typeName: '', options: [''] }]);
@@ -17,17 +25,17 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
       setProductTypes([...productTypes, { typeName: '', options: [''] }]);
     };
 
-    const handleTypeChange = (index, value) => {
+    const handleTypeChange = (index, values) => {
       const updatedTypes = [...productTypes];
-      updatedTypes[index].typeName = value;
-      setProductTypes(updatedTypes);
+      updatedTypes[index].typeName = values;
+      setProductTypes(updatedTypes);      
     };
     
-    const handleOptionChangeByType = (typeIndex, optionIndex, value) => {
+    const handleOptionChangeByType = (typeIndex, optionIndex, values) => {
       const updatedTypes = [...productTypes];
-      updatedTypes[typeIndex].options[optionIndex] = value;
+      updatedTypes[typeIndex].options[optionIndex] = values;
     
-      if (value && optionIndex === updatedTypes[typeIndex].options.length - 1) {
+      if (values && optionIndex === updatedTypes[typeIndex].options.length - 1) {
         updatedTypes[typeIndex].options.push('');
       }
       setProductTypes(updatedTypes);
@@ -48,92 +56,69 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
     
-        if (!productCreate.name || !productCreate.originalprice || !productCreate.quantity) {
+        if (!productCreate.name || !productVariant.price || !productVariant.stock ) {
             toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc!");
             return;
         }
     
-        try {
-            // Tạo sản phẩm trước
-            const createProductResponse = await ProductManage.CreateProduct(
-                productCreate.name || null,
-                productCreate.description || null,
-                productCreate.rating,
-                productCreate.reviewCount,
-                productCreate.tags || null,
-                productCreate.viewCount,
-                productCreate.favorites,
-                productCreate.sellCount,
-                productCreate.categoryId,
-                productCreate.dateAdded,
-                productCreate.isAvailable || true,
+        try {   
+          const variantTypes = productTypes
+          .filter(type => type.typeName.trim() !== "" && type.options.some(opt => opt.trim() !== ""))
+          .map(type => ({
+            name: type.typeName,
+            values: type.options.filter(opt => opt.trim() !== "")
+          }));
 
-            );
-    
-            const createdProduct = createProductResponse.data;
-    
-            const variantData = productTypes.flatMap(type =>
-              type.options
-                  .filter(option => option.trim() !== '')
-                  .map(option => ({ type: type.typeName, value: option }))
-            );
-            
-            if (variantData.length > 0) {
-              await ProductManage.CreateVariantproduct(createdProduct.id, variantData);
-            }
-    
-            toast.success("Thêm mới sản phẩm và các biến thể thành công!");
-            setProductData(prevData => [...prevData, createdProduct]);
+          setProductCreate(prev => ({...prev, variantTypes: variantTypes }));
 
+          ProductManage.CreateProduct(productCreate)
+          .then((res) => {
+            console.log(res);
             setProductCreate({
-                name: '',
-                description: '',
-                rating: '',
-                reviewCount: '',
-                tags: '',
-                viewCount: '',
-                favorites: '',
-                sellCount: '',
-                categoryId: '',
-                dateAdded: '',
-                isAvailable: false                
+              name: "",
+              description: "",
+              reviewCount: 0,
+              tags: "",
+              viewCount: 0,
+              favorites: 0,
+              sellCount: 0,
+              categoryId: "",
+              status: 1,
+              productVariant: [],
+              variantTypes: []              
             });
             setProductTypes([{ typeName: '', options: [''] }]);
             handleCreateClose();
+            toast.success("Thêm mới sản phẩm thành công!");
+            })
+          .catch((err) => {
+            toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!")
+          });            
         } catch (error) {
             console.error(error);
             toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!");
         }
     };
+
+    useEffect(() => {
+      setProductCreate(Pre => )
+    },[productTypes])
     
     //handle input
-    useEffect(() => {
-      const currentDate = new Date().toISOString();
-      setProductCreate(prev => ({
-          ...prev,
-          dateAdded: currentDate
-      }));
-    }, [setProductCreate]);
-
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
       let fieldValue = type === 'checkbox' ? checked : value;
-      
-      const updatedProduct = { ...productCreate, [name]: fieldValue };
-      if (name === 'discount') {
-        fieldValue = Math.max(0, Math.min(100, Number(fieldValue)));
-      }
 
-      if (name === 'originalprice' || name === 'discount') {
-        const originalPrice = parseFloat(updatedProduct.originalprice) || 0;
-        const discount = parseFloat(updatedProduct.discount) || 0;
-        productCreate.saleprice = originalPrice - (originalPrice * discount) / 100;
-      }
-
-      setProductCreate({ ...productCreate, [name]: fieldValue });
+      setProductCreate(prev => ({ ...prev, [name]: fieldValue }));
     };
+
+    const handleProductVariantChange = (e) => {
+      const { name, value } = e.target;
+      setProductVariant( prev => ({...prev, [name]: value}));
+      setProductCreate(Prev => ({...Prev, productVariant: [productVariant]}));
+    }
     const handleCategoryChange = (e) => {
-        setProductCreate({ ...productCreate, categoryId: e.target.value });
+        setProductCreate( prev => ({ ...prev, categoryId: e.target.value }));
     };
 
   return (
@@ -172,35 +157,35 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                   </div>
                   <div style={{width: '30%'}}>
                     <div className='input-label'>Khối lượng <span style={{fontSize: '14px'}}>(Gram)</span><span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='weight' autoFocus required value={productCreate.weight} min={0} type="number" onChange={handleInputChange} />
+                    <input name='weight' required value={productCreate.weight} min={0} type="number" onChange={handleProductVariantChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Số lượng <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='quantity' autoFocus required value={productCreate.quantity} min={0} type="number" onChange={handleInputChange} />
-                  </div>
-                </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
-                  <div style={{width: '36%'}}>
-                    <div className='input-label'>Giá bán <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='originalprice' autoFocus required value={productCreate.originalprice} min={0} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='input-label'>Khuyến mãi <span style={{fontSize: '14px'}}>(%)</span> <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='discount' autoFocus required value={productCreate.discount} min={0} max={100} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='input-label'>Giá khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='saleprice' autoFocus required value={productCreate.saleprice} min={0} type="number" onChange={handleInputChange} />
+                    <div className='input-label'>Tồn kho <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
+                    <input name='stock' required value={productCreate.stock} min={0} type="number" onChange={handleProductVariantChange} />
                   </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
                   <div style={{width: '36%'}}>
                     <div className='input-label'>Chất liệu sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='materials' autoComplete="off" autoFocus required value={productCreate.materials} type="text" onChange={handleInputChange} />
+                    <input name='materials' autoComplete="off" required value={productCreate.materials} type="text" onChange={handleProductVariantChange} />
                   </div>
                   <div style={{width: '62%'}}>
                     <div className='input-label'>Tags name <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='tags' autoComplete="off" autoFocus required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
+                    <input name='tags' autoComplete="off" required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
+                  </div>
+                </div>
+                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                  <div style={{width: '36%'}}>
+                    <div className='input-label'>Giá bán <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
+                    <input name='price' required value={productCreate.price} min={0} type="number" onChange={handleProductVariantChange} />
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='input-label'>Giá khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
+                    <input name='discountPrice' required value={productCreate.discountPrice} min={0} type="number" onChange={handleProductVariantChange} />
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='input-label'>SKU</div>
+                    <input name='sku' value={productCreate.sku} type="text" onChange={handleProductVariantChange} />
                   </div>
                 </div>
                 <div className='Modalborder-input' style={{padding: '5px 0px', marginTop: '15px'}}>
@@ -256,33 +241,33 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                   <input
                       style={{width: '2%'}} 
                       type="checkbox" 
-                      id='isAvailable' 
-                      checked={productCreate.isAvailable} 
-                      name='isAvailable' 
+                      id='status' 
+                      checked={productCreate.status} 
+                      name='status' 
                       onChange={handleInputChange}
                   />
-                  <label htmlFor="isAvailable">Hoạt động</label>
+                  <label htmlFor="status">Hoạt động</label>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%', marginTop: '3rem'}} className='Modalborder-input'>
                   <div style={{width: '25%'}}>
                     <div className='input-label'>Số lượt thích</div>
                     <input name='favorites' readOnly value={productCreate.favorites} min={0} type="text" onChange={handleInputChange} />
                   </div>
-                  <div style={{width: '25%'}}>
+                  {/* <div style={{width: '25%'}}>
                     <div className='input-label'>Đánh giá</div>
                     <input name='rating' readOnly value={productCreate.rating} min={0} type="text" onChange={handleInputChange} />
-                  </div>
+                  </div> */}
                   <div style={{width: '25%'}}>
                     <div className='input-label'>Số lượt đánh giá</div>
-                    <input name='reviewcount' readOnly value={productCreate.reviewcount} min={0} type="text" onChange={handleInputChange} />
+                    <input name='reviewCount' readOnly value={productCreate.reviewCount} min={0} type="text" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '25%'}}>
                     <div className='input-label'>Số lượt xem sản phẩm</div>
-                    <input name='viewcount' readOnly value={productCreate.viewcount} min={0} type="text" onChange={handleInputChange} />
+                    <input name='viewCount' readOnly value={productCreate.viewCount} min={0} type="text" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '25%'}}>
                     <div className='input-label'>Số lượt mua sản phẩm</div>
-                    <input name='sellcount' readOnly value={productCreate.sellcount} min={0} type="text" onChange={handleInputChange} />
+                    <input name='sellCount' readOnly value={productCreate.sellCount} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
                 <input type="hidden" name='dateAdded' value={productCreate.dateAdded} readOnly />

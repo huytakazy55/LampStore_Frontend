@@ -39,24 +39,15 @@ const Products = () => {
   const [openUpdate, setOpenUpdate] = React.useState(false);
   const [updateData, setUpdateData] = useState({
     id: '',
-    name: '', 
-    description: '',
-    productType: '',
-    originalprice: '',
-    discount: '',     
-    saleprice: '',           
-    quantity: '',
-    weight: '',
-    materials: '',
-    categoryId: '', 
-    tags: '',
-    rating: '',
-    viewcount: '',
-    reviewcount: '',
-    favorites: '',
-    sellCount: '',
-    dateAdded: '', 
-    isAvailable: ''
+    name: "",
+    description: "",
+    reviewCount: 0,
+    tags: "",
+    viewCount: 0,
+    favorites: 0,
+    sellCount: 0,
+    categoryId: null,
+    status: 1
   });
   const handleUpdateOpen = () => setOpenUpdate(true);
   const handleUpdateClose = () => setOpenUpdate(false);
@@ -70,17 +61,15 @@ const Products = () => {
   //Data
   const [productData, setProductData] = useState([]);
   const [productCreate, setProductCreate] = useState({
-    name: '', 
-    description: '',
-    rating: '',
-    reviewCount: '',
-    tags: '',     
-    viewCount: '',           
-    favorites: '',
-    sellCount: '',
-    categoryId: '', 
-    dateAdded: '',
-    isAvailable: '' 
+    name: "",
+    description: "",
+    reviewCount: 0,
+    tags: "",
+    viewCount: 0,
+    favorites: 0,
+    sellCount: 0,
+    categoryId: "",
+    status: 1,
   });
   //Category
   const [categories, setCategories] = useState([]);
@@ -239,7 +228,7 @@ const Products = () => {
                       <td style={{width: '15%'}}>{highlightedText(product.name, searchTerm)}</td>
                       <td style={{width: '20%'}}>{truncateWords(product.description, 10)}</td>
                       <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.minPrice, language)} - {formattedNumber(product.maxPrice, language)}</td>
-                      <td style={{width: '5%', textAlign: 'center'}}>{product.quantity}</td>
+                      <td style={{width: '5%', textAlign: 'center'}}>{product.stock}</td>
                       <td style={{width: '10%', textAlign: 'center'}}>{highlightedText(GetCategoryById(product.categoryId), searchTerm)}</td>
                       <td style={{ width: '7%', textAlign: 'center' }}>
                         {new Date(product.dateAdded).toLocaleDateString('vi-VN', {
@@ -248,7 +237,7 @@ const Products = () => {
                           year: 'numeric' // NNNN
                         }).replace(/\//g, '-')}
                       </td>
-                      <td style={{width: '7%', color: `${product.isAvailable ? 'green' : 'red'}`, textAlign: 'center'}}>{product.isAvailable ? 'Hoạt động' : 'Ẩn'}</td>
+                      <td style={{width: '7%', color: `${product.status ? 'green' : 'red'}`, textAlign: 'center'}}>{product.status ? 'Hoạt động' : 'Ẩn'}</td>
                       <td style={{width: '8%'}}>
                         <div className='combo-action'>
                           <i onClick={() => handleUploadClick(product.id)} class='bx bx-image-add'></i>
