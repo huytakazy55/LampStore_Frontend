@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react'
-import "./Header.css"
 import FormLogin from './FormLogin'
 import FormCart from './FormCart';
 import FormActionLogin from './FormActionLogin';
@@ -18,6 +17,7 @@ const Header = () => {
   const [toggleCart, setToggleCart] = useState(false)
   const [toggleProfile, setToggleProfile] = useState(false);
   const [avatar, setAvatar] = useState({ProfileAvatar: ''})
+  const [arrowIcon, setArrowIcon] = useState(false);
   const popupRef = useRef(null);
   const popupActionRef = useRef(null);
   const popupProfileRef = useRef(null);
@@ -44,6 +44,13 @@ const Header = () => {
     setToggleLogin(!toggleLogin);
   }
 
+  const toggleArrow = () => {
+    setArrowIcon(!arrowIcon);
+  };
+
+  const closeArrow = () => {
+    setArrowIcon(false);
+  };
 
   const toggleActionLoginForm = () => {
     setToggleActionLogin(!toggleActionLogin);
@@ -79,17 +86,18 @@ const Header = () => {
   }, []);
 
   return (
-    <div className='header container'>
-      <div className='logo'>
-        <img src={Logo} alt="Logo" srcset="" />
+    <div className='w-full xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-28'>
+      <div className='h-24'>
+        <img className='h-full max-w-full' src={Logo} alt="Logo" srcset="" />
       </div>
-      <div className='navbar-toggler'>
-        <i class='bx bx-menu'></i>
+      <div>
+        <i className='bx bx-menu leading-none align-middle text-h2'></i>
       </div>
-      <div className='navbar-search'>
-        <input className='navbar-search-input' autoFocus type="text" placeholder='Search for Products ...' />
-        <div class="custom-select">
-          <select name="" id="select-category">
+      <div className='flex border-2 border-[var(--hightlight-color)] rounded-[30px] w-1/2 h-11 overflow-hidden'>
+        <input className='caret-[var(--hightlight-color)] outline-0 border-0 w-3/5 py-[2px] px-[20px] h-full' autoFocus type="text" placeholder='Search for Products ...' />
+        <div className='w-1/3 h-full relative'> 
+          <i className={`bx ${arrowIcon ? 'bxs-up-arrow' : 'bxs-down-arrow'} text-[0.7rem] text-gray-600 absolute leading-[3.5] h-full right-2`}></i>
+          <select onClick={toggleArrow} onBlur={closeArrow} className='appearance-none pr-24 pl-4 bg-white border-gray-300 rounded text-gray-600 cursor-pointer outline-0 border-0 text-small py-2 px-5 font-[var(--font-medium)] w-full h-full' name="">
             <option selected value="1">All Categories</option>
             <option value="1">All Category</option>
             <option value="1">All Category</option>
@@ -99,23 +107,23 @@ const Header = () => {
             <option value="1">All Category</option>
           </select>
         </div>
-        <button className='search-icon'><i class='bx bx-search' ></i></button>
+        <button className='w-[10%] h-full bg-[var(--hightlight-color)] group'><i className='bx bx-search text-[var(--main-background-color)] leading-none align-middle text-h3 transition-transform duration-100 group-hover:scale-110'></i></button>
       </div>
-      <div className='header-icons'>
-        <ul>
-          <li><i class='bx bx-heart'></i></li>
-          <li onClick={toggleFormcart} ref={buttonRef} >
-            <div className='shopping-cart'>
-              <i class='bx bx-shopping-bag' ></i>
+      <div className='w-1/5 text-[var(--black-color)]'> 
+        <ul className='flex justify-between items-center'>
+          <li className='group'><i className='bx bx-heart text-h2 leading-none align-middle text-red-600 cursor-pointer transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i></li>
+          <li className='flex justify-center items-center gap-1 cursor-pointer group' onClick={toggleFormcart} ref={buttonRef} >
+            <div className='relative'>
+                <i className='bx bx-shopping-bag text-h2 leading-none align-middle transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
                 <FormCart popupRef={popupRef} toggleCart={toggleCart} setToggleCart={setToggleCart} />
-              <div className='cart-number'>10</div>
+                <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-[var(--hightlight-color)] rounded-[50%] text-center text-xs leading-5 text-[--dark-color]'>10</div>
             </div>
-            <div className='total-cart'>
-              <div className='icon-money'>₫</div>
+            <div className='text-small ml-1 p-[2px] relative'>
+              <div className='absolute w-1 h-1 -top-[2px] -left-[7px] text-small'>₫</div>
               10.000.000
             </div>
           </li>
-          <div onClick={toggleLoginForm} className={`overlay-login ${toggleLogin ? 'active' : ''}`}>
+          <div onClick={toggleLoginForm} className={`fixed bg-black/50 top-0 left-0 right-0 bottom-0 z-[1000] justify-center items-center max-h-screen ${toggleLogin ? 'flex' : 'hidden'}`}>
             <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
           </div>
           <div onClick={toggleFormProfile} >
@@ -124,14 +132,14 @@ const Header = () => {
           {
             token ? 
             <>
-              <li onClick={toggleActionLoginForm} ref={buttonActionRef} id='LoginActionForm'>
-                <img src={ avatarURL ? avatarURL : (avatar.ProfileAvatar ? `${API_ENDPOINT}${avatar.ProfileAvatar}` : avatarimg)} alt="" />
+              <li onClick={toggleActionLoginForm} ref={buttonActionRef} className='relative w-8 h-8 leading-8 border-2 border-[var(--hightlight-color)] rounded-[20%] p-[1px] cursor-pointer'>
+                <img className='rounded-[20%] h-full w-full ' src={ avatarURL ? avatarURL : (avatar.ProfileAvatar ? `${API_ENDPOINT}${avatar.ProfileAvatar}` : avatarimg)} alt="" />
                 <FormActionLogin toggleProfile={toggleProfile} setToggleProfile={setToggleProfile} buttonProfileRef={buttonProfileRef} popupActionRef={popupActionRef} toggleActionLogin={toggleActionLogin} setToggleActionLogin={setToggleActionLogin} />
               </li>
             </> : 
             <>
-              <li onClick={toggleLoginForm} id='LoginForm'>
-                <i class='bx bx-user'></i>
+              <li className='group' onClick={toggleLoginForm}>
+                <i className='bx bx-user text-h2 leading-none align-middle cursor-pointer transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>   
               </li>          
             </>
           }

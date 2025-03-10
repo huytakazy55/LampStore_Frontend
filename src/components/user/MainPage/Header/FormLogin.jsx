@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import './FormLogin.css'
 import AuthService from '../../../../Services/AuthService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -112,66 +111,65 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
             [name]: value,
         }));
     }
-
     return (
-        <div onClick={(e) => e.stopPropagation()} className='FormLogin'>
-            <div className='FormLogin-content'>
-                <form className={changeForm ? 'Login' : 'Login active'} action="">
-                    <div className='FormLogin-title'>Login</div>
-                    <div className='border-input'>
-                        <div className='user-input'>
-                            <i className='bx bxs-user'></i>
-                            <input type="text" autoFocus name="username" value={stateSignin.username} onChange={HandleOnChangeStateSignin} id="LoginUsername" placeholder='Username' />
-                            <div className='requirePass'>{formErrors.username && <p>{formErrors.username}</p>}</div>
+        <div onClick={(e) => e.stopPropagation()} className='w-[25rem] h-[38rem] bg-white/13 backdrop-blur-2xl border-[2px] border-white rounded-[10px] p-10 text-white text-center overflow-hidden translate-y-[-15%] shadow-lg shadow-gray-400'>
+            <div className='relative'>
+                <form className={`absolute w-full transition-all duration-1000 ease-in-out ${changeForm ? 'opacity-0 invisible -rotate-90 -top-[500px] -left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="">
+                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px var(--white-color)' }}>Login</div>
+                    <div>
+                        <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
+                            <i className='bx bxs-user text-h3'></i>
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="text" autoFocus name="username" value={stateSignin.username} onChange={HandleOnChangeStateSignin} id="LoginUsername" placeholder='Username' />
+                            <div className='absolute top-[0.8rem] left-32 text-red-600 font-black'>{formErrors.username && <p>{formErrors.username}</p>}</div>
                         </div>
-                        <div className='pass-input'>
-                            <i className='bx bxs-lock-alt'></i>
-                            <input type="password" name="password" value={stateSignin.password} onChange={HandleOnChangeStateSignin} id="LoginPass" placeholder='Password' />
-                            <i className='bx bx-low-vision'></i>
-                            <div className='requirePass'>{formErrors.password && <p>{formErrors.password}</p>}</div>                   
-                        </div>
-                    </div>
-                    <div className='form-action'>
-                        <div className='remember-name'>
-                            <input type="checkbox" name="rememberMe" checked={stateSignin.rememberMe} onChange={HandleOnChangeStateSignin} id="LoginCheckbox" />
-                            <span>Remember me</span>
-                        </div>
-                        <div className='forget-pass'>
-                            <a href="#">Forget password!</a>
+                        <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
+                            <i className='bx bxs-lock-alt text-h3'></i>
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="password" name="password" value={stateSignin.password} onChange={HandleOnChangeStateSignin} id="LoginPass" placeholder='Password' />
+                            <i className='bx bx-low-vision text-h3'></i>
+                            <div className='absolute top-[0.8rem] left-32 text-red-600 font-black'>{formErrors.password && <p>{formErrors.password}</p>}</div>                   
                         </div>
                     </div>
-                    <button type="submit" onClick={handleSignin}>Login</button>
-                    <div className='or'>Or</div>
-                    <div className='with-socialmedia'>
-                        <div className='Facebook'><i className='bx bxl-facebook-circle'></i> Facebook</div>
-                        <div className='Google'><i className='bx bxl-google'></i> Google</div>
+                    <div className='flex justify-between items-center mb-4 mt-16'>
+                        <div>
+                            <input className='mr-[5px] leading-none align-middle' type="checkbox" name="rememberMe" checked={stateSignin.rememberMe} onChange={HandleOnChangeStateSignin} id="LoginCheckbox" />
+                            <span className='leading-none align-middle'>Remember me</span>
+                        </div>
+                        <div>
+                            <a className='text-white' href="#">Forget password!</a>
+                        </div>
                     </div>
-                    <div className='dont-have-acc'>
-                        <p onClick={ChangeFormLogin}>Don't have an account? <a href="#">Register</a></p>
+                    <button className='w-full py-[5px] rounded-2xl mb-4 border-2 border-white' type="submit" onClick={handleSignin}>Login</button>
+                    <div className='mb-6'>Or</div>
+                    <div className='w-full flex justify-around mb-4'>
+                        <div className='border-[1px] rounded-sm p-[5px] w-[35%] bg-white/30 flex justify-center items-center gap-1 cursor-pointer'><i className='bx bxl-facebook-circle text-h3'></i> Facebook</div>
+                        <div className='border-[1px] rounded-sm p-[5px] w-[35%] bg-white/30 flex justify-center items-center gap-1 cursor-pointer'><i className='bx bxl-google text-h3'></i> Google</div>
+                    </div>
+                    <div>
+                        <p onClick={ChangeFormLogin}>Don't have an account? <a className='ml-1 text-[var(--hightlight-color)]' href="#">Register</a></p>
                     </div>
                 </form>
-                <form className={!changeForm ? 'Signup' : 'Signup active'} action="">
-                    <div className='FormLogin-title'>Sign up</div>
-                    <div className='border-input'>
-                        <div className='user-input'>
-                            <i className='bx bxs-user'></i>
-                            <input type="text" name="username" value={stateSignup.username} onChange={HandleOnChangeStateSignup} id="SignupUsername" placeholder='Username' />
+                <form className={`absolute w-full transition-all duration-1000 ease-in-out ${!changeForm ? 'opacity-0 invisible rotate-90 top-[500px] left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="">
+                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px var(--white-color)' }}>Sign up</div>
+                    <div>
+                        <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
+                            <i className='bx bxs-user text-h3'></i>
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="text" name="username" value={stateSignup.username} onChange={HandleOnChangeStateSignup} id="SignupUsername" placeholder='Username' />
                         </div>
-                        <div className='pass-input'>
-                            <i className='bx bxs-lock-alt'></i>
-                            <input type="password" name="password" value={stateSignup.password} onChange={HandleOnChangeStateSignup} id="SignupPass" placeholder='Password' />
-                            <i className='bx bx-low-vision'></i>
+                        <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
+                            <i className='bx bxs-lock-alt text-h3'></i>
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="password" name="password" value={stateSignup.password} onChange={HandleOnChangeStateSignup} id="SignupPass" placeholder='Password' />
+                            <i className='bx bx-low-vision text-h3'></i>
                         </div>
                     </div>
-                    <div className='form-action'>
+                    <div className='flex justify-between items-center mb-4 mt-16'>
                         <div className='accept'>
-                            <input type="checkbox" name="acceptTerms" onChange={HandleOnChangeStateSignup} id="SignupAcceptTerms" />
-                            <span>I accept the personal data processing</span>
+                            <input className='mr-[5px] leading-none align-middle' type="checkbox" name="acceptTerms" onChange={HandleOnChangeStateSignup} id="SignupAcceptTerms" />
+                            <span className='leading-none align-middle'>I accept the personal data processing</span>
                         </div>
                     </div>
-                    <button type="submit" onClick={handleSignup}>Sign up</button>
-                    <div className='dont-have-acc'>
-                        <p onClick={ChangeFormLogin}>Have account? <a href="#">Login now</a></p>
+                    <button className='w-full py-[5px] rounded-2xl mb-4 border-2 border-white' type="submit" onClick={handleSignup}>Sign up</button>
+                    <div>
+                        <p onClick={ChangeFormLogin}>Have account? <a className='ml-1 text-[var(--hightlight-color)]' href="#">Login now</a></p>
                     </div>
                 </form>
             </div>

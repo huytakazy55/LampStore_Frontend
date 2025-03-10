@@ -25,7 +25,7 @@
       --layout-color : #e7e7e7;
       --layoutdarker-color : #dad7d7;
       --gray-layout-color: #f4f4f4;
-      --layoutlight-color : #39c7ff7d;
+      --layoutlight-color : #39c7ff7d;  
       --layout-sale-color : #FEEEEA;
       --crimson-color: crimson;
       --violet-layout-color: rgba(0, 0, 0, 0.4);
@@ -67,6 +67,27 @@
       --z-modal: 1000;
 }
 
+.text-h1 {
+  font-size: var(--h1-font-size)
+}
+.text-h2 {
+  font-size: var(--h2-font-size)
+}
+.text-h3 {
+  font-size: var(--h3-font-size)
+}
+.text-normal {
+  font-size: var(--normal-font-size)
+}
+.text-small {
+  font-size: var(--small-font-size)
+}
+.text-smaller {
+  font-size: var(--smaller-font-size)
+}
+.text-tiny {
+  font-size: var(--tiny-font-size)
+}
 /* ================= Reponsive typography ================= */
 @media screen and (max-width: 992px) {
   :root {
@@ -125,7 +146,6 @@ a {
 
 button {
   cursor: pointer;
-  border: none;
   outline: none;
 }
 
@@ -133,133 +153,3 @@ img {
   max-width: 100%;
   height: auto;
 }
-/* =================== REUSABLE CSS CLASSES ================= */
-.section {
-  padding: 6rem 0 2rem;
-}
-
-.section__title {
-  font-size: var(--h2-font-size);
-  color: var(--main-text-color);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1rem;
-}
-
-.section__title h4 {
-  position: absolute;
-  padding-left: 40px;
-  text-transform: uppercase;
-  color: var(--main-text-color);
-}
-
-.section__title i {
-  padding-right: 10px;
-}
-
-.section__title a {
-  font-size: var(--small-font-size);
-  text-decoration: underline;
-  padding-right: 5px;
-}
-
-.section__subtitle {
-  display: block;
-  font-size: var(--small-font-size);
-  margin-bottom: 4rem;
-}
-
-.section__title,
-.section__subtitle {
-  text-align: left;
-}
-
-/* =================== LAYOUT ===================== */
-.container {
-  /* max-width: 968px; */
-  max-width: 1440px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.grid {
-  display: grid;
-}
-
-/* ===================== BUTTON ==================== */
-.button {
-  display: inline-block;
-  background-color: var(--title-color);
-  color: var(--container-color);
-  padding: 1.25rem 2rem;
-  border-radius: 1rem;
-  font-weight: var(--font-medium);
-}
-
-.button:hover {
-  background-color: var(--title-color-dark);
-}
-
-.button__icon {
-  margin-left: var(--mb-0-5);
-}
-
-.button__flex {
-  display: inline-flex;
-  align-items: center;
-}
-
-/* ========================== BREAKPOINTS ========================== */
-@media screen and (max-width: 1200px) {
-  .container {
-    margin-left: var(--mb-1-5);
-    margin-right: var(--mb-1-5);
-  }
-
-  .button {
-    padding: 1rem 1.75rem;
-  }
-
-  .button__icon {
-    width: 22px;
-    height: 22px;
-  }
-}
-/* For large devices */
-@media screen and (max-width: 992px) {
-  .container {
-    margin-left: var(--mb-1-5);
-    margin-right: var(--mb-1-5);
-  }
-
-  .button {
-    padding: 1rem 1.75rem;
-  }
-
-  .button__icon {
-    width: 22px;
-    height: 22px;
-  }
-}
-
-/* For medium devices */
-@media screen and (max-width: 768px) {
-  body {
-    margin: 0 0 var(--header-height) 0;
-  }
-
-  .section {
-    padding: 2rem 0 4rem;
-  }
-
-  .section__subtitle {
-    margin-bottom: var(--mb-3);
-  }
-}
-
-/* For large devices */
-@media screen and (max-width: 576px) {
-  
-}
-

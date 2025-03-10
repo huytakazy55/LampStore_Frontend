@@ -99,10 +99,6 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
             toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!");
         }
     };
-
-    useEffect(() => {
-      setProductCreate(Pre => )
-    },[productTypes])
     
     //handle input
     const handleInputChange = (e) => {

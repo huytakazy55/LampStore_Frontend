@@ -13,7 +13,7 @@ const ProductCarousel = () => {
         setActiveTab(tab);
     }
   return (
-    <div className='ProductCarousel container'>
+    <div className='w-full h-[35rem] mb-4 xl:mx-auto xl:max-w-[1440px]'>
         <ul className='nav nav-inline'>
             <li className={`nav-item ${activeTab === 'featured' ? 'active' : ''}`}
             onClick={() => handleTabClick('featured')}>

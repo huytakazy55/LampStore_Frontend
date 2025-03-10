@@ -22,7 +22,7 @@ const BannerProductCarousel = () => {
       };
   return (
     <div className='BannerProductCarousel'>
-        <nav className='container'>
+        <nav className='xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full'>
             <div className='img-block'>
                 <img src={imgBlock} alt="" />
             </div>
