@@ -16,7 +16,7 @@ const TopBar = () => {
         }
     }, [token]);
     return (
-        <div className='h-12 bg-[var(--main-background-color)] border-b border-[var(--dark-color)]'> 
+        <div className='h-12 bg-gray-100 border-b border-gray-300'> 
             <nav className='xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full'> 
                 <div>
                     <p>Welcome to Worldwide Lamp Store</p>

@@ -26,7 +26,7 @@ const BannerProductCarousel = () => {
                 <img className='w-full h-full' src={imgBlock} alt="" />
             </div>
             <div className='h-full w-1/2 text-h3'>
-                <div className='relative font-medium text-black border-b border-gray-300 pb-1 mb-6 after:absolute after:w-[39%] after:h-[1px] after:bg-[var(--hightlight-color)] after:bottom-0 after:left-0'>Television Entertainment</div>
+                <div className='relative font-medium text-black border-b border-gray-300 pb-1 mb-6 after:absolute after:w-[39%] after:h-[1px] after:bg-yellow-400 after:bottom-0 after:left-0'>Television Entertainment</div>
                 <div className='relative'>
                     <Slider {...settings}>
                         <div className='p-[10px] bg-white !w-[98%] h-[11.5rem] mb-[7px] transition-all duration-300 ease-in-out hover:ring-1 ring-gray-300 z-10 group'>
@@ -42,7 +42,7 @@ const BannerProductCarousel = () => {
                                             <p className='text-h3'>1.000.000<span>đ</span></p>
                                             <p className='text-small line-through'>1.000.000<span>đ</span></p>
                                         </div>
-                                        <div className='group-hover:bg-[var(--hightlight-color)] w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
+                                        <div className='group-hover:bg-yellow-400 w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
                                             <i className='bx bxs-cart-add align-middle text-h3 ml-[0.3rem]' ></i>
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@ const BannerProductCarousel = () => {
                                             <p className='text-h3'>1.000.000<span>đ</span></p>
                                             <p className='text-small line-through'>1.000.000<span>đ</span></p>
                                         </div>
-                                        <div className='group-hover:bg-[var(--hightlight-color)] w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
+                                        <div className='group-hover:bg-yellow-400 w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
                                             <i className='bx bxs-cart-add align-middle text-h3 ml-[0.3rem]' ></i>
                                         </div>
                                     </div>
@@ -94,7 +94,7 @@ const BannerProductCarousel = () => {
                                             <p className='text-h3'>1.000.000<span>đ</span></p>
                                             <p className='text-small line-through'>1.000.000<span>đ</span></p>
                                         </div>
-                                        <div className='group-hover:bg-[var(--hightlight-color)] w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
+                                        <div className='group-hover:bg-yellow-400 w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
                                             <i className='bx bxs-cart-add align-middle text-h3 ml-[0.3rem]' ></i>
                                         </div>
                                     </div>
@@ -120,7 +120,7 @@ const BannerProductCarousel = () => {
                                             <p className='text-h3'>1.000.000<span>đ</span></p>
                                             <p className='text-small line-through'>1.000.000<span>đ</span></p>
                                         </div>
-                                        <div className='group-hover:bg-[var(--hightlight-color)] w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
+                                        <div className='group-hover:bg-yellow-400 w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
                                             <i className='bx bxs-cart-add align-middle text-h3 ml-[0.3rem]' ></i>
                                         </div>
                                     </div>
@@ -146,7 +146,7 @@ const BannerProductCarousel = () => {
                                             <p className='text-h3'>1.000.000<span>đ</span></p>
                                             <p className='text-small line-through'>1.000.000<span>đ</span></p>
                                         </div>
-                                        <div className='group-hover:bg-[var(--hightlight-color)] w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
+                                        <div className='group-hover:bg-yellow-400 w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
                                             <i className='bx bxs-cart-add align-middle text-h3 ml-[0.3rem]' ></i>
                                         </div>
                                     </div>
@@ -172,7 +172,7 @@ const BannerProductCarousel = () => {
                                             <p className='text-h3'>1.000.000<span>đ</span></p>
                                             <p className='text-small line-through'>1.000.000<span>đ</span></p>
                                         </div>
-                                        <div className='group-hover:bg-[var(--hightlight-color)] w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
+                                        <div className='group-hover:bg-yellow-400 w-8 h-8 bg-gray-300 rounded-[50%] leading-[1.5] text-white cursor-pointer mr-4 mt-3'>
                                             <i className='bx bxs-cart-add align-middle text-h3 ml-[0.3rem]' ></i>
                                         </div>
                                     </div>

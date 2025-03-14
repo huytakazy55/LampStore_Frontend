@@ -112,10 +112,10 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         }));
     }
     return (
-        <div onClick={(e) => e.stopPropagation()} className='w-[25rem] h-[38rem] bg-white/13 backdrop-blur-2xl border-[2px] border-white rounded-[10px] p-10 text-white text-center overflow-hidden translate-y-[-15%] shadow-lg shadow-gray-400'>
+        <div onClick={(e) => e.stopPropagation()} className='form-login w-[25rem] h-[38rem] bg-white/13 backdrop-blur-2xl border-[2px] border-white rounded-[10px] p-10 text-white text-center overflow-hidden translate-y-[-15%] shadow-lg shadow-gray-400'>
             <div className='relative'>
                 <form className={`absolute w-full transition-all duration-1000 ease-in-out ${changeForm ? 'opacity-0 invisible -rotate-90 -top-[500px] -left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="">
-                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px var(--white-color)' }}>Login</div>
+                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px #fff' }}>Login</div>
                     <div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
                             <i className='bx bxs-user text-h3'></i>
@@ -145,11 +145,11 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                         <div className='border-[1px] rounded-sm p-[5px] w-[35%] bg-white/30 flex justify-center items-center gap-1 cursor-pointer'><i className='bx bxl-google text-h3'></i> Google</div>
                     </div>
                     <div>
-                        <p onClick={ChangeFormLogin}>Don't have an account? <a className='ml-1 text-[var(--hightlight-color)]' href="#">Register</a></p>
+                        <p onClick={ChangeFormLogin}>Don't have an account? <a className='ml-1 text-yellow-400' href="#">Register</a></p>
                     </div>
                 </form>
                 <form className={`absolute w-full transition-all duration-1000 ease-in-out ${!changeForm ? 'opacity-0 invisible rotate-90 top-[500px] left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="">
-                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px var(--white-color)' }}>Sign up</div>
+                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px #fff' }}>Sign up</div>
                     <div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
                             <i className='bx bxs-user text-h3'></i>
@@ -169,7 +169,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                     </div>
                     <button className='w-full py-[5px] rounded-2xl mb-4 border-2 border-white' type="submit" onClick={handleSignup}>Sign up</button>
                     <div>
-                        <p onClick={ChangeFormLogin}>Have account? <a className='ml-1 text-[var(--hightlight-color)]' href="#">Login now</a></p>
+                        <p onClick={ChangeFormLogin}>Have account? <a className='ml-1 text-yellow-400' href="#">Login now</a></p>
                     </div>
                 </form>
             </div>

@@ -41,7 +41,7 @@ const SectionProductCardCarousel = () => {
       };
   return (
     <div className='w-full h-[35rem] overflow-visible xl:mx-auto xl:max-w-[1440px]'>
-        <div className='border-b border-gray-300 pb-1 relative mb-8 after:w-[16%] after:h-[1px] after:bg-[var(--hightlight-color)] after:absolute after:bottom-0 after:left-0'>
+        <div className='border-b border-gray-300 pb-1 relative mb-8 after:w-[16%] after:h-[1px] after:bg-yellow-400 after:absolute after:bottom-0 after:left-0'>
             <h3 className='font-medium text-h3 text-black'>Laptops & Computers</h3>
         </div>
         <div className='h-[30rem]'>
@@ -58,7 +58,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -81,7 +81,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -127,7 +127,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -173,7 +173,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -196,7 +196,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -219,7 +219,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -242,7 +242,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>
@@ -265,7 +265,7 @@ const SectionProductCardCarousel = () => {
                             </div>
                             <div className='mt-auto flex justify-between items-center '>
                                 <div className='text-h3'>25.000.000<span>₫</span></div>
-                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-[var(--hightlight-color)]'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
+                                <div className='w-10 h-10 text-h2 bg-gray-300 p-1 leading-0 align-middle rounded-[50%] text-white group-hover:bg-yellow-400'><i className='bx bxs-cart-add w-8 h-8 leading-[1.2] align-middle pl-[1px] ml-[1px]'></i></div>
                             </div>
                         </div>
                     </div>

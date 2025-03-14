@@ -15,7 +15,7 @@ const CategorySale = () => {
                 <p>CATCH THE HOTTES NEW</p>
                 <p>DEALS</p>
                 <p>IN CAMERAS</p>
-                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-[var(--hightlight-color)] rounded-[50%] text-white' ></i></a>
+                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-yellow-400 rounded-[50%] text-white' ></i></a>
             </div>
         </div>
         <div className="w-[23.5%] bg-gray-300 flex justify-between p-4">
@@ -26,7 +26,7 @@ const CategorySale = () => {
                 <p>CATCH THE HOTTES NEW</p>
                 <p>DEALS</p>
                 <p>IN CAMERAS</p>
-                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-[var(--hightlight-color)] rounded-[50%] text-white' ></i></a>
+                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-yellow-400 rounded-[50%] text-white' ></i></a>
             </div>
         </div>
         <div className="w-[23.5%] bg-gray-300 flex justify-between p-4">
@@ -37,7 +37,7 @@ const CategorySale = () => {
                 <p>CATCH THE HOTTES NEW</p>
                 <p>DEALS</p>
                 <p>IN CAMERAS</p>
-                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-[var(--hightlight-color)] rounded-[50%] text-white' ></i></a>
+                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-yellow-400 rounded-[50%] text-white' ></i></a>
             </div>
         </div>
         <div className="w-[23.5%] bg-gray-300 flex justify-between p-4">
@@ -48,7 +48,7 @@ const CategorySale = () => {
                 <p>CATCH THE HOTTES NEW</p>
                 <p>DEALS</p>
                 <p>IN CAMERAS</p>
-                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-[var(--hightlight-color)] rounded-[50%] text-white' ></i></a>
+                <a className='text-black font-extrabold' href='#'>shop now <i className='bx bx-chevron-right text-h3 leading-none align-middle bg-yellow-400 rounded-[50%] text-white' ></i></a>
             </div>
         </div>
     </div>

@@ -10,6 +10,7 @@ const CustomScrollbar = ({ children }) => {
   useEffect(() => {
     const scrollbarInstance = Scrollbar.init(scrollbarRef.current, {
       damping: 0.05,
+      delegateTo: document.body,
       plugins: {
         overscroll: {
           effect: 'bounce',
@@ -19,10 +20,18 @@ const CustomScrollbar = ({ children }) => {
       },
     });
 
-    return () => {
-      scrollbarInstance.destroy();
-    };
-  }, []);
+    const cartModal = document.querySelector('.cart-modal');
+    if (cartModal) {
+      cartModal.addEventListener('wheel', (e) => e.stopPropagation());
+    }
+
+      return () => {
+        if (cartModal) {
+          cartModal.removeEventListener('wheel', (e) => e.stopPropagation());
+        }
+        scrollbarInstance.destroy();
+      };
+    }, []);
 
   return (
     <div ref={scrollbarRef} style={{ height: '100vh', overflow: 'hidden' }}>
