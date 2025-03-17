@@ -239,7 +239,7 @@ const Products = () => {
                       </td>
                       <td style={{width: '7%', color: `${product.status ? 'green' : 'red'}`, textAlign: 'center'}}>{product.status ? 'Hoạt động' : 'Ẩn'}</td>
                       <td style={{width: '8%'}}>
-                        <div className='combo-action'>
+                        <div className='flex justify-center items-center gap-3'>
                           <i onClick={() => handleUploadClick(product.id)} class='bx bx-image-add'></i>
                           <i onClick={() => handleUpdateClick(product.id)} class='bx bx-edit'></i>
                           <i onClick={() => DeleteProduct(product.id,product.name)} class='bx bx-trash' ></i>

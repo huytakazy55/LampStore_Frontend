@@ -127,7 +127,7 @@ const Category = () => {
                       <td style={{width: '25%'}}>{truncateWords(category.name, 10)}</td>
                       <td style={{width: '60%'}}>{truncateWords(category.description, 25)}</td>
                       <td style={{width: '10%'}}>
-                        <div className='combo-action'>
+                        <div className='flex justify-center items-center gap-3'>
                           <i onClick={() => handleUpdateClick(category.id)} class='bx bx-edit'></i>
                           <i onClick={() => DeleteCategory(category.id,category.name)} class='bx bx-trash' ></i>
                         </div>

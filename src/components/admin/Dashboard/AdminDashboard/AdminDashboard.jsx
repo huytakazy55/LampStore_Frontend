@@ -2,7 +2,6 @@ import React from 'react';
 import AppBar from '../AppBar/AppBar';
 import LeftBar from '../LeftBar/LeftBar';
 import RightBody from '../RightBody/RightBody';
-import './AdminDashboard.css'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -10,7 +9,7 @@ const AdminDashboard = () => {
   return (
     <div>
       <AppBar />
-      <div className='Admin-body'>
+      <div className='h-[calc(100vh-4rem)] flex justify-between items-center'>
         <LeftBar />
         <RightBody />
         <ToastContainer

@@ -54,7 +54,7 @@ const ProductCarousel = () => {
                         </div>
                     </div>
                 </div>
-                <div className='relative w-1/5 p-6 h-[28rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0'>
+                <div className='relative w-1/5 p-6 h-[27.5rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0'>
                     <p className='mb-[15px]'>Audio Speakers</p>
                     <strong className='text-blue-500 text-normal'>Wireless audio system multiroom 360</strong>
                     <div className='tab-img'>
@@ -74,7 +74,7 @@ const ProductCarousel = () => {
                     </div>
                 </div>
 
-                <div className='relative w-1/5 p-6 h-[28rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0'>
+                <div className='relative w-1/5 p-6 h-[27.5rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0'>
                     <p className='mb-[15px]'>Audio Speakers</p>
                     <strong className='text-blue-500 text-normal'>Wireless audio system multiroom 360</strong>
                     <div className='tab-img'>
@@ -94,7 +94,7 @@ const ProductCarousel = () => {
                     </div>
                 </div>
 
-                <div className='relative w-1/5 p-6 h-[28rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0'>
+                <div className='relative w-1/5 p-6 h-[27.5rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0'>
                     <p className='mb-[15px]'>Audio Speakers</p>
                     <strong className='text-blue-500 text-normal'>Wireless audio system multiroom 360</strong>
                     <div className='tab-img'>
@@ -114,7 +114,7 @@ const ProductCarousel = () => {
                     </div>
                 </div>
 
-                <div className='relative w-1/5 p-6 h-[28rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group'>
+                <div className='relative w-1/5 p-6 h-[27.5rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group'>
                     <p className='mb-[15px]'>Audio Speakers</p>
                     <strong className='text-blue-500 text-normal'>Wireless audio system multiroom 360</strong>
                     <div className='tab-img'>

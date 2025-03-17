@@ -128,25 +128,26 @@ const Users = () => {
 
   return (
     <div>
-        <div className='RightBody-title'>
+        <div className='text-h2 font-semibold'>
           {t('Users')}
         </div>
-        <div className='Right-button'>
-          <div style={{background: `${themeColors.EndColorLinear}`}} className='Search-User'>
-            <i class='bx bx-search-alt-2' ></i>
+        <div className='absolute right-0 top-6 flex justify-end items-center gap-4'>
+          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm'>
+            <i className='bx bx-search-alt-2 text-h2 px-5 text-white'></i>
             <input 
+              className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm'
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
               style={{color: `${themeColors.StartColorLinear}`}} type="text" 
               placeholder="tên, danh mục ..." 
             />
           </div>
-          <div className='Create-User' style={{background: `${themeColors.EndColorLinear}`}}>
-              <i class='bx bx-duplicate'></i>
+          <div className='border-[1px] border-gray-300 py-1 px-3 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer' style={{background: `${themeColors.EndColorLinear}`}}>
+              <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
               {t('Create')}
           </div>
         </div>
-        <div className='RightBody-breadcrumbs'>
+        <div className='mb-4'>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Link component={RouterLink} to="/admin" color="inherit">
               {t('Home')}
@@ -175,7 +176,7 @@ const Users = () => {
                         <td>{highlightedText(user.userName, searchTerm)}</td>
                         <td style={{textAlign: 'center'}}>{highlightedText(roleData[user.id] ? roleData[user.id] : 'Loading...', searchTerm)}</td>
                         <td>
-                          <div className='combo-action'>                        
+                          <div className='flex justify-center items-center gap-3'>                        
                           {user.lockoutEnd && new Date(user.lockoutEnd) > new Date() ? (
                             // Tài khoản bị khóa, hiển thị nút "Mở khóa"
                             <i onClick={() => UnLockUser(user.id, user.userName)} className='bx bx-lock-open' ></i>

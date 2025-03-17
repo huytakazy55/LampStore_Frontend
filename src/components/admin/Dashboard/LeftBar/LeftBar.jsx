@@ -1,5 +1,4 @@
 import React, {useContext} from 'react'
-import './LeftBar.css'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -9,89 +8,58 @@ const LeftBar = () => {
     const {t} = useTranslation();
     const leftBar = useSelector((state) => state.leftbar.leftbar);
     const { themeColors } = useContext(ThemeContext);
+    console.log(leftBar);
   return (
-    <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`}} className={`LeftBar ${leftBar ? 'minimize' : ''}`}>
-        <ul>
-            <Link to="/admin">
-                <li>
-                    <i class='bx bxs-home'></i>
+    <div style={{background: `linear-gradient(0deg, ${themeColors.StartColorLinear} 0%, ${themeColors.EndColorLinear} 100%)`}} className={`h-full border-r border-gray-300 transition-all duration-400 ease-linear overflow-hidden ${leftBar ? 'w-[4.5rem] relative' : 'w-[13%]'}`}>
+        <ul className='p-4 text-white'>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-home text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('HomePage')}</span>                    
                 </li>
             </Link>
 
-            <Link to="/admin/users">
-                <li>
-                    <i class='bx bxs-user'></i>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin/users">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-user text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('Users')}</span>
                 </li>
             </Link>
 
-            <Link to="/admin/category">
-                <li>
-                    <i class='bx bxs-category'></i>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin/category">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-category text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('Category')}</span>
                 </li>
             </Link>
 
-            <Link to="/admin/products">
-                <li>
-                    <i class='bx bxs-package' ></i>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin/products">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-package text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('Products')}</span>
                 </li>
             </Link>
 
-            <Link to="/admin">
-                <li>
-                    <i class='bx bxs-store-alt' ></i>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-store-alt text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('Orders')}</span>
                 </li>
             </Link>
 
-            <Link to="/admin">
-                <li>
-                    <i class='bx bxs-book-content' ></i>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-book-content text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('Delivery')}</span>
                 </li>
             </Link>
 
-            <Link to="/admin">
-                <li>
-                    <i class='bx bxs-cog' ></i>
+            <Link className='left-10 text-white font-medium w-52 transition-all duration-400 ease-in-out' to="/admin">
+                <li className='relative p-[10px] h-10 flex justify-start items-center rounded-md mb-2 cursor-pointer hover:bg-fuchsia-500'>
+                    <i className={`bx bxs-cog text-h3 -mt-1 mr-4 transition-all duration-400 ease-in-out ${leftBar ? 'flex justify-center items-center mr-40' : ''}`}></i>
                     <span>{t('Setting')}</span>
                 </li>
             </Link>
-
-
-            {/* <li>
-                <i class='bx bxs-home'></i>
-                <Link to="/admin">{t('HomePage')}</Link>
-            </li>
-
-
-            <li>
-                <i class='bx bxs-user'></i>
-                <Link to="/admin/users">{t('Users')}</Link>
-            </li>
-            <li>
-                <i class='bx bxs-category'></i>
-                <Link to="/admin/category">{t('Category')}</Link>
-            </li>
-            <li>
-                <i class='bx bxs-package' ></i>
-                <Link to="/admin/products">{t('Products')}</Link>
-            </li>
-            <li>
-                <i class='bx bxs-store-alt' ></i>
-                <a href="#">{(t('Orders'))}</a>
-            </li>
-            <li>
-                <i class='bx bxs-book-content' ></i>
-                <a href="#">{(t('Delivery'))}</a>
-            </li>
-            <li>
-                <i class='bx bxs-cog' ></i>
-                <a href="#">{(t('Setting'))}</a>
-            </li> */}
         </ul>
     </div>
   )

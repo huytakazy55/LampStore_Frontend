@@ -50,4 +50,43 @@ code {
   img {
     @apply max-w-full h-auto;
   }
+
+  table {
+    @apply border-collapse w-full
+  }
+
+  table tr th {
+    @apply border-[1px] border-gray-300 text-center py-2 px-3
+  }
+
+  table tr td {
+    @apply border-[1px] border-gray-300 text-center py-2 px-3
+  }
+
+  table .bx-edit, table .bx-lock-open {
+    @apply text-normal text-green-500 cursor-pointer p-1 border-[1px] border-green-500 rounded-sm bg-green-500/20
+  }
+
+  table .bx-trash, table .bx-lock {
+    @apply text-normal text-red-500 cursor-pointer p-1 border-[1px] border-red-500 rounded-sm bg-red-500/20
+  }
+
+  table .bx-image-add {
+    @apply text-normal text-blue-500 cursor-pointer p-1 border-[1px] border-blue-500 rounded-sm bg-blue-500/20
+  }
+
+  table .bx-image-add:hover {
+    @apply bg-blue-500/30
+  }
+
+  table .bx-edit:hover,
+  table .bx-lock-open:hover {
+    @apply bg-green-500/30
+  }
+
+  table .bx-trash:hover,
+  table .bx-lock:hover {
+    @apply bg-red-500/30
+  }
+
 }

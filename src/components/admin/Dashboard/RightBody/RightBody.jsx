@@ -1,5 +1,4 @@
 import React from 'react';
-import './RightBody.css';
 import { useLocation } from 'react-router-dom';
 import Category from '../Category-manage/Category';
 import RightBodyContent from './RightBodyContent';
@@ -23,8 +22,8 @@ const RightBody = () => {
   };
 
   return (
-    <div className='RightBody'>
-      <div className='RightBody-content'>
+    <div className='flex-1 h-full py-2 px-8'>
+      <div className='relative'>
         {renderContent()}
       </div>
     </div>
