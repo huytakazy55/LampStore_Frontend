@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import './Category.css'
 import CategoryManage from '../../../../Services/CategoryManage';
 import { toast } from 'react-toastify';
 import CreateModal from './CreateModal';
@@ -93,14 +92,14 @@ const Category = () => {
 
   return (
     <div>
-        <div className='RightBody-title'>
+        <div className='text-h2 font-semibold mb-2'>
           {t('Category')}
         </div>
-        <div onClick={handleCreateOpen} className='Create-Category' style={{background: `${themeColors.EndColorLinear}`}}>
-            <i class='bx bx-duplicate'></i>
+        <div onClick={handleCreateOpen} className='absolute top-4 right-0 border-[1px] border-gray-300 py-1 px-3 font-medium rounded text-white flex justify-center items-center gap-1 cursor-pointer' style={{background: `${themeColors.EndColorLinear}`}}>
+            <i className='bx bx-duplicate text-h2 -mt-[1px]'></i>
             {t('Create')}
           </div>
-        <div className='RightBody-breadcrumbs'>
+        <div className='mb-4'>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Link component={RouterLink} to="/admin" color="inherit">
               {t('Home')}
@@ -128,8 +127,8 @@ const Category = () => {
                       <td style={{width: '60%'}}>{truncateWords(category.description, 25)}</td>
                       <td style={{width: '10%'}}>
                         <div className='flex justify-center items-center gap-3'>
-                          <i onClick={() => handleUpdateClick(category.id)} class='bx bx-edit'></i>
-                          <i onClick={() => DeleteCategory(category.id,category.name)} class='bx bx-trash' ></i>
+                          <i onClick={() => handleUpdateClick(category.id)} className='bx bx-edit'></i>
+                          <i onClick={() => DeleteCategory(category.id,category.name)} className='bx bx-trash' ></i>
                         </div>
                       </td>
                     </tr>

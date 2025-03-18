@@ -45,47 +45,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       setProductTypes(updatedTypes);
     };
 
-    useEffect(() => {
-      if (updateId) {
-          ProductManage.GetVariantByProductId(updateId)
-              .then((variants) => {
-                  const variantList = variants?.data?.$values || [];
-  
-                  const groupedVariants = variantList.reduce((acc, variant) => {
-                      const typeName = variant?.type || "Unknown";
-                      
-                      const options = Array.isArray(variant.value)
-                          ? variant.value
-                          : (variant.value || "").split(",").map(option => option.trim());
-  
-                      if (!acc[typeName]) {
-                          acc[typeName] = [];
-                      }
-                      
-                      acc[typeName] = [...acc[typeName], ...options];
-                      return acc;
-                  }, {});
-  
-                  // Chuyển từ object sang array
-                  const groupedArray = Object.entries(groupedVariants).map(([typeName, options]) => ({
-                      typeName,
-                      options: [...new Set(options), '']
-                  }));
-  
-                  // Nếu không có dữ liệu, set mặc định 1 cặp
-                  if (groupedArray.length === 0) {
-                      setProductTypes([{ typeName: '', options: [''] }]);
-                  } else {
-                      setProductTypes(groupedArray);
-                  }
-              })
-              .catch((err) => {
-                  // Khi lỗi, đặt giá trị mặc định
-                  setProductTypes([{ typeName: '', options: [''] }]);
-                  console.error("Lỗi khi lấy phân loại sản phẩm:", err);
-              });
-      } 
-    }, [updateId]);
 
     const [updateData, setUpdateData] = useState({
       id: '',

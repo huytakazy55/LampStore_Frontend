@@ -123,24 +123,24 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
           onClose={handleCreateClose}
         >
           <Box sx={style}>
-            <div style={{background: `${themeColors.EndColorLinear}`}} className='Modal-header'>
-              <div style={{color: 'white'}} className='Header-title'>
-                <i style={{color: `${themeColors.StartColorLinear}`}} class='bx bx-book-add' ></i>
+            <div style={{background: `${themeColors.EndColorLinear}`}} className='w-full'>
+              <div style={{color: 'white'}} className='h-full flex justify-start gap-2 items-center p-4 text-h2 font-semibold'>
+                <i style={{color: `${themeColors.StartColorLinear}`}} className='bx bx-book-add' ></i>
                 {t('Create')}
               </div>
             </div>
-            <div className='Modal-body' style={{maxHeight: '80vh', overflow: 'auto'}}>
+            <div className='w-full bg-gray-50 p-4 border-b border-gray-300 max-h-[80vh] overflow-hidden'>
               <form action="" onSubmit={handleSubmitCreate} method='post'>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
-                  <div style={{width: '100%'}}>
-                    <div className='input-label'>Tên sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='name' required autoComplete="off" autoFocus value={productCreate.name} type="text" onChange={handleInputChange} />
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
+                  <div className='w-full'>
+                    <div className='mb-1 font-medium'>Tên sản phẩm <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='name' required autoComplete="off" autoFocus value={productCreate.name} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Danh mục sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <select style={{padding: '6.5px 10px'}} name="categoryId" value={productCreate.categoryId} onChange={handleCategoryChange}>
+                    <div className='mb-1 font-medium'>Danh mục sản phẩm <span className='text-red-700 text-base'>*</span></div>
+                    <select className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' style={{padding: '6.5px 10px'}} name="categoryId" value={productCreate.categoryId} onChange={handleCategoryChange}>
                       <option value="" disabled>-- Chọn danh mục --</option>
                       {
                           categories.length > 0 ? (
@@ -152,58 +152,58 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                     </select>
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Khối lượng <span style={{fontSize: '14px'}}>(Gram)</span><span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='weight' required value={productCreate.weight} min={0} type="number" onChange={handleProductVariantChange} />
+                    <div className='mb-1 font-medium'>Khối lượng <span style={{fontSize: '14px'}}>(Gram)</span><span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='weight' required value={productCreate.weight} min={0} type="number" onChange={handleProductVariantChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Tồn kho <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='stock' required value={productCreate.stock} min={0} type="number" onChange={handleProductVariantChange} />
+                    <div className='mb-1 font-medium'>Tồn kho <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='stock' required value={productCreate.stock} min={0} type="number" onChange={handleProductVariantChange} />
                   </div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Chất liệu sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='materials' autoComplete="off" required value={productCreate.materials} type="text" onChange={handleProductVariantChange} />
+                    <div className='mb-1 font-medium'>Chất liệu sản phẩm <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='materials' autoComplete="off" required value={productCreate.materials} type="text" onChange={handleProductVariantChange} />
                   </div>
                   <div style={{width: '62%'}}>
-                    <div className='input-label'>Tags name <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='tags' autoComplete="off" required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Tags name <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='tags' autoComplete="off" required value={productCreate.tags} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Giá bán <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='price' required value={productCreate.price} min={0} type="number" onChange={handleProductVariantChange} />
+                    <div className='mb-1 font-medium'>Giá bán <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='price' required value={productCreate.price} min={0} type="number" onChange={handleProductVariantChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Giá khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='discountPrice' required value={productCreate.discountPrice} min={0} type="number" onChange={handleProductVariantChange} />
+                    <div className='mb-1 font-medium'>Giá khuyến mãi <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='discountPrice' required value={productCreate.discountPrice} min={0} type="number" onChange={handleProductVariantChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>SKU</div>
-                    <input name='sku' value={productCreate.sku} type="text" onChange={handleProductVariantChange} />
+                    <div className='mb-1 font-medium'>SKU</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='sku' value={productCreate.sku} type="text" onChange={handleProductVariantChange} />
                   </div>
                 </div>
-                <div className='Modalborder-input' style={{padding: '5px 0px', marginTop: '15px'}}>
+                <div className='w-full mb-2' style={{padding: '5px 0px', marginTop: '15px'}}>
                   {productTypes.map((type, typeIndex) => (
                     <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
                       <div style={{ width: '35.8%'}}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div className="input-label">Phân loại sản phẩm {typeIndex + 1}</div>
+                        <div className='flex justify-between items-center'>
+                          <div className="mb-1 font-medium">Phân loại sản phẩm {typeIndex + 1}</div>
                           {productTypes.length > 1 && (
-                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} class='bx bxs-x-square'></i>
+                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} className='bx bxs-x-square'></i>
                           )}
                         </div>
-                        <input autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)}
+                        <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)}
                           style={{ width: '100%', marginBottom: '10px' }}
                         />
                       </div>
                       <div style={{width: '62%'}}>
-                        <div className="input-label">Tùy chọn</div>
+                        <div className="mb-1 font-medium">Tùy chọn</div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>  
                           {type.options.map((option, optionIndex) => (
                             <div key={optionIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px', width: '48%' }}>
-                              <input
+                              <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
                                 name={`Option-${typeIndex}-${optionIndex}`}
                                 autoComplete="off"
                                 value={option}
@@ -226,15 +226,15 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                     </div>
                   ))}
                   <button type="button" onClick={handleAddProductType} style={{ marginTop: '10px', padding: '3px 10px', border: `1px solid ${themeColors.StartColorLinear}`, background: `${themeColors.EndColorLinear}`, color: 'white', borderRadius: '2px' }}>
-                    Thêm phân loại <i class='bx bxs-layer-plus' ></i>
+                    Thêm phân loại <i className='bx bxs-layer-plus' ></i>
                   </button>
                 </div>
-                <div className='Modalborder-input'>
-                  <div className='input-label'>Mô tả</div>
-                  <textarea name="description" type="text" value={productCreate.description} rows={4} id="" onChange={handleInputChange}></textarea>
+                <div className='w-full mb-2'>
+                  <div className='mb-1 font-medium'>Mô tả</div>
+                  <textarea className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="description" type="text" value={productCreate.description} rows={4} id="" onChange={handleInputChange}></textarea>
                 </div>
-                <div style={{display:'flex', justifyContent: 'start', alignItems: 'center', gap: '5px', fontWeight: 'bold'}} className='Modalborder-input'>
-                  <input
+                <div style={{display:'flex', justifyContent: 'start', alignItems: 'center', gap: '5px', fontWeight: 'bold'}} className='w-full mb-2'>
+                  <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
                       style={{width: '2%'}} 
                       type="checkbox" 
                       id='status' 
@@ -244,37 +244,33 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                   />
                   <label htmlFor="status">Hoạt động</label>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%', marginTop: '3rem'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%] mt-12'>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Số lượt thích</div>
-                    <input name='favorites' readOnly value={productCreate.favorites} min={0} type="text" onChange={handleInputChange} />
-                  </div>
-                  {/* <div style={{width: '25%'}}>
-                    <div className='input-label'>Đánh giá</div>
-                    <input name='rating' readOnly value={productCreate.rating} min={0} type="text" onChange={handleInputChange} />
-                  </div> */}
-                  <div style={{width: '25%'}}>
-                    <div className='input-label'>Số lượt đánh giá</div>
-                    <input name='reviewCount' readOnly value={productCreate.reviewCount} min={0} type="text" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượt thích</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='favorites' readOnly value={productCreate.favorites} min={0} type="text" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Số lượt xem sản phẩm</div>
-                    <input name='viewCount' readOnly value={productCreate.viewCount} min={0} type="text" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượt đánh giá</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='reviewCount' readOnly value={productCreate.reviewCount} min={0} type="text" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '25%'}}>
-                    <div className='input-label'>Số lượt mua sản phẩm</div>
-                    <input name='sellCount' readOnly value={productCreate.sellCount} min={0} type="text" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượt xem sản phẩm</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='viewCount' readOnly value={productCreate.viewCount} min={0} type="text" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '25%'}}>
+                    <div className='mb-1 font-medium'>Số lượt mua sản phẩm</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='sellCount' readOnly value={productCreate.sellCount} min={0} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
                 <input type="hidden" name='dateAdded' value={productCreate.dateAdded} readOnly />
               </form>
             </div>
-            <div className='Modal-footer'>
-                <button onClick={handleSubmitCreate} type="submit" style={{background: `${themeColors.EndColorLinear}`}}>
-                  <i class='bx bx-save'></i>
+            <div className='p-4 bg-gray-50 flex justify-end items-center gap-2'>
+                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleSubmitCreate} type="submit" style={{background: `${themeColors.EndColorLinear}`}}>
+                  <i className='bx bx-save -mt-[1px]'></i>
                   Lưu lại
                 </button>
-                <button onClick={handleCreateClose} style={{background: 'red'}}>Đóng</button>
+                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleCreateClose} style={{background: 'red'}}>Đóng</button>
             </div>
           </Box>
         </Modal>

@@ -35,30 +35,30 @@ const CreateModal = ({openCreate, handleCreateClose, categoryCreate, setCategory
           onClose={handleCreateClose}
         >
           <Box sx={style}>
-            <div style={{background: `${themeColors.EndColorLinear}`}} className='Modal-header'>
-              <div style={{color: 'white'}} className='Header-title'>
-                <i style={{color: `${themeColors.StartColorLinear}`}} class='bx bx-book-add' ></i>
+            <div style={{background: `${themeColors.EndColorLinear}`}} className='w-full'>
+              <div style={{color: 'white'}} className='h-full flex justify-start gap-2 items-center p-4 text-h2 font-semibold'>
+                <i style={{color: `${themeColors.StartColorLinear}`}} className='bx bx-book-add text-h1'></i>
                 {t('Create')}
               </div>    
             </div>
-            <div className='Modal-body'>
+            <div className='w-full bg-gray-50 p-4 border-b border-gray-300'>
               <form action="" onSubmit={handleSubmitCreate} method='post'>
-                <div className='Modalborder-input'>
-                  <div className='input-label'>Tên danh mục</div>
-                  <input name='name' autoFocus required value={categoryCreate.name} type="text" onChange={handleInputChange} />
+                <div className='w-full mb-2'>
+                  <div className='mb-1 font-medium'>Tên danh mục</div>
+                  <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='name' autoFocus required value={categoryCreate.name} type="text" onChange={handleInputChange} />
                 </div>
-                <div className='Modalborder-input'>
-                  <div className='input-label'>Mô tả</div>
-                  <textarea name="description" type="text" value={categoryCreate.description} rows={5} id="" onChange={handleInputChange}></textarea>
+                <div className='w-full mb-0'>
+                  <div className='mb-1 font-medium'>Mô tả</div>
+                  <textarea className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="description" type="text" value={categoryCreate.description} rows={5} id="" onChange={handleInputChange}></textarea>
                 </div>
               </form>
             </div>
-            <div className='Modal-footer'>
-                <button onClick={handleSubmitCreate} style={{background: `${themeColors.EndColorLinear}`}}>
-                  <i class='bx bx-save'></i>
+            <div className='p-4 bg-gray-50 flex justify-end items-center gap-2'>
+                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleSubmitCreate} style={{background: `${themeColors.EndColorLinear}`}}>
+                  <i className='bx bx-save -mt-[1px]'></i>
                   Lưu lại
                 </button>
-                <button onClick={handleCreateClose} style={{background: 'red'}}>Đóng</button>
+                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleCreateClose} style={{background: 'red'}}>Đóng</button>
             </div>
           </Box>
         </Modal>

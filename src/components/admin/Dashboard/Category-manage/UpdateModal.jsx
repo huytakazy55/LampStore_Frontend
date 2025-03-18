@@ -59,31 +59,31 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setCategoryData, style, upd
   return (
     <Modal open={openUpdate} onClose={handleUpdateClose}>
         <Box sx={style}>
-        <div style={{background: `${themeColors.EndColorLinear}`}} className='Modal-header'>
-            <div style={{color: 'white'}} className='Header-title'>
-            <i style={{color: `${themeColors.StartColorLinear}`}} class='bx bxs-edit' ></i>
+        <div style={{background: `${themeColors.EndColorLinear}`}} className='w-full'>
+            <div style={{color: 'white'}} className='h-full flex justify-start gap-2 items-center p-4 text-h2 font-semibold'>
+            <i style={{color: `${themeColors.StartColorLinear}`}} className='bx bxs-edit' ></i>
             {t('Update')}
             </div>    
         </div>
-        <div className='Modal-body'>
+        <div className='w-full bg-gray-50 p-4 border-b border-gray-300'>
             <form action="" onSubmit={handleSubmitUpdate} method='post'>
-            <div className='Modalborder-input'>
-                <div className='input-label'>Tên danh mục</div>
-                <input name='name' autoFocus required value={updateData.name} type="text" spellCheck="false" onChange={handleInputChange} />
+            <div className='w-full mb-2'>
+                <div className='mb-1 font-medium'>Tên danh mục</div>
+                <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='name' autoFocus required value={updateData.name} type="text" spellCheck="false" onChange={handleInputChange} />
             </div>
-            <div className='Modalborder-input'>
-                <div className='input-label'>Mô tả</div>
-                <textarea name="description" type="text" value={updateData.description} rows={5} id="" onChange={handleInputChange} spellCheck="false">{updateData.description}</textarea>
+            <div className='w-full mb-0'>
+                <div className='mb-1 font-medium'>Mô tả</div>
+                <textarea className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="description" type="text" value={updateData.description} rows={5} id="" onChange={handleInputChange} spellCheck="false">{updateData.description}</textarea>
             </div>
             <input type="hidden" name='id' value={updateData.id} onChange={handleInputChange} />
             </form>
         </div>
-        <div className='Modal-footer'>
-            <button onClick={handleSubmitUpdate} style={{background: `${themeColors.EndColorLinear}`}}>
-                <i class='bx bx-save'></i>
+        <div className='p-4 bg-gray-50 flex justify-end items-center gap-2'>
+            <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleSubmitUpdate} style={{background: `${themeColors.EndColorLinear}`}}>
+                <i className='bx bx-save -mt-[1px]'></i>
                 Lưu lại
             </button>
-            <button onClick={handleUpdateClose} style={{background: 'red'}}>Đóng</button>
+            <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleUpdateClose} style={{background: 'red'}}>Đóng</button>
         </div>
         </Box>
     </Modal>

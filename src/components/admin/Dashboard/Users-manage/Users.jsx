@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 import Modal from '@mui/material/Modal';
-import './Users.css';
 import { ThemeContext } from '../../../../ThemeContext';
 import UserManage from '../../../../Services/UserManage';
 import { toast } from 'react-toastify';
@@ -128,21 +127,21 @@ const Users = () => {
 
   return (
     <div>
-        <div className='text-h2 font-semibold'>
+        <div className='text-h2 font-semibold mb-2'>
           {t('Users')}
         </div>
-        <div className='absolute right-0 top-6 flex justify-end items-center gap-4'>
-          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm'>
+        <div className='absolute right-0 top-4 flex justify-end items-center gap-4 h-9'>
+          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm h-full'>
             <i className='bx bx-search-alt-2 text-h2 px-5 text-white'></i>
             <input 
-              className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm'
+              className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm leading-none h-full w-[12.5rem]'
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
               style={{color: `${themeColors.StartColorLinear}`}} type="text" 
               placeholder="tên, danh mục ..." 
             />
           </div>
-          <div className='border-[1px] border-gray-300 py-1 px-3 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer' style={{background: `${themeColors.EndColorLinear}`}}>
+          <div className='border-[1px] border-gray-300 py-1 px-3 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
               <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
               {t('Create')}
           </div>

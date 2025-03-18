@@ -5,7 +5,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
-import './Products.css'
 import {ThemeContext} from '../../../../ThemeContext';
 import { toast } from 'react-toastify';
 import ProductManage from '../../../../Services/ProductManage';
@@ -170,25 +169,25 @@ const Products = () => {
 
   return (
     <div>
-        <div className='RightBody-title'>
+        <div className='text-h2 font-semibold mb-2'>
           {t('Product')}
         </div>
-        <div className='Right-button'>
-          <div style={{background: `${themeColors.EndColorLinear}`}} className='Search-product'>
-            <i class='bx bx-search-alt-2' ></i>
-            <input 
+        <div className='absolute right-0 top-6 flex justify-end items-center gap-4 h-[2.2rem]'>
+          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm h-full'>
+            <i className='bx bx-search-alt-2 text-h2 px-6 text-white' ></i>
+            <input className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm h-full w-60'
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
               style={{color: `${themeColors.StartColorLinear}`}} type="text" 
               placeholder="tên, danh mục ..." 
             />
           </div>
-          <div onClick={handleCreateOpen} className='Create-Product' style={{background: `${themeColors.EndColorLinear}`}}>
-              <i class='bx bx-duplicate'></i>
+          <div onClick={handleCreateOpen} className='border-[1px] border-gray-300 py-1 px-3 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
+              <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
               {t('Create')}
           </div>
         </div>
-        <div className='RightBody-breadcrumbs'>
+        <div className='mb-4'>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Link component={RouterLink} to="/admin" color="inherit">
               {t('Home')}
@@ -240,9 +239,9 @@ const Products = () => {
                       <td style={{width: '7%', color: `${product.status ? 'green' : 'red'}`, textAlign: 'center'}}>{product.status ? 'Hoạt động' : 'Ẩn'}</td>
                       <td style={{width: '8%'}}>
                         <div className='flex justify-center items-center gap-3'>
-                          <i onClick={() => handleUploadClick(product.id)} class='bx bx-image-add'></i>
-                          <i onClick={() => handleUpdateClick(product.id)} class='bx bx-edit'></i>
-                          <i onClick={() => DeleteProduct(product.id,product.name)} class='bx bx-trash' ></i>
+                          <i onClick={() => handleUploadClick(product.id)} className='bx bx-image-add'></i>
+                          <i onClick={() => handleUpdateClick(product.id)} className='bx bx-edit'></i>
+                          <i onClick={() => DeleteProduct(product.id,product.name)} className='bx bx-trash' ></i>
                         </div>
                       </td>
                     </tr>

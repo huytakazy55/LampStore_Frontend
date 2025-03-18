@@ -126,29 +126,29 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
             onClose={handleUploadClose}
         >
             <Box sx={style}>
-                <div style={{background: `${themeColors.EndColorLinear}`}} className='Modal-header'>
-                    <div style={{color: 'white'}} className='Header-title'>
-                        <i style={{color: `${themeColors.StartColorLinear}`}} className='bx bxs-edit'></i>
+                <div style={{background: `${themeColors.EndColorLinear}`}} className='w-full'>
+                    <div style={{color: 'white'}} className='h-full flex justify-start gap-2 items-center p-4 text-h2 font-semibold'>
+                        <i style={{color: `${themeColors.StartColorLinear}`}} className='bx bxs-edit text-h1'></i>
                         {t('Upload')}
                     </div>
                 </div>
-                <div className='Modal-body'>
+                <div className='w-full bg-gray-50 p-4 border-b border-gray-300'>
                     <form onSubmit={handleImageUploadSubmit}>
                         {
                             ImagePath.length > 0 ? (
                                 <div className='current-image'>
-                                    <div className='current-image-label'>Hình ảnh sản phẩm</div>
-                                    <div className='border-product-image'>
+                                    <div className='text-normal font-medium mb-1'>Hình ảnh sản phẩm</div>
+                                    <div className='mb-4 flex justify-center items-center gap-4'>
                                         {
                                             ImagePath.map((image, index) => (
-                                                <div key={index} className='border-Img'>
+                                                <div key={index} className='transition-transform duration-300 ease-linear cursor-pointer relative hover:scale-105'>
                                                     <img                                                        
                                                         src={`${API_ENDPOINT}${image.imagePath}`}
                                                         alt={`image-${index}`}
-                                                        className='image-item'
+                                                        className='rounded-lg'
                                                         style={{ width: '135px', height: '100px' }}
                                                     />
-                                                    <div onClick={() => toggleDeleteProductImage(image.id, index)} className='Delete-button'><i class='bx bxs-message-square-x' ></i></div>
+                                                    <div onClick={() => toggleDeleteProductImage(image.id, index)} className='absolute -top-3 -right-2 text-red-700 text-h2 hover:scale-110'><i class='bx bxs-message-square-x' ></i></div>
                                                 </div>                                
                                             ))
                                         }
@@ -161,7 +161,7 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                             )
                         }                        
                         <div className='upload-image-section'>
-                            <div className='input-label'>Tải thêm hình ảnh</div>
+                            <div className='text-normal font-medium mb-1'>Tải thêm hình ảnh</div>
                             <input 
                                 type="file" 
                                 accept="image/*" 
@@ -169,19 +169,18 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                                 multiple // nếu muốn cho phép upload nhiều ảnh
                             />
                         </div>
-                        <div className='preview-section'>
+                        <div className='flex justify-center items-center flex-wrap gap-4 mt-5'>
                             {
                                 selectedImages && selectedImages.length > 0 && (
-                                    <div className='image-preview'>
+                                    <div className='flex gap-4 flex-wrap justify-center'>
                                         {selectedImages.map((image, index) => (
-                                            <div key={index} className='image-container'>
+                                            <div key={index} className='relative w-48 h-32 rounded-lg overflow-hidden transition-transform duration-300 ease-linear hover:opacity-80'>
                                                 <img 
                                                     src={URL.createObjectURL(image)} 
                                                     alt={`Preview ${index}`} 
-                                                    className='preview-img' 
-                                                    style={{maxWidth: '150px', maxHeight: '100px'}}
+                                                    className='w-full h-full border-[1px] border-gray-300 rounded p-1'                                                    
                                                 />
-                                                <button className='removeImg' type="button" onClick={() => handleRemoveImage(index)}>Xóa</button>
+                                                <button className='absolute top-1 right-1 bg-red-700/70 text-white border-none rounded-[50%] w-6 h-6 cursor-pointer flex justify-center items-center text-normal transition-colors duration-300 ease-linear hover:bg-red-700 focus:outline-none' type="button" onClick={() => handleRemoveImage(index)}>Xóa</button>
                                             </div>
                                         ))}
                                     </div>
@@ -190,12 +189,12 @@ const UploadModal = ({style, openUpload, handleUploadClose, updateId, setProduct
                         </div>
                     </form>
                 </div>
-                <div className='Modal-footer'>
-                    <button type="submit" onClick={handleImageUploadSubmit} style={{background: `${themeColors.EndColorLinear}`}}>
-                        <i className='bx bx-save'></i>
+                <div className='p-4 bg-gray-50 flex justify-end items-center gap-2'>
+                    <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' type="submit" onClick={handleImageUploadSubmit} style={{background: `${themeColors.EndColorLinear}`}}>
+                        <i className='bx bx-save -mt-[1px]'></i>
                         {t("Upload")}
                     </button>
-                    <button onClick={handleUploadClose} style={{background: 'red'}}>Đóng</button>
+                    <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleUploadClose} style={{background: 'red'}}>Đóng</button>
                 </div>
             </Box>
         </Modal>
