@@ -172,8 +172,8 @@ const Products = () => {
         <div className='text-h2 font-semibold mb-2'>
           {t('Product')}
         </div>
-        <div className='absolute right-0 top-6 flex justify-end items-center gap-4 h-[2.2rem]'>
-          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm h-full'>
+        <div className='absolute right-0 top-4 flex justify-end items-center gap-4 h-9'>
+          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded h-full'>
             <i className='bx bx-search-alt-2 text-h2 px-6 text-white' ></i>
             <input className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm h-full w-60'
               value={searchTerm} 
@@ -182,7 +182,7 @@ const Products = () => {
               placeholder="tên, danh mục ..." 
             />
           </div>
-          <div onClick={handleCreateOpen} className='border-[1px] border-gray-300 py-1 px-3 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
+          <div onClick={handleCreateOpen} className='border-[1px] border-gray-300 py-1 px-4 font-medium rounded text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
               <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
               {t('Create')}
           </div>
@@ -216,28 +216,28 @@ const Products = () => {
                 currentItems.length > 0 ? (
                   currentItems.map((product, index) => (
                     <tr key={product.id}>
-                      <td style={{textAlign: 'center', width: '2%'}}>{index + 1}</td>
-                      <td style={{ width: '6%' }}>
+                      <td className='text-center w-[2%]'>{index + 1}</td>
+                      <td className='w-[6%]'>
                         {product.images && product.images.$values.length > 0 ? (
-                          <img src={`${API_ENDPOINT}${product.images.$values[0].imagePath}`} alt="Product" style={{ width: '100%', height: '4rem', display: 'flex' }} />
+                          <img src={`${API_ENDPOINT}${product.images.$values[0].imagePath}`} alt="Product" className='w-full h-16 flex' />
                         ) : (
                           'No Image'
                         )}
                       </td>
-                      <td style={{width: '15%'}}>{highlightedText(product.name, searchTerm)}</td>
-                      <td style={{width: '20%'}}>{truncateWords(product.description, 10)}</td>
-                      <td style={{width: '7%', textAlign: 'center'}}>{formattedNumber(product.minPrice, language)} - {formattedNumber(product.maxPrice, language)}</td>
-                      <td style={{width: '5%', textAlign: 'center'}}>{product.stock}</td>
-                      <td style={{width: '10%', textAlign: 'center'}}>{highlightedText(GetCategoryById(product.categoryId), searchTerm)}</td>
-                      <td style={{ width: '7%', textAlign: 'center' }}>
+                      <td className='w-[15%]'>{highlightedText(product.name, searchTerm)}</td>
+                      <td className='w-1/5'>{truncateWords(product.description, 10)}</td>
+                      <td className='w-[7%] text-center'>{formattedNumber(product.minPrice, language)} - {formattedNumber(product.maxPrice, language)}</td>
+                      <td className='w-[5%] text-center'>{product.stock}</td>
+                      <td className='w-[10%] text-center'>{highlightedText(GetCategoryById(product.categoryId), searchTerm)}</td>
+                      <td className='w-[7%] text-center'>
                         {new Date(product.dateAdded).toLocaleDateString('vi-VN', {
                           day: '2-digit', // NN
                           month: '2-digit', // TT
                           year: 'numeric' // NNNN
                         }).replace(/\//g, '-')}
                       </td>
-                      <td style={{width: '7%', color: `${product.status ? 'green' : 'red'}`, textAlign: 'center'}}>{product.status ? 'Hoạt động' : 'Ẩn'}</td>
-                      <td style={{width: '8%'}}>
+                      <td className={`w-[7%] ${product.status == 1 ? 'text-green-600' : 'text-red-600'} text-center`}>{product.status ? 'Hoạt động' : 'Ẩn'}</td>
+                      <td className='w-[8%]'>
                         <div className='flex justify-center items-center gap-3'>
                           <i onClick={() => handleUploadClick(product.id)} className='bx bx-image-add'></i>
                           <i onClick={() => handleUpdateClick(product.id)} className='bx bx-edit'></i>
@@ -248,7 +248,7 @@ const Products = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="10" style={{textAlign: 'center', color:'red'}}>Không có dữ liệu</td>
+                    <td colSpan="10" className='text-center text-red-600'>Không có dữ liệu</td>
                   </tr>
                 )
               }

@@ -12,11 +12,23 @@ class ProductManage {
         return axios.get(`${API_ENDPOINT}/api/Products/${id}`);
     }
 
+    GetVariantById(id) {
+        return axios.get(`${API_ENDPOINT}/api/Products/Variant/${id}`);
+    }
+
     GetProductImageById(id) {
         return axios.get(`${API_ENDPOINT}/api/Products/${id}/images`);
     }
 
-    UpdateProduct(id, name, description, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, sellcount, dateAdded, isAvailable) {
+    GetProductTypeByProductId(productId) {
+        return axios.get(`${API_ENDPOINT}/api/Products/VariantType/${productId}`);
+    }
+
+    GetProductValueByTypeId(typeId) {
+        return axios.get(`${API_ENDPOINT}/api/Products/VariantValue/${typeId}`);
+    }
+
+    UpdateProduct(id, name, description, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, sellcount, dateAdded, status) {
         return axios.put(`${API_ENDPOINT}/api/Products/${id}`, {
             id: id,
             name: name,
@@ -35,7 +47,7 @@ class ProductManage {
             favorites: favorites,
             sellcount: sellcount,
             dateAdded: dateAdded,
-            isAvailable: isAvailable
+            status: status
         });
     }
 
@@ -58,7 +70,6 @@ class ProductManage {
             }
         });
     }
-
 
     DeleteProductImage(imageId) {
         return axios.delete(`${API_ENDPOINT}/api/Products/image/${imageId}`);

@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Paper, Typography } from '@mui/material';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, Legend, PieChart, Pie, Cell } from 'recharts';
-import './AnalyticChart.css';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../../../../ThemeContext';
 
@@ -54,15 +53,15 @@ const AnalyticChart = () => {
     const {themeColors} = useContext(ThemeContext);
 
     return (
-        <div className='Analytic-chart'>
-            <div className='Analytic-chart-line'>
+        <div className='w-full flex justify-between items-center relative'>
+            <div className='relative w-[65%]'>
                 <Paper sx={{ mt: 4, p: 2 }}>
                     <Typography variant="h6" gutterBottom style={{color: `${themeColors.EndColorLinear}`}}> 
                         Sale Over Time ({timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})
-                        <div className='Analytic-timeRange'>
-                            <a href='#' style={{ color: timeRange === 'daily' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('daily')}>Daily</a>
-                            <a href='#' style={{ color: timeRange === 'weekly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('weekly')}>Weekly</a>
-                            <a href='#' style={{ color: timeRange === 'monthly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('monthly')}>Monthly</a>
+                        <div className='absolute top-12 right-4'>
+                            <a className='ml-6 font-medium' href='#' style={{ color: timeRange === 'daily' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('daily')}>Daily</a>
+                            <a className='ml-6 font-medium' href='#' style={{ color: timeRange === 'weekly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('weekly')}>Weekly</a>
+                            <a className='ml-6 font-medium' href='#' style={{ color: timeRange === 'monthly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('monthly')}>Monthly</a>
                         </div>
                     </Typography>
                     <ResponsiveContainer width="100%" height={250}>
@@ -78,7 +77,7 @@ const AnalyticChart = () => {
                     </ResponsiveContainer>
                 </Paper>
             </div>
-            <div className='Analytic-chart-pie'>
+            <div className='relative w-2/6'>
                 <Paper sx={{ mt: 4, p: 2 }}>
                     <Typography variant="h6" gutterBottom style={{color: `${themeColors.EndColorLinear}`}}>
                         Traffic by Month

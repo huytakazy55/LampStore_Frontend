@@ -34,6 +34,7 @@
     "redux": "^5.0.1",
     "smooth-scrollbar": "^8.8.4",
     "summernote": "0.8.18",
+    "sweetalert2": "^11.17.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {

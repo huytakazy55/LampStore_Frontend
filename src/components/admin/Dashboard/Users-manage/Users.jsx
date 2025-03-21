@@ -134,14 +134,14 @@ const Users = () => {
           <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm h-full'>
             <i className='bx bx-search-alt-2 text-h2 px-5 text-white'></i>
             <input 
-              className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm leading-none h-full w-[12.5rem]'
+              className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm leading-none h-full w-60'
               value={searchTerm} 
               onChange={(e) => setSearchTerm(e.target.value)} 
               style={{color: `${themeColors.StartColorLinear}`}} type="text" 
               placeholder="tên, danh mục ..." 
             />
           </div>
-          <div className='border-[1px] border-gray-300 py-1 px-3 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
+          <div className='border-[1px] border-gray-300 py-1 px-4 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
               <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
               {t('Create')}
           </div>
@@ -158,11 +158,11 @@ const Users = () => {
           <table>
             <thead>
               <tr style={{background: `${themeColors.EndColorLinear}`, color: `${themeColors.StartColorLinear}`}}>
-                <th style={{width: '5%'}}>STT</th>
-                <th style={{width: '25%'}}>Id</th>
-                <th style={{width: '40%'}}>Tên người dùng</th>
-                <th style={{width: '10%'}}>Nhóm quyền</th>
-                <th style={{width: '10%'}}>Thao tác</th>
+                <th className='w-[5%]'>STT</th>
+                <th className='w-1/4'>Id</th>
+                <th className='w-[40%]'>Tên người dùng</th>
+                <th className='w-[10%]'>Nhóm quyền</th>
+                <th className='w-[10%]'>Thao tác</th>
               </tr>
             </thead>
             <tbody>

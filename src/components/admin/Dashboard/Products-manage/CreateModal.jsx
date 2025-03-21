@@ -17,7 +17,6 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
       materials: "",
       sku: ""
     })
-
     //Thêm phân loại
     const [productTypes, setProductTypes] = useState([{ typeName: '', options: [''] }]);
 
@@ -54,50 +53,55 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
 
     //Submit form
     const handleSubmitCreate = async (e) => {
-        e.preventDefault();
-    
-        if (!productCreate.name || !productVariant.price || !productVariant.stock ) {
-            toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc!");
-            return;
-        }
-    
-        try {   
+      e.preventDefault();
+  
+      if (!productCreate.name || !productVariant.price || !productVariant.stock) {
+          toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc!");
+          return;
+      }
+  
+      try {
+          // Xử lý danh sách phân loại
           const variantTypes = productTypes
-          .filter(type => type.typeName.trim() !== "" && type.options.some(opt => opt.trim() !== ""))
-          .map(type => ({
-            name: type.typeName,
-            values: type.options.filter(opt => opt.trim() !== "")
-          }));
-
-          setProductCreate(prev => ({...prev, variantTypes: variantTypes }));
-
-          ProductManage.CreateProduct(productCreate)
+            .filter(type => type.typeName.trim() !== "" && type.options.some(opt => opt.trim() !== ""))
+            .map(type => ({
+              name: type.typeName,
+              values: type.options.filter(opt => opt.trim() !== "")
+            }));
+          // Cập nhật productCreate trước khi gọi API
+          const updatedProduct = {
+              ...productCreate,
+              productVariants: [productVariant],
+              variantTypes: variantTypes
+          };
+  
+          await ProductManage.CreateProduct(updatedProduct)
           .then((res) => {
-            console.log(res);
+            toast.success("Thêm mới sản phẩm thành công!");
             setProductCreate({
-              name: "",
-              description: "",
-              reviewCount: 0,
-              tags: "",
-              viewCount: 0,
-              favorites: 0,
-              sellCount: 0,
-              categoryId: "",
-              status: 1,
-              productVariant: [],
-              variantTypes: []              
+                name: "",
+                description: "",
+                reviewCount: 0,
+                tags: "",
+                viewCount: 0,
+                favorites: 0,
+                sellCount: 0,
+                categoryId: "",
+                status: 1,
+                productVariants: [],
+                variantTypes: []              
             });
             setProductTypes([{ typeName: '', options: [''] }]);
+            setProductData( prev => [...prev, res]);
             handleCreateClose();
-            toast.success("Thêm mới sản phẩm thành công!");
-            })
+          })
           .catch((err) => {
-            toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!")
-          });            
-        } catch (error) {
-            console.error(error);
-            toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!");
-        }
+            toast.error("Có lỗi khi thêm mới sản phẩm!")
+          })
+      } catch (error) {
+          console.error("Lỗi khi thêm sản phẩm:", error);
+          toast.error("Có lỗi xảy ra khi thêm sản phẩm hoặc biến thể!");
+      }
     };
     
     //handle input
@@ -111,7 +115,6 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
     const handleProductVariantChange = (e) => {
       const { name, value } = e.target;
       setProductVariant( prev => ({...prev, [name]: value}));
-      setProductCreate(Prev => ({...Prev, productVariant: [productVariant]}));
     }
     const handleCategoryChange = (e) => {
         setProductCreate( prev => ({ ...prev, categoryId: e.target.value }));
@@ -129,7 +132,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                 {t('Create')}
               </div>
             </div>
-            <div className='w-full bg-gray-50 p-4 border-b border-gray-300 max-h-[80vh] overflow-hidden'>
+            <div className='w-full bg-gray-50 p-4 border-b border-gray-300 max-h-[80vh] overflow-auto'>
               <form action="" onSubmit={handleSubmitCreate} method='post'>
                 <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div className='w-full'>
@@ -233,7 +236,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                   <div className='mb-1 font-medium'>Mô tả</div>
                   <textarea className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="description" type="text" value={productCreate.description} rows={4} id="" onChange={handleInputChange}></textarea>
                 </div>
-                <div style={{display:'flex', justifyContent: 'start', alignItems: 'center', gap: '5px', fontWeight: 'bold'}} className='w-full mb-2'>
+                <div className='w-full mb-2 flex justify-start items-center gap-1 font-bold'>
                   <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
                       style={{width: '2%'}} 
                       type="checkbox" 
@@ -244,7 +247,7 @@ const CreateModal = ({openCreate, handleCreateClose, productCreate, setProductDa
                   />
                   <label htmlFor="status">Hoạt động</label>
                 </div>
-                <div className='w-full mb-2 flex justify-between gap-[2%] mt-12'>
+                <div className='w-full mb-2 flex justify-between gap-[2%] mt-4'>
                   <div style={{width: '25%'}}>
                     <div className='mb-1 font-medium'>Số lượt thích</div>
                     <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='favorites' readOnly value={productCreate.favorites} min={0} type="text" onChange={handleInputChange} />

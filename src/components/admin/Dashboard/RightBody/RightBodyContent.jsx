@@ -11,28 +11,28 @@ const RightBodyContent = () => {
   const {t} = useTranslation();
   return (
     <div>
-        <div className='text-h2 font-semibold'>
+        <div className='text-h2 font-semibold mb-4'>
           {t('HomePage')}
         </div>
-        <div className='mb-4'>
+        {/* <div className='mb-4'>
           <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
             <Link component={RouterLink} to="/admin" color="inherit">
               {t('Home')}
             </Link>
           </Breadcrumbs>
-        </div>
+        </div> */}
         <AnalyticOverview />
-            <div className='mb-8'>
-                <AnalyticChart />
+        <div className='mb-8'>
+            <AnalyticChart />
+        </div>
+        <div className='flex justify-between items-center'>
+            <div className='w-4/6'>
+              
             </div>
-            <div className='flex justify-between items-center'>
-                <div className='w-4/6'>
-                  
-                </div>
-                <div className='w-[30%]'>
-                    <CalendarComponent />
-                </div>
+            <div className='w-2/6'>
+                <CalendarComponent />
             </div>
+        </div>
     </div>
   )
 }

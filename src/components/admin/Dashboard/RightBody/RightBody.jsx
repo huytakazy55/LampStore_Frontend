@@ -9,13 +9,20 @@ const RightBody = () => {
   const location = useLocation();
 
   const renderContent = () => {
-    if (location.pathname === '/admin') {
+    if (location.pathname === '/admin') 
+    {
       return <RightBodyContent />;
-    } else if (location.pathname === '/admin/category') {
+    } 
+    else if (location.pathname === '/admin/category')
+    {
       return <Category />;
-    } else if(location.pathname === '/admin/users'){
+    } 
+    else if(location.pathname === '/admin/users')
+    {
       return <Users />
-    } else if(location.pathname === '/admin/products'){
+    } 
+    else if(location.pathname === '/admin/products')
+    {
       return <Products />
     }
     return null;

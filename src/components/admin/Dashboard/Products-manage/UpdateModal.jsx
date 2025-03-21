@@ -50,12 +50,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       id: '',
       name: '', 
       description: '', 
-      originalprice: '',
-      discount: '',     
-      saleprice: '',           
-      quantity: '',
-      weight: '',
-      materials: '',
       categoryId: '', 
       tags: '',
       rating: '',
@@ -63,7 +57,16 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       reviewcount: '',
       favorites: '',
       dateAdded: '', 
-      isAvailable: '' 
+      status: '' 
+    });
+
+    const [variantData, setVariantData] = useState({
+      price: 0,
+      discountPrice: 0,
+      stock: 0,
+      materials: '',
+      weight: 0,
+      sku: ''
     });
 
     const handleSubmitUpdate = (e) => {
@@ -73,12 +76,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         updateData.id, 
         updateData.name, 
         updateData.description, 
-        updateData.originalprice,
-        updateData.discount,
-        updateData.saleprice,
-        updateData.quantity,
-        updateData.weight,
-        updateData.materials,
         updateData.categoryId,
         updateData.tags,
         updateData.rating,
@@ -87,14 +84,13 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         updateData.favorites,
         updateData.sellCount,
         updateData.dateAdded,
-        updateData.isAvailable
+        updateData.status
       )
         .then((res) => {
           const updatedData = JSON.parse(res.config.data);
           ProductManage.GetProductById(updatedData.id)
           .then((res) => {
             const refreshedProductData = res.data;
-            console.log(refreshedProductData);
             setProductData((prevData) =>
               prevData.map((item) => (item.id === refreshedProductData.id ? refreshedProductData : item))
             );
@@ -110,33 +106,64 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
         });
     };
 
+    // lay du lieu cho form
     useEffect(() => {
-      if(updateId) {
-        ProductManage.GetProductById(updateId)
-        .then((res) => {
-          setUpdateData({
-            id: res?.data.id,
-            name: res?.data.name,
-            description: res?.data.description,
-            originalprice: res?.data.originalPrice,
-            discount: res?.data.discount,
-            saleprice: res?.data.salePrice,
-            quantity: res?.data.quantity,
-            weight: res?.data.weight,
-            materials: res?.data.materials,
-            categoryId: res?.data.categoryId,
-            tags: res?.data.tags,
-            rating: res?.data.rating,
-            viewcount: res?.data.viewCount,
-            reviewcount: res?.data.reviewCount,
-            favorites: res?.data.favorites,
-            sellCount: res?.data.sellCount,
-            dateAdded: res?.data.dateAdded,
-            isAvailable: res?.data.isAvailable
-          })
-        })
+      if (updateId) {
+        const fetchData = async () => {
+          try {
+            const [productRes, variantRes, typeRes] = await Promise.all([
+              ProductManage.GetProductById(updateId),
+              ProductManage.GetVariantById(updateId),
+              ProductManage.GetProductTypeByProductId(updateId)
+            ]);
+    
+            setUpdateData({
+              id: productRes?.data.id,
+              name: productRes?.data.name,
+              description: productRes?.data.description,
+              categoryId: productRes?.data.categoryId,
+              tags: productRes?.data.tags,
+              rating: productRes?.data.rating,
+              viewcount: productRes?.data.viewCount,
+              reviewcount: productRes?.data.reviewCount,
+              favorites: productRes?.data.favorites,
+              sellCount: productRes?.data.sellCount,
+              dateAdded: productRes?.data.dateAdded,
+              status: productRes?.data.status
+            });
+    
+            setVariantData({
+              price: variantRes?.data.price,
+              discountPrice: variantRes?.data.discountPrice,
+              stock: variantRes?.data.stock,
+              materials: variantRes?.data.materials,
+              weight: variantRes?.data.weight,
+              sku: variantRes?.data.sku
+            });
+    
+            // Lấy thông tin phân loại
+            if (typeRes?.data?.$values?.length > 0) {
+              const mappedTypes = typeRes.data.$values.map(async (type) => {
+                const valueRes = await ProductManage.GetProductValueByTypeId(type.id);
+                return {
+                  typeName: type.name,
+                  options: valueRes?.data?.$values || ['']
+                };
+              });
+    
+              // Chờ tất cả dữ liệu được resolve
+              const resolvedTypes = await Promise.all(mappedTypes);
+              setProductTypes(resolvedTypes);
+            }
+          } catch (error) {
+            toast.error("Có lỗi khi lấy dữ liệu.");
+            console.error(error);
+          }
+        };
+    
+        fetchData();
       }
-    },[updateId])
+    }, [updateId]);
 
     //lấy ngày hiện tại
     useEffect(() => {
@@ -149,23 +176,21 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
 
     const handleInputChange = (e) => {
       const { name, value, type, checked } = e.target;
-
       let fieldValue = type === 'checkbox' ? checked : value;
-      const updatedProduct = { ...updateData, [name]: fieldValue };
 
-      if (name === 'discount') {
-        fieldValue = Math.max(0, Math.min(100, Number(fieldValue)));
+      if (Object.keys(variantData).includes(name)) {
+          setVariantData((prev) => ({
+              ...prev,
+              [name]: fieldValue
+          }));
+      } else {
+          setUpdateData((prev) => ({
+              ...prev,
+              [name]: fieldValue
+          }));
       }
-      
-      if(name === 'originalprice' || name === 'discount'){
-        const originalPrice = parseFloat(updatedProduct.originalprice || 0);
-        const discount = parseFloat(updatedProduct.discount || 0);
-        updateData.saleprice = originalPrice - (originalPrice * discount / 100);
-      }
-      
-      setUpdateData({ ...updateData, [name]: fieldValue });
-
     };
+    
     const handleCategoryChange = (e) => {
         setUpdateData({ ...updateData, categoryId: e.target.value });
     };
@@ -176,24 +201,24 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
           onClose={handleUpdateClose}
         >
           <Box sx={style}>
-            <div style={{background: `${themeColors.EndColorLinear}`}} className='Modal-header'>
-              <div style={{color: 'white'}} className='Header-title'>
-                <i style={{color: `${themeColors.StartColorLinear}`}} class='bx bxs-edit' ></i>
+            <div style={{background: `${themeColors.EndColorLinear}`}} className='w-full'>
+              <div className='h-full flex justify-start gap-2 items-center p-4 text-h2 font-semibold text-white'>
+                <i className={`bx bxs-edit text-${themeColors.StartColorLinear}`} ></i>
                 {t('Update')}
               </div>
             </div>
-            <div className='Modal-body' style={{maxHeight: '80vh', overflow: 'auto'}}>
+            <div className='w-full bg-gray-50 p-4 border-b border-gray-300 max-h-[80vh] overflow-auto'>
               <form action="" onSubmit={handleSubmitUpdate} method='post'>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '100%'}}>
-                    <div className='input-label'>Tên sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='name' required autoFocus value={updateData.name} type="text" spellCheck="false" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Tên sản phẩm <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='name' required autoFocus value={updateData.name} type="text" spellCheck="false" onChange={handleInputChange} />
                   </div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Danh mục sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <select style={{padding: '6.5px 10px'}} name="categoryId" value={updateData.categoryId} onChange={handleCategoryChange}>
+                    <div className='mb-1 font-medium'>Danh mục sản phẩm <span className='text-red-700 text-base'>*</span></div>
+                    <select className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="categoryId" value={updateData.categoryId} onChange={handleCategoryChange}>
                       {
                           categories.length > 0 ? (
                             categories.map((category, index) => (
@@ -204,59 +229,56 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                     </select>
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Khối lượng <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='weight' required value={updateData.weight} type="number" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Khối lượng <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='weight' required value={variantData.weight} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '30%'}}>
-                    <div className='input-label'>Số lượng <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='quantity' required value={updateData.quantity} type="number" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượng <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='stock' required value={variantData.stock} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '36%'}}>
-                    <div className='input-label'>Giá bán <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='originalprice' required value={updateData.originalprice} type="number" onChange={handleInputChange} />                    
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='input-label'>Khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='discount' required value={updateData.discount} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='input-label'>Giá khuyến mãi <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='saleprice' required value={updateData.saleprice} type="number" onChange={handleInputChange} />
-                  </div>
-                </div>
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
-                  <div style={{width: '36%'}}>
-                    <div className='input-label'>Chất liệu sản phẩm <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='materials' required value={updateData.materials} type="text" onChange={handleInputChange} />                    
+                    <div className='mb-1 font-medium'>Chất liệu sản phẩm <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='materials' required value={variantData.materials} type="text" onChange={handleInputChange} />                    
                   </div>
                   <div style={{width: '62%'}}>
-                    <div className='input-label'>Tags name <span style={{color: 'red', fontSize: '15px'}}>*</span></div>
-                    <input name='tags' required value={updateData.tags} type="text" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Tags name <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='tags' required value={updateData.tags} type="text" onChange={handleInputChange} />
                   </div>
                 </div>
-
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
+                  <div style={{width: '36%'}}>
+                    <div className='mb-1 font-medium'>Giá bán <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='price' required value={variantData.price} type="number" onChange={handleInputChange} />                    
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='mb-1 font-medium'>Giá khuyến mãi <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='discountPrice' required value={variantData.discountPrice} type="number" onChange={handleInputChange} />
+                  </div>
+                  <div style={{width: '30%'}}>
+                    <div className='mb-1 font-medium'>SKU <span className='text-red-700 text-base'>*</span></div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='sku' required value={variantData.sku} type="text" onChange={handleInputChange} />
+                  </div>
+                </div>            
                 <div className='Modalborder-input' style={{padding: '5px 0px', marginTop: '15px'}}>
                   {productTypes.map((type, typeIndex) => (
                     <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
                       <div style={{ width: '35.8%'}}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div className="input-label">Phân loại sản phẩm {typeIndex + 1}</div>
+                          <div className="mb-1 font-medium">Phân loại sản phẩm {typeIndex + 1}</div>
                           {productTypes.length > 1 && (
-                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} class='bx bxs-x-square'></i>
+                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} className='bx bxs-x-square'></i>
                           )}
                         </div>
-                        <input autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)}
-                          style={{ width: '100%', marginBottom: '10px' }}
-                        />
+                        <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small mb-3' autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)} />
                       </div>
-                      <div style={{width: '62%'}}>
-                        <div className="input-label">Tùy chọn</div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>  
+                      <div className='w-[62%]'>
+                        <div className="mb-1 font-medium">Tùy chọn</div>
+                        <div className='flex flex-wrap gap-3'>  
                           {type.options.map((option, optionIndex) => (
-                            <div key={optionIndex} style={{ display: 'flex', alignItems: 'center', gap: '5px', width: '48%' }}>
-                              <input
+                            <div key={optionIndex} className='flex items-center gap-1 w-[48%]'>
+                              <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
                                 name={`Option-${typeIndex}-${optionIndex}`}
                                 autoComplete="off"
                                 value={option}
@@ -267,8 +289,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                               />
                               {optionIndex !== type.options.length - 1 && (
                                 <i
-                                  className="bx bx-trash"
-                                  style={{ fontSize: '20px', color: 'red', cursor: 'pointer' }}
+                                  className='bx bx-trash text-sm text-red-600 cursor-pointer'
                                   onClick={() => handleRemoveOptionByType(typeIndex, optionIndex)}
                                 ></i>
                               )}
@@ -278,58 +299,57 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
                       </div>
                     </div>
                   ))}
-                  <button type="button" onClick={handleAddProductType} style={{ marginTop: '10px', padding: '3px 10px', border: `1px solid ${themeColors.StartColorLinear}`, background: `${themeColors.EndColorLinear}`, color: 'white', borderRadius: '2px' }}>
-                    Thêm phân loại <i class='bx bxs-layer-plus' ></i>
+                  <button type="button" onClick={handleAddProductType} className={`mt-3 py-1 px-3 border-[1px] border-${themeColors.StartColorLinear} bg-${themeColors.EndColorLinear} text-white rounded-sm`}>
+                    Thêm phân loại <i className='bx bxs-layer-plus' ></i>
                   </button>
                 </div>
 
-                <div className='Modalborder-input'>
-                  <div className='input-label'>Mô tả</div>
-                  <textarea name="description" type="text" value={updateData.description} spellCheck="false" rows={4} id="" onChange={handleInputChange}></textarea>
+                <div className='w-full mb-2'>
+                  <div className='mb-1 font-medium'>Mô tả</div>
+                  <textarea className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="description" type="text" value={updateData.description} spellCheck="false" rows={4} id="" onChange={handleInputChange}></textarea>
                 </div>
-                <div style={{display:'flex', justifyContent: 'start', alignItems: 'center', gap: '5px'}} className='Modalborder-input'>
-                  <input 
-                      style={{width: '2%'}} 
+                <div className='w-full mb-2 flex justify-start items-center gap-1 font-bold'>
+                  <input className='w-[2%] border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
                       type="checkbox" 
-                      id='isAvailable' 
-                      checked={updateData.isAvailable} 
-                      name='isAvailable' 
+                      id='status'
+                      checked={updateData.status}
+                      name='status'
                       onChange={handleInputChange}
                   />
-                  <label htmlFor="isAvailable">Hoạt động</label>
+                  <label htmlFor="status">Hoạt động</label>
                 </div>
 
-                <div style={{display: 'flex', justifyContent: 'space-between', gap: '2%'}} className='Modalborder-input'>
+                <div className='w-full mb-2 flex justify-between gap-[2%]'>
                   <div style={{width: '20%'}}>
-                    <div className='input-label'>Số lượt thích</div>
-                    <input name='favorites' readOnly value={updateData.favorites} type="number" onChange={handleInputChange} />                    
+                    <div className='mb-1 font-medium'>Số lượt thích</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='favorites' readOnly value={updateData.favorites} type="number" onChange={handleInputChange} />                    
                   </div>
                   <div style={{width: '20%'}}>
-                    <div className='input-label'>Đánh giá</div>
-                    <input name='rating' readOnly value={updateData.rating} type="number" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Đánh giá</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='rating' readOnly value={updateData.rating} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '20%'}}>
-                    <div className='input-label'>Số lượt đánh giá</div>
-                    <input name='reviewcount' readOnly value={updateData.reviewcount} type="number" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượt đánh giá</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='reviewcount' readOnly value={updateData.reviewcount} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '20%'}}>
-                    <div className='input-label'>Số lượt xem sản phẩm</div>
-                    <input name='viewcount' readOnly value={updateData.viewcount} type="number" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượt xem sản phẩm</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='viewcount' readOnly value={updateData.viewcount} type="number" onChange={handleInputChange} />
                   </div>
                   <div style={{width: '20%'}}>
-                    <div className='input-label'>Số lượt mua sản phẩm</div>
-                    <input name='sellcount' readOnly value={updateData.sellCount} type="number" onChange={handleInputChange} />
+                    <div className='mb-1 font-medium'>Số lượt mua sản phẩm</div>
+                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='sellcount' readOnly value={updateData.sellCount} type="number" onChange={handleInputChange} />
                   </div>
                 </div>
-                <input type="hidden" name='dateAdded' value={updateData.dateAdded} readOnly />
+                <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' type="hidden" name='dateAdded' value={updateData.dateAdded} readOnly />
               </form>
             </div>
-            <div className='Modal-footer'>
-                <button onClick={handleSubmitUpdate} style={{background: `${themeColors.EndColorLinear}`}}>
-                  <i class='bx bx-save'></i>
+            <div className='p-4 bg-gray-50 flex justify-end items-center gap-2'>
+                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleSubmitUpdate} style={{background: `${themeColors.EndColorLinear}`}}>
+                  <i className='bx bx-save -mt-[1px]'></i>
                   Lưu lại
                 </button>
-                <button onClick={handleUpdateClose} style={{background: 'red'}}>Đóng</button>
+                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleUpdateClose} style={{background: 'red'}}>Đóng</button>
             </div>
           </Box>
         </Modal>

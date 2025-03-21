@@ -95,8 +95,8 @@ const Category = () => {
         <div className='text-h2 font-semibold mb-2'>
           {t('Category')}
         </div>
-        <div onClick={handleCreateOpen} className='absolute top-4 right-0 border-[1px] border-gray-300 py-1 px-3 font-medium rounded text-white flex justify-center items-center gap-1 cursor-pointer' style={{background: `${themeColors.EndColorLinear}`}}>
-            <i className='bx bx-duplicate text-h2 -mt-[1px]'></i>
+        <div onClick={handleCreateOpen} className='absolute h-9 top-4 right-0 border-[1px] border-gray-300 py-1 px-4 font-medium rounded text-white flex justify-center items-center gap-1 cursor-pointer' style={{background: `${themeColors.EndColorLinear}`}}>
+            <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
             {t('Create')}
           </div>
         <div className='mb-4'>
@@ -122,10 +122,10 @@ const Category = () => {
                 currentItems.length > 0 ? (
                   currentItems.map((category, index) => (
                     <tr key={category.id}>
-                      <td style={{textAlign: 'center', width: '5%'}}>{index + 1}</td>
-                      <td style={{width: '25%'}}>{truncateWords(category.name, 10)}</td>
-                      <td style={{width: '60%'}}>{truncateWords(category.description, 25)}</td>
-                      <td style={{width: '10%'}}>
+                      <td className='text-center w-[5%]'>{index + 1}</td>
+                      <td className='w-1/4'>{truncateWords(category.name, 10)}</td>
+                      <td className='w-3/5'>{truncateWords(category.description, 25)}</td>
+                      <td className='w-[10%]'>
                         <div className='flex justify-center items-center gap-3'>
                           <i onClick={() => handleUpdateClick(category.id)} className='bx bx-edit'></i>
                           <i onClick={() => DeleteCategory(category.id,category.name)} className='bx bx-trash' ></i>
@@ -135,7 +135,7 @@ const Category = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" style={{textAlign: 'center', color:'red'}}>Không có dữ liệu</td>
+                    <td colSpan="4" className='text-center text-red-500'>Không có dữ liệu</td>
                   </tr>
                 )
               }
