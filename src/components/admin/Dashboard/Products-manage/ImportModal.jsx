@@ -241,7 +241,7 @@ const ImportModal = ({ openImport, handleImportClose, fetchProducts }) => {
                 return productDto;
             });
 
-            const response = await ProductManage.ImportProducts({products});
+            const response = await ProductManage.ImportProducts(products);
             toast.success('Import sản phẩm thành công');
             handleImportClose();
             fetchProducts();
