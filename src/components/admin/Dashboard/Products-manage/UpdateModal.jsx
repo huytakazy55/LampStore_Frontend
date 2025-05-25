@@ -1,15 +1,21 @@
 import React, {useContext, useState, useEffect} from 'react'
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
+import { Modal, Form, Input, Select, InputNumber, Checkbox, Button, Space, Typography } from 'antd';
+import { EditOutlined, SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import ProductManage from '../../../../Services/ProductManage';
+import TagManage from '../../../../Services/TagManage';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
+const { Title } = Typography;
 
-const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, categories, updateId}) => {
+const UpdateModal = ({openUpdate, handleUpdateClose, fetchProducts, style, categories, product}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
+    const [form] = Form.useForm();
+    const [tags, setTags] = useState([]);
 
     //Thêm phân loại
     const [productTypes, setProductTypes] = useState([{ typeName: '', options: [''] }]);
@@ -45,7 +51,6 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       setProductTypes(updatedTypes);
     };
 
-
     const [updateData, setUpdateData] = useState({
       id: '',
       name: '', 
@@ -69,91 +74,118 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
       sku: ''
     });
 
-    const handleSubmitUpdate = (e) => {
-      e.preventDefault();
-      
-      ProductManage.UpdateProduct(
-        updateData.id, 
-        updateData.name, 
-        updateData.description, 
-        updateData.categoryId,
-        updateData.tags,
-        updateData.rating,
-        updateData.viewcount,
-        updateData.reviewcount,
-        updateData.favorites,
-        updateData.sellCount,
-        updateData.dateAdded,
-        updateData.status
-      )
-        .then((res) => {
-          const updatedData = JSON.parse(res.config.data);
-          ProductManage.GetProductById(updatedData.id)
+    const handleSubmitUpdate = async (values) => {
+      if (!values.name || !values.price || !values.stock) {
+          toast.error("Vui lòng điền đầy đủ các thông tin bắt buộc!");
+          return;
+      }
+  
+      try {
+          const variantTypes = productTypes
+            .filter(type => type.typeName.trim() !== "" && type.options.some(opt => opt.trim() !== ""))
+            .map(type => ({
+              name: type.typeName,
+              values: type.options.filter(opt => opt.trim() !== "")
+            }));
+
+          const updatedProduct = {
+              id: updateData.id,
+              name: values.name,
+              description: values.description,
+              categoryId: values.categoryId,
+              tags: values.tags ? values.tags.join(',') : '',
+              reviewCount: values.reviewCount,
+              viewCount: values.viewCount,
+              favorites: values.favorites,
+              sellCount: values.sellCount,
+              dateAdded: values.dateAdded,
+              status: values.status,
+              productVariants: [{
+                price: values.price,
+                discountPrice: values.discountPrice,
+                stock: values.stock,
+                materials: values.materials,
+                weight: values.weight,
+                sku: values.sku
+              }],
+              variantTypes: variantTypes
+          };
+  
+          await ProductManage.UpdateProduct(updatedProduct)
           .then((res) => {
-            const refreshedProductData = res.data;
-            setProductData((prevData) =>
-              prevData.map((item) => (item.id === refreshedProductData.id ? refreshedProductData : item))
-            );
+            fetchProducts();
+            toast.success("Cập nhật bản ghi thành công");
+            handleUpdateClose();
           })
           .catch((err) => {
-            toast.error("Có lỗi khi lấy thông tin sản phẩm mới.");
+            toast.error("Có lỗi xảy ra.");
           });
-          toast.success("Cập nhật bản ghi thành công");
-          handleUpdateClose();
-        })
-        .catch((err) => {
-          toast.error("Có lỗi xảy ra.");
-        });
+      } catch (error) {
+          console.error("Lỗi khi cập nhật sản phẩm:", error);
+          toast.error("Có lỗi xảy ra khi cập nhật sản phẩm!");
+      }
     };
 
-    // lay du lieu cho form
     useEffect(() => {
-      if (updateId) {
+      if (product) {
         const fetchData = async () => {
           try {
             const [productRes, variantRes, typeRes] = await Promise.all([
-              ProductManage.GetProductById(updateId),
-              ProductManage.GetVariantById(updateId),
-              ProductManage.GetProductTypeByProductId(updateId)
+              ProductManage.GetProductById(product.id),
+              ProductManage.GetVariantById(product.id),
+              ProductManage.GetProductTypeByProductId(product.id)
             ]);
     
-            setUpdateData({
-              id: productRes?.data.id,
-              name: productRes?.data.name,
-              description: productRes?.data.description,
-              categoryId: productRes?.data.categoryId,
-              tags: productRes?.data.tags,
-              rating: productRes?.data.rating,
-              viewcount: productRes?.data.viewCount,
-              reviewcount: productRes?.data.reviewCount,
-              favorites: productRes?.data.favorites,
-              sellCount: productRes?.data.sellCount,
-              dateAdded: productRes?.data.dateAdded,
-              status: productRes?.data.status
-            });
-    
+            const formData = {
+              id: productRes?.data?.id,
+              name: productRes?.data?.name,
+              description: productRes?.data?.description,
+              categoryId: productRes?.data?.categoryId,
+              tags: productRes?.data?.tags ? productRes?.data?.tags.split(',') : [],
+              rating: productRes?.data?.rating,
+              viewCount: productRes?.data?.viewCount,
+              reviewCount: productRes?.data?.reviewCount,
+              favorites: productRes?.data?.favorites,
+              sellCount: productRes?.data?.sellCount,
+              dateAdded: productRes?.data?.dateAdded,
+              status: productRes?.data?.status,
+              price: variantRes?.data?.price,
+              discountPrice: variantRes?.data?.discountPrice,
+              stock: variantRes?.data?.stock,
+              materials: variantRes?.data?.materials,
+              weight: variantRes?.data?.weight,
+              sku: variantRes?.data?.sku
+            };
+            
+            // Reset form trước khi set giá trị mới
+            form.resetFields();
+            form.setFieldsValue(formData);
+            setUpdateData(formData);
             setVariantData({
-              price: variantRes?.data.price,
-              discountPrice: variantRes?.data.discountPrice,
-              stock: variantRes?.data.stock,
-              materials: variantRes?.data.materials,
-              weight: variantRes?.data.weight,
-              sku: variantRes?.data.sku
+              price: variantRes?.data?.price,
+              discountPrice: variantRes?.data?.discountPrice,
+              stock: variantRes?.data?.stock,
+              materials: variantRes?.data?.materials,
+              weight: variantRes?.data?.weight,
+              sku: variantRes?.data?.sku
             });
     
-            // Lấy thông tin phân loại
             if (typeRes?.data?.$values?.length > 0) {
-              const mappedTypes = typeRes.data.$values.map(async (type) => {
-                const valueRes = await ProductManage.GetProductValueByTypeId(type.id);
-                return {
-                  typeName: type.name,
-                  options: valueRes?.data?.$values || ['']
-                };
-              });
-    
-              // Chờ tất cả dữ liệu được resolve
-              const resolvedTypes = await Promise.all(mappedTypes);
-              setProductTypes(resolvedTypes);
+              const mappedTypes = await Promise.all(
+                typeRes.data.$values.map(async (type) => {
+                  const valueRes = await ProductManage.GetProductValueByTypeId(type.id);
+                  return {
+                    typeName: type.name,
+                    options: valueRes?.data?.$values || ['']
+                  };
+                })
+              );
+              
+              const sortedTypes = typeRes.data.$values.map(type => 
+                mappedTypes.find(mt => mt.typeName === type.name)
+              ).filter(Boolean);
+              
+              setProductTypes(sortedTypes.reverse());
             }
           } catch (error) {
             toast.error("Có lỗi khi lấy dữ liệu.");
@@ -163,197 +195,309 @@ const UpdateModal = ({openUpdate, handleUpdateClose, setProductData, style, cate
     
         fetchData();
       }
-    }, [updateId]);
+    }, [product, form]);
 
-    //lấy ngày hiện tại
     useEffect(() => {
       const currentDate = new Date().toISOString();
-      setUpdateData(prev => ({
-          ...prev,
-          dateAdded: currentDate // Gán dateAdded trực tiếp vào productCreate
-      }));
-    }, [setProductData]);
+      form.setFieldValue('dateAdded', currentDate);
+    }, [form]);
 
-    const handleInputChange = (e) => {
-      const { name, value, type, checked } = e.target;
-      let fieldValue = type === 'checkbox' ? checked : value;
+    useEffect(() => {
+        TagManage.GetTag()
+            .then((res) => {
+                setTags(res.data.$values);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
 
-      if (Object.keys(variantData).includes(name)) {
-          setVariantData((prev) => ({
-              ...prev,
-              [name]: fieldValue
-          }));
-      } else {
-          setUpdateData((prev) => ({
-              ...prev,
-              [name]: fieldValue
-          }));
-      }
-    };
-    
-    const handleCategoryChange = (e) => {
-        setUpdateData({ ...updateData, categoryId: e.target.value });
-    };
+    // Thêm CSS cho modal
+    useEffect(() => {
+        const customStyles = `
+            .custom-modal .ant-modal-content {
+                border-radius: 8px;
+                overflow: hidden;
+            }
 
-  return (
-    <Modal
-          open={openUpdate}
-          onClose={handleUpdateClose}
+            .custom-modal .ant-modal-header {
+                padding: 16px 24px;
+                border-bottom: 2px solid #f0f0f0;
+                margin-bottom: 0;
+            }
+
+            .custom-modal .ant-modal-body {
+                padding: 24px;
+            }
+
+            .custom-modal .ant-modal-footer {
+                padding: 16px 24px;
+                border-top: 1px solid #f0f0f0;
+            }
+
+            .custom-form .ant-form-item-label {
+                font-weight: 500;
+            }
+
+            .custom-form .ant-input,
+            .custom-form .ant-input-number,
+            .custom-form .ant-select-selector {
+                border-radius: 4px;
+            }
+
+            .custom-form .ant-input:hover,
+            .custom-form .ant-input-number:hover,
+            .custom-form .ant-select-selector:hover {
+                border-color: ${themeColors.StartColorLinear};
+            }
+
+            .custom-form .ant-input:focus,
+            .custom-form .ant-input-number:focus,
+            .custom-form .ant-select-selector:focus {
+                border-color: ${themeColors.StartColorLinear};
+                box-shadow: 0 0 0 2px ${themeColors.StartColorLinear}20;
+            }
+        `;
+
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = customStyles;
+        document.head.appendChild(styleSheet);
+
+        return () => {
+            document.head.removeChild(styleSheet);
+        };
+    }, [themeColors]);
+
+    return (
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <EditOutlined style={{ color: themeColors.StartColorLinear, fontSize: '20px' }} />
+            <Title level={4} style={{ margin: 0, color: themeColors.StartColorLinear }}>
+              Cập nhật sản phẩm
+            </Title>
+          </div>
+        }
+        open={openUpdate}
+        onCancel={handleUpdateClose}
+        width={1200}
+        footer={[
+          <Button 
+            key="cancel" 
+            onClick={handleUpdateClose} 
+            icon={<CloseOutlined />}
+            danger
+          >
+            Đóng
+          </Button>,
+          <Button 
+            key="submit" 
+            type="primary" 
+            onClick={() => form.submit()}
+            icon={<SaveOutlined />}
+            style={{background: themeColors.StartColorLinear}}
+          >
+            Lưu lại
+          </Button>
+        ]}
+        className="custom-modal"
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmitUpdate}
+          className="custom-form"
         >
-          <Box sx={style}>
-            <div style={{background: `${themeColors.EndColorLinear}`}} className='w-full'>
-              <div className='h-full flex justify-start gap-2 items-center p-4 text-h2 font-semibold text-white'>
-                <i className={`bx bxs-edit text-${themeColors.StartColorLinear}`} ></i>
-                {t('Update')}
-              </div>
-            </div>
-            <div className='w-full bg-gray-50 p-4 border-b border-gray-300 max-h-[80vh] overflow-auto'>
-              <form action="" onSubmit={handleSubmitUpdate} method='post'>
-                <div className='w-full mb-2 flex justify-between gap-[2%]'>
-                  <div style={{width: '100%'}}>
-                    <div className='mb-1 font-medium'>Tên sản phẩm <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='name' required autoFocus value={updateData.name} type="text" spellCheck="false" onChange={handleInputChange} />
+          <Form.Item
+            name="name"
+            label="Tên sản phẩm"
+            rules={[{ required: true, message: 'Vui lòng nhập tên sản phẩm!' }]}
+          >
+            <Input placeholder="Nhập tên sản phẩm" />
+          </Form.Item>
+
+          <div className="flex gap-4">
+            <Form.Item
+              name="categoryId"
+              label="Danh mục sản phẩm"
+              className="w-1/3"
+              rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
+            >
+              <Select placeholder="Chọn danh mục">
+                {categories.map((category) => (
+                  <Select.Option key={category.id} value={category.id}>
+                    {category.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              name="price"
+              label="Giá bán"
+              className="w-1/3"
+              rules={[{ required: true, message: 'Vui lòng nhập giá bán!' }]}
+            >
+              <InputNumber 
+                style={{width: '100%'}} 
+                min={0} 
+                placeholder="Nhập giá bán"
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="stock"
+              label="Số lượng"
+              className="w-1/3"
+              rules={[{ required: true, message: 'Vui lòng nhập số lượng!' }]}
+            >
+              <InputNumber 
+                style={{width: '100%'}} 
+                min={0} 
+                placeholder="Nhập số lượng"
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-4">
+            <Form.Item
+              name="discountPrice"
+              label="Giá khuyến mãi"
+              className="w-1/3"
+            >
+              <InputNumber 
+                style={{width: '100%'}} 
+                min={0} 
+                placeholder="Nhập giá khuyến mãi"
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="materials"
+              label="Chất liệu"
+              className="w-1/3"
+            >
+              <Input placeholder="Nhập chất liệu" />
+            </Form.Item>
+
+            <Form.Item
+              name="weight"
+              label="Cân nặng (kg)"
+              className="w-1/3"
+            >
+              <InputNumber 
+                style={{width: '100%'}} 
+                min={0} 
+                step={0.1}
+                placeholder="Nhập cân nặng"
+              />
+            </Form.Item>
+          </div>
+
+          <div className="flex gap-4">
+            <Form.Item
+              name="sku"
+              label="SKU"
+              className="w-1/3"
+            >
+              <Input placeholder="Nhập mã SKU" />
+            </Form.Item>
+
+            <Form.Item
+              name="tags"
+              label="Tags"
+              className="w-2/3"
+            >
+              <Select
+                mode="multiple"
+                style={{ width: '100%' }}
+                placeholder="Chọn tags"
+                options={tags.map(tag => ({
+                  label: tag.name,
+                  value: tag.id
+                }))}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </Form.Item>
+          </div>
+
+          <div className="mt-4 mb-4">
+            {productTypes.map((type, typeIndex) => (
+              <div key={typeIndex} className="mb-4 p-4 border border-gray-200 rounded-lg">
+                <div className="flex gap-4">
+                  <div className="w-1/3">
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="font-medium">Phân loại sản phẩm {typeIndex + 1}</div>
+                      {productTypes.length > 1 && (
+                        <Button 
+                          type="text" 
+                          danger 
+                          icon={<CloseOutlined />}
+                          onClick={() => handleRemoveProductType(typeIndex)}
+                        />
+                      )}
+                    </div>
+                    <Input
+                      value={type.typeName}
+                      placeholder="Tên phân loại"
+                      onChange={(e) => handleTypeChange(typeIndex, e.target.value)}
+                    />
                   </div>
-                </div>
-                <div className='w-full mb-2 flex justify-between gap-[2%]'>
-                  <div style={{width: '36%'}}>
-                    <div className='mb-1 font-medium'>Danh mục sản phẩm <span className='text-red-700 text-base'>*</span></div>
-                    <select className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="categoryId" value={updateData.categoryId} onChange={handleCategoryChange}>
-                      {
-                          categories.length > 0 ? (
-                            categories.map((category, index) => (
-                              <option key={index} value={category.id}>{category.name}</option>
-                            ))
-                          ) : 'không có danh mục nào'
-                      }
-                    </select>
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='mb-1 font-medium'>Khối lượng <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='weight' required value={variantData.weight} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='mb-1 font-medium'>Số lượng <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='stock' required value={variantData.stock} type="number" onChange={handleInputChange} />
-                  </div>
-                </div>
-                <div className='w-full mb-2 flex justify-between gap-[2%]'>
-                  <div style={{width: '36%'}}>
-                    <div className='mb-1 font-medium'>Chất liệu sản phẩm <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='materials' required value={variantData.materials} type="text" onChange={handleInputChange} />                    
-                  </div>
-                  <div style={{width: '62%'}}>
-                    <div className='mb-1 font-medium'>Tags name <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='tags' required value={updateData.tags} type="text" onChange={handleInputChange} />
-                  </div>
-                </div>
-                <div className='w-full mb-2 flex justify-between gap-[2%]'>
-                  <div style={{width: '36%'}}>
-                    <div className='mb-1 font-medium'>Giá bán <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='price' required value={variantData.price} type="number" onChange={handleInputChange} />                    
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='mb-1 font-medium'>Giá khuyến mãi <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='discountPrice' required value={variantData.discountPrice} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '30%'}}>
-                    <div className='mb-1 font-medium'>SKU <span className='text-red-700 text-base'>*</span></div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='sku' required value={variantData.sku} type="text" onChange={handleInputChange} />
-                  </div>
-                </div>            
-                <div className='Modalborder-input' style={{padding: '5px 0px', marginTop: '15px'}}>
-                  {productTypes.map((type, typeIndex) => (
-                    <div key={typeIndex} style={{ marginBottom: '5px', position: 'relative', display: 'flex', justifyContent: 'start', gap: '2%' }}>
-                      <div style={{ width: '35.8%'}}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div className="mb-1 font-medium">Phân loại sản phẩm {typeIndex + 1}</div>
-                          {productTypes.length > 1 && (
-                              <i style={{color: 'red', marginTop: '-5px', fontSize: '1.5rem', cursor: 'pointer'}} onClick={() => handleRemoveProductType(typeIndex)} className='bx bxs-x-square'></i>
+                  <div className="w-2/3">
+                    <div className="font-medium mb-2">Tùy chọn</div>
+                    <div className="flex flex-wrap gap-2">
+                      {type.options.map((option, optionIndex) => (
+                        <div key={optionIndex} className="flex gap-2 w-[48%]">
+                          <Input
+                            value={option}
+                            placeholder={`Tùy chọn ${optionIndex + 1}`}
+                            onChange={(e) => handleOptionChangeByType(typeIndex, optionIndex, e.target.value)}
+                          />
+                          {optionIndex !== type.options.length - 1 && (
+                            <Button
+                              type="text"
+                              danger
+                              icon={<CloseOutlined />}
+                              onClick={() => handleRemoveOptionByType(typeIndex, optionIndex)}
+                            />
                           )}
                         </div>
-                        <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small mb-3' autoComplete="off" type="text" value={type.typeName} placeholder="Tên phân loại" onChange={(e) => handleTypeChange(typeIndex, e.target.value)} />
-                      </div>
-                      <div className='w-[62%]'>
-                        <div className="mb-1 font-medium">Tùy chọn</div>
-                        <div className='flex flex-wrap gap-3'>  
-                          {type.options.map((option, optionIndex) => (
-                            <div key={optionIndex} className='flex items-center gap-1 w-[48%]'>
-                              <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
-                                name={`Option-${typeIndex}-${optionIndex}`}
-                                autoComplete="off"
-                                value={option}
-                                type="text"
-                                placeholder={`Tùy chọn ${optionIndex + 1}`}
-                                onChange={(e) => handleOptionChangeByType(typeIndex, optionIndex, e.target.value)}
-                                style={{ flex: 1 }}
-                              />
-                              {optionIndex !== type.options.length - 1 && (
-                                <i
-                                  className='bx bx-trash text-sm text-red-600 cursor-pointer'
-                                  onClick={() => handleRemoveOptionByType(typeIndex, optionIndex)}
-                                ></i>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                  <button type="button" onClick={handleAddProductType} className={`mt-3 py-1 px-3 border-[1px] border-${themeColors.StartColorLinear} bg-${themeColors.EndColorLinear} text-white rounded-sm`}>
-                    Thêm phân loại <i className='bx bxs-layer-plus' ></i>
-                  </button>
+                  </div>
                 </div>
+              </div>
+            ))}
+            <Button 
+              type="primary"
+              onClick={handleAddProductType}
+              icon={<SaveOutlined />}
+              style={{background: themeColors.StartColorLinear}}
+            >
+              Thêm phân loại
+            </Button>
+          </div>
 
-                <div className='w-full mb-2'>
-                  <div className='mb-1 font-medium'>Mô tả</div>
-                  <textarea className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name="description" type="text" value={updateData.description} spellCheck="false" rows={4} id="" onChange={handleInputChange}></textarea>
-                </div>
-                <div className='w-full mb-2 flex justify-start items-center gap-1 font-bold'>
-                  <input className='w-[2%] border-[1px] border-gray-300 outline-none py-1 px-3 text-small'
-                      type="checkbox" 
-                      id='status'
-                      checked={updateData.status}
-                      name='status'
-                      onChange={handleInputChange}
-                  />
-                  <label htmlFor="status">Hoạt động</label>
-                </div>
+          <Form.Item name="description" label="Mô tả">
+            <ReactQuill theme="snow" placeholder="Nhập mô tả sản phẩm" />
+          </Form.Item>
 
-                <div className='w-full mb-2 flex justify-between gap-[2%]'>
-                  <div style={{width: '20%'}}>
-                    <div className='mb-1 font-medium'>Số lượt thích</div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='favorites' readOnly value={updateData.favorites} type="number" onChange={handleInputChange} />                    
-                  </div>
-                  <div style={{width: '20%'}}>
-                    <div className='mb-1 font-medium'>Đánh giá</div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='rating' readOnly value={updateData.rating} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '20%'}}>
-                    <div className='mb-1 font-medium'>Số lượt đánh giá</div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='reviewcount' readOnly value={updateData.reviewcount} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '20%'}}>
-                    <div className='mb-1 font-medium'>Số lượt xem sản phẩm</div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='viewcount' readOnly value={updateData.viewcount} type="number" onChange={handleInputChange} />
-                  </div>
-                  <div style={{width: '20%'}}>
-                    <div className='mb-1 font-medium'>Số lượt mua sản phẩm</div>
-                    <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' name='sellcount' readOnly value={updateData.sellCount} type="number" onChange={handleInputChange} />
-                  </div>
-                </div>
-                <input className='w-full border-[1px] border-gray-300 outline-none py-1 px-3 text-small' type="hidden" name='dateAdded' value={updateData.dateAdded} readOnly />
-              </form>
-            </div>
-            <div className='p-4 bg-gray-50 flex justify-end items-center gap-2'>
-                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleSubmitUpdate} style={{background: `${themeColors.EndColorLinear}`}}>
-                  <i className='bx bx-save -mt-[1px]'></i>
-                  Lưu lại
-                </button>
-                <button className='border-[1px] border-gray-300 outline-none py-1 px-3 rounded text-white flex justify-center items-center gap-1' onClick={handleUpdateClose} style={{background: 'red'}}>Đóng</button>
-            </div>
-          </Box>
-        </Modal>
-  )
+          <Form.Item name="status" valuePropName="checked">
+            <Checkbox>Hoạt động</Checkbox>
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
 }
 
-export default UpdateModal
+export default UpdateModal;

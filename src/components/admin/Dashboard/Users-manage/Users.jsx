@@ -1,53 +1,46 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { Breadcrumbs, Link } from '@mui/material';
-import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Pagination from '@mui/material/Pagination';
-import Modal from '@mui/material/Modal';
+import { Table, Input, Button, Breadcrumb, Modal, Pagination, message, Space, Row, Col, Card } from 'antd';
+import { LockOutlined, UnlockOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ThemeContext } from '../../../../ThemeContext';
 import UserManage from '../../../../Services/UserManage';
-import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import CreateUser from './CreateUser';
+import EditUser from './EditUser';
 
-const style = {
-  position: 'absolute',
-  top: '30%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 700,
-  bgcolor: 'background.paper',
-  boxShadow: 10,
-  border: 'none',
-  outline: 'none',
-  p: 4,
-};
+const API_URL = process.env.REACT_APP_API_ENDPOINT;
 
 const Users = () => {
-  const {themeColors} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  const [open, setOpen] = React.useState(false);
+  const { themeColors } = useContext(ThemeContext);
+  const { t } = useTranslation();
   const [userData, setUserData] = useState([]);
-   //Pagination
-   const [page, setPage] = useState(1);
-   const itemsPerPage = 20;
-
-  // Search
-  const [searchTerm, setSearchTerm] = useState('');
   const [roleData, setRoleData] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 20;
+  const [loading, setLoading] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [openBulkDelete, setOpenBulkDelete] = useState(false);
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  useEffect(() => {
+  const fetchUsers = () => {
+    setLoading(true);
     UserManage.GetUserAccount()
       .then((res) => {
         setUserData(res.$values);
+        setLoading(false);
       })
-      .catch((err) => {
-        toast.error("Có lỗi xảy ra!");
+      .catch(() => {
+        message.error('Có lỗi xảy ra!');
+        setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -60,16 +53,16 @@ const Users = () => {
               [user.id]: res.data.$values,
             }));
           })
-          .catch((err) => {
-            toast.error(`Lỗi khi lấy role của ${user.userName}`);
+          .catch(() => {
+            message.error(`Lỗi khi lấy role của ${user.userName}`);
           });
       });
     }
   }, [userData]);
 
   const updateUserLockStatus = (userId, isLocked) => {
-    setUserData(prevData => 
-      prevData.map(user => 
+    setUserData(prevData =>
+      prevData.map(user =>
         user.id === userId ? { ...user, lockoutEnd: isLocked ? new Date(Date.now() + 1000 * 60 * 60) : null } : user
       )
     );
@@ -77,140 +70,385 @@ const Users = () => {
 
   const LockUser = (userId, username) => {
     UserManage.LockUser(userId, username)
-      .then((res) => {
-        toast.success(`Đã khóa tài khoản ${username}`);
-        updateUserLockStatus(userId, true); // Cập nhật trạng thái khóa
+      .then(() => {
+        message.success(`Đã khóa tài khoản ${username}`);
+        updateUserLockStatus(userId, true);
       })
-      .catch((err) => {
-        toast.error("Có lỗi xảy ra");
+      .catch(() => {
+        message.error('Có lỗi xảy ra');
       });
   };
 
   const UnLockUser = (userId, username) => {
     UserManage.UnLockUser(userId, username)
-      .then((res) => {
-        toast.success(`Đã mở khóa tài khoản ${username}`);
-        updateUserLockStatus(userId, false); // Cập nhật trạng thái mở khóa
+      .then(() => {
+        message.success(`Đã mở khóa tài khoản ${username}`);
+        updateUserLockStatus(userId, false);
       })
-      .catch((err) => {
-        toast.error("Có lỗi xảy ra");
+      .catch(() => {
+        message.error('Có lỗi xảy ra');
       });
   };
 
-  //Search Service
-  const highlightedText = (text, highlight) => {
-    if (!text || typeof text !== 'string') return text;
-    if (!highlight) return text;
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-    return parts.map((part, index) =>
-      part.toLowerCase() === highlight.toLowerCase() ? (
-        <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
-      ) : part
-    );
-  };
   const filteredUsers = useMemo(() => {
-    return userData.filter(user => {
-      return (
-        user.userName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+    return userData.filter(user =>
+      user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   }, [userData, searchTerm]);
-  
-  const handleChangePage = (event, value) => {
-    setPage(value);
+
+  const columns = [
+    {
+      title: 'STT',
+      dataIndex: 'stt',
+      key: 'stt',
+      width: 60,
+      align: 'center',
+      render: (text, record, index) => (page - 1) * itemsPerPage + index + 1,
+    },
+    {
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
+      width: 200,
+      align: 'center',
+      sorter: (a, b) => a.id.localeCompare(b.id),
+    },
+    {
+      title: 'Tên người dùng',
+      dataIndex: 'userName',
+      key: 'userName',
+      width: 250,
+      align: 'center',
+      render: (text) => <span>{text}</span>,
+      sorter: (a, b) => a.userName.localeCompare(b.userName),
+      filters: [
+        ...Array.from(new Set(filteredUsers.map(u => u.userName))).map(name => ({
+          text: name,
+          value: name,
+        }))
+      ],
+      onFilter: (value, record) => record.userName === value,
+    },
+    {
+      title: 'Nhóm quyền',
+      dataIndex: 'role',
+      key: 'role',
+      width: 150,
+      align: 'center',
+      render: (text, record) => roleData[record.id] ? roleData[record.id] : 'Loading...',
+      sorter: (a, b) => {
+        const roleA = roleData[a.id] || '';
+        const roleB = roleData[b.id] || '';
+        return roleA.localeCompare(roleB);
+      },
+      filters: [
+        ...Array.from(new Set(Object.values(roleData))).map(role => ({
+          text: role,
+          value: role,
+        }))
+      ],
+      onFilter: (value, record) => (roleData[record.id] || '') === value,
+    },
+    {
+      title: 'Thao tác',
+      key: 'action',
+      width: 120,
+      align: 'center',
+      render: (text, record) => (
+        <Space size="middle" style={{justifyContent: 'center', width: '100%'}}>
+          {record.lockoutEnd && new Date(record.lockoutEnd) > new Date() ? (
+            <Button
+              icon={<UnlockOutlined />}
+              onClick={() => UnLockUser(record.id, record.userName)}
+              type="primary"
+              size="small"
+            >
+              Mở khóa
+            </Button>
+          ) : (
+            <Button
+              icon={<LockOutlined />}
+              onClick={() => LockUser(record.id, record.userName)}
+              danger
+              size="small"
+            >
+              Khóa
+            </Button>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  // Pagination
-  const currentItems = useMemo(() => {
-    return filteredUsers.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-  }, [filteredUsers, page, itemsPerPage]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+    columnWidth: 40,
+    columnTitle: '',
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      setBulkDeleteLoading(true);
+      const response = await axios.delete(`${API_URL}/users/bulk`, {
+        data: { ids: selectedRowKeys }
+      });
+      
+      if (response.data.success) {
+        message.success(t('DeleteSuccess'));
+        setSelectedRowKeys([]);
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error('Error deleting users:', error);
+      message.error(t('DeleteFailed'));
+    } finally {
+      setBulkDeleteLoading(false);
+      setOpenBulkDelete(false);
+    }
+  };
+
+  const customStyles = `
+    .custom-table .ant-table-thead > tr > th {
+      background: #fafafa;
+      font-weight: 600;
+      color: #1f1f1f;
+      padding: 16px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .custom-table .ant-table-tbody > tr > td {
+      padding: 16px;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.3s;
+    }
+    
+    .custom-table .ant-table-tbody > tr:hover > td {
+      background: #f6f8fc;
+    }
+    
+    .custom-table .ant-table-cell {
+      font-size: 14px;
+    }
+    
+    .custom-table .ant-table-row-selected td {
+      background: #e6f7ff;
+    }
+    
+    .custom-table .ant-table-pagination {
+      margin: 16px;
+      padding: 16px 0;
+      border-top: 1px solid #f0f0f0;
+    }
+    
+    .custom-table .ant-table-thead > tr:first-child th:first-child {
+      border-top-left-radius: 8px;
+    }
+    
+    .custom-table .ant-table-thead > tr:first-child th:last-child {
+      border-top-right-radius: 8px;
+    }
+    
+    .custom-table .ant-table-tbody > tr:last-child td:first-child {
+      border-bottom-left-radius: 8px;
+    }
+    
+    .custom-table .ant-table-tbody > tr:last-child td:last-child {
+      border-bottom-right-radius: 8px;
+    }
+
+    .custom-table .ant-checkbox-wrapper {
+      transform: scale(0.8);
+    }
+
+    .custom-table .ant-table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .custom-table .ant-table-container {
+      border: 1px solid #f0f0f0;
+      border-radius: 8px;
+    }
+
+    .custom-table .ant-table-tbody > tr > td {
+      background: #fff;
+    }
+
+    .custom-table .ant-table-tbody > tr:nth-child(even) > td {
+      background: #fafafa;
+    }
+
+    .custom-table .ant-table-tbody > tr:hover > td {
+      background: #f6f8fc !important;
+    }
+
+    .custom-table .ant-table-row-selected td {
+      background: #e6f7ff !important;
+    }
+
+    .custom-table .ant-table-row-selected:hover td {
+      background: #bae7ff !important;
+    }
+
+    .custom-table .ant-tag {
+      margin: 0;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .custom-table .ant-space {
+      gap: 8px !important;
+    }
+
+    .custom-table .ant-btn {
+      border-radius: 4px;
+    }
+
+    .custom-table .ant-btn-text {
+      padding: 4px 8px;
+    }
+
+    .custom-table .ant-btn-text:hover {
+      background: #f5f5f5;
+    }
+  `;
 
   return (
-    <div>
-        <div className='text-h2 font-semibold mb-2'>
-          {t('Users')}
+    <div style={{padding: '24px'}}>
+      <div style={{
+        background: '#fff',
+        borderRadius: '8px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+      }}>
+        {/* Title Bar */}
+        <div
+          className="admin-title-bar"
+          style={{
+            background: '#f6f8fc',
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            padding: '24px 24px 16px 24px',
+            marginBottom: 0
+          }}
+        >
+          <div style={{fontSize: '1.5rem', fontWeight: 600, color: themeColors.StartColorLinear}}>
+            {t('Users')}
+          </div>
+          <Breadcrumb
+            items={[
+              { title: t('Home') },
+              { title: t('Users') }
+            ]}
+            style={{ marginTop: '8px' }}
+          />
         </div>
-        <div className='absolute right-0 top-4 flex justify-end items-center gap-4 h-9'>
-          <div style={{background: `${themeColors.EndColorLinear}`}} className='flex border-[1px] border-gray-300 justify-between items-center rounded-sm h-full'>
-            <i className='bx bx-search-alt-2 text-h2 px-5 text-white'></i>
-            <input 
-              className='border-none outline-none py-1 px-3 text-small rounded-tr-sm rounded-br-sm leading-none h-full w-60'
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)} 
-              style={{color: `${themeColors.StartColorLinear}`}} type="text" 
-              placeholder="tên, danh mục ..." 
+
+        {/* Filter Bar */}
+        <div
+          className="admin-filter-bar"
+          style={{
+            padding: '16px 24px',
+            background: '#fff',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '16px'
+          }}
+        >
+          <Space>
+            <Input.Search
+              placeholder="Tìm kiếm tên người dùng..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ width: 300 }}
+            />
+            {selectedRowKeys.length > 0 && (
+              <Button
+                type="primary"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => setOpenBulkDelete(true)}
+                loading={bulkDeleteLoading}
+              >
+                {t('DeleteSelected')} ({selectedRowKeys.length})
+              </Button>
+            )}
+          </Space>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setOpenCreate(true)}>
+            {t('Create')}
+          </Button>
+        </div>
+
+        {/* Table */}
+        <div style={{padding: '0 24px 24px 24px'}}>
+          <Table
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={filteredUsers}
+            rowKey="id"
+            loading={loading}
+            bordered
+            size="middle"
+            scroll={{ x: 900 }}
+            className="custom-table"
+          />
+          <div className="flex justify-end mt-4">
+            <Pagination
+              current={page}
+              pageSize={itemsPerPage}
+              total={filteredUsers.length}
+              onChange={setPage}
+              showSizeChanger={false}
             />
           </div>
-          <div className='border-[1px] border-gray-300 py-1 px-4 font-medium rounded-sm text-white flex justify-center items-center gap-1 cursor-pointer h-full' style={{background: `${themeColors.EndColorLinear}`}}>
-              <i className='bx bx-duplicate text-h3 -mt-[1px]'></i>
-              {t('Create')}
-          </div>
         </div>
-        <div className='mb-4'>
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            <Link component={RouterLink} to="/admin" color="inherit">
-              {t('Home')}
-            </Link>
-            <Typography color="textPrimary">{t('Users')}</Typography>
-          </Breadcrumbs>
-        </div>
-        <div className='User'>
-          <table>
-            <thead>
-              <tr style={{background: `${themeColors.EndColorLinear}`, color: `${themeColors.StartColorLinear}`}}>
-                <th className='w-[5%]'>STT</th>
-                <th className='w-1/4'>Id</th>
-                <th className='w-[40%]'>Tên người dùng</th>
-                <th className='w-[10%]'>Nhóm quyền</th>
-                <th className='w-[10%]'>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                  currentItems.length > 0 ? (
-                    currentItems.map((user, index) => (
-                      <tr key={user.id}>
-                        <td style={{textAlign: 'center', width: '5%'}}>{index + 1}</td>
-                        <td>{user.id}</td>
-                        <td>{highlightedText(user.userName, searchTerm)}</td>
-                        <td style={{textAlign: 'center'}}>{highlightedText(roleData[user.id] ? roleData[user.id] : 'Loading...', searchTerm)}</td>
-                        <td>
-                          <div className='flex justify-center items-center gap-3'>                        
-                          {user.lockoutEnd && new Date(user.lockoutEnd) > new Date() ? (
-                            // Tài khoản bị khóa, hiển thị nút "Mở khóa"
-                            <i onClick={() => UnLockUser(user.id, user.userName)} className='bx bx-lock-open' ></i>
-                          ) : (
-                            // Tài khoản không bị khóa, hiển thị nút "Khóa"
-                            <i onClick={() => LockUser(user.id, user.userName)} className='bx bx-lock' ></i>
-                          )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" style={{textAlign: 'center', color:'red'}}>Không có dữ liệu</td>
-                    </tr>
-                  )
-              }
-            </tbody>
-          </table>
-          {
-            userData.length > itemsPerPage && (
-              <Pagination
-                size="small"
-                variant="outlined" shape="rounded"
-                count={Math.ceil(userData.length / itemsPerPage)}
-                page={page}
-                onChange={handleChangePage}
-                color="primary"
-                style={{ display: 'flex', justifyContent: 'right', marginTop: '20px' }}
-              />
-            )
-          }
-        </div>
+      </div>
+
+      {/* Create Modal */}
+      <CreateUser
+        open={openCreate}
+        onCancel={() => setOpenCreate(false)}
+        onSuccess={() => {
+          setOpenCreate(false);
+          fetchUsers();
+        }}
+      />
+
+      {/* Edit Modal */}
+      {currentUser && (
+        <EditUser
+          open={openEdit}
+          onCancel={() => {
+            setOpenEdit(false);
+            setCurrentUser(null);
+          }}
+          onSuccess={() => {
+            setOpenEdit(false);
+            setCurrentUser(null);
+            fetchUsers();
+          }}
+          user={currentUser}
+        />
+      )}
+
+      {/* Bulk Delete Modal */}
+      <Modal
+        title={t('ConfirmDelete')}
+        open={openBulkDelete}
+        onOk={handleBulkDelete}
+        onCancel={() => setOpenBulkDelete(false)}
+        confirmLoading={bulkDeleteLoading}
+      >
+        <p>{t('ConfirmDeleteSelected', { count: selectedRowKeys.length })}</p>
+      </Modal>
     </div>
-  )
-}
+  );
+};
 
 export default Users;

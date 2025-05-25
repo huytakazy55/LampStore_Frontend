@@ -1,40 +1,46 @@
-import React from 'react'
-import AnalyticOverview from '../AnalyticOverview/AnalyticOverview'
-import AnalyticChart from '../AnalyticChart/AnalyticChart'
-import CalendarComponent from '../Calendar/Calendar'
-import { Breadcrumbs, Link } from '@mui/material';
-import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
-import { Link as RouterLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import React, { useContext } from 'react';
+import { Breadcrumb, Card, Row, Col, Typography } from 'antd';
+import { ThemeContext } from '../../../../ThemeContext';
+import AnalyticOverview from '../AnalyticOverview/AnalyticOverview';
+import AnalyticChart from '../AnalyticChart/AnalyticChart';
+
+const { Title } = Typography;
 
 const RightBodyContent = () => {
-  const {t} = useTranslation();
-  return (
-    <div>
-        <div className='text-h2 font-semibold mb-4'>
-          {t('HomePage')}
-        </div>
-        {/* <div className='mb-4'>
-          <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
-            <Link component={RouterLink} to="/admin" color="inherit">
-              {t('Home')}
-            </Link>
-          </Breadcrumbs>
-        </div> */}
-        <AnalyticOverview />
-        <div className='mb-8'>
-            <AnalyticChart />
-        </div>
-        <div className='flex justify-between items-center'>
-            <div className='w-4/6'>
-              
-            </div>
-            <div className='w-2/6'>
-                <CalendarComponent />
-            </div>
-        </div>
-    </div>
-  )
-}
+  const { themeColors } = useContext(ThemeContext);
 
-export default RightBodyContent
+  return (
+    <Card
+      style={{
+        height: '100%',
+        padding: '24px',
+        backgroundColor: '#f5f5f5',
+        borderRadius: '8px',
+      }}
+    >
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{fontSize: '1.5rem', fontWeight: 600, color: themeColors.StartColorLinear}}>
+          Dashboard
+        </div>
+        <Breadcrumb
+          items={[
+            { title: 'Home' },
+            { title: 'Dashboard' }
+          ]}
+          style={{ marginTop: '8px' }}
+        />
+      </div>
+
+      <Row gutter={[24, 24]}>
+        <Col span={24}>
+          <AnalyticOverview />
+        </Col>
+        <Col span={24}>
+          <AnalyticChart />
+        </Col>
+      </Row>
+    </Card>
+  );
+};
+
+export default RightBodyContent;

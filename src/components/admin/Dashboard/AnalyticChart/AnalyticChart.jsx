@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
-import { Paper, Typography } from '@mui/material';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, Legend, PieChart, Pie, Cell } from 'recharts';
+import { Card, Row, Col, Typography, Radio, Space } from 'antd';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../../../../ThemeContext';
+
+const { Title } = Typography;
 
 const dataDaily = [
   { name: 'Thứ Hai', sale1: 100, sale2: 400 },
@@ -35,78 +37,93 @@ const dataMonthly = [
 ];
 
 const dataTrafficByMonth = [
-    { name: 'January', value: 400 },
-    { name: 'February', value: 300 },
-    { name: 'March', value: 300 },
-    { name: 'April', value: 200 },
-    { name: 'May', value: 278 },
-    { name: 'June', value: 189 },
+  { name: 'January', value: 400 },
+  { name: 'February', value: 300 },
+  { name: 'March', value: 300 },
+  { name: 'April', value: 200 },
+  { name: 'May', value: 278 },
+  { name: 'June', value: 189 },
 ];
 
-// Colors for PieChart
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF00A0', '#A000FF'];
 
 const AnalyticChart = () => {
-    const { t } = useTranslation();
-    const [timeRange, setTimeRange] = useState('daily');
-    const data = timeRange === 'daily' ? dataDaily : timeRange === 'weekly' ? dataWeekly : dataMonthly;
-    const {themeColors} = useContext(ThemeContext);
+  const { t } = useTranslation();
+  const [timeRange, setTimeRange] = useState('daily');
+  const data = timeRange === 'daily' ? dataDaily : timeRange === 'weekly' ? dataWeekly : dataMonthly;
+  const {themeColors} = useContext(ThemeContext);
 
-    return (
-        <div className='w-full flex justify-between items-center relative'>
-            <div className='relative w-[65%]'>
-                <Paper sx={{ mt: 4, p: 2 }}>
-                    <Typography variant="h6" gutterBottom style={{color: `${themeColors.EndColorLinear}`}}> 
-                        Sale Over Time ({timeRange.charAt(0).toUpperCase() + timeRange.slice(1)})
-                        <div className='absolute top-12 right-4'>
-                            <a className='ml-6 font-medium' href='#' style={{ color: timeRange === 'daily' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('daily')}>Daily</a>
-                            <a className='ml-6 font-medium' href='#' style={{ color: timeRange === 'weekly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('weekly')}>Weekly</a>
-                            <a className='ml-6 font-medium' href='#' style={{ color: timeRange === 'monthly' ? `${themeColors.StartColorLinear}` : `${themeColors.EndColorLinear}` }} onClick={() => setTimeRange('monthly')}>Monthly</a>
-                        </div>
-                    </Typography>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <LineChart data={data}>
-                            <CartesianGrid stroke="#ccc" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend layout="horizontal" align="right" verticalAlign="top" height={30} />
-                            <Line type="monotone" dataKey="sale1" stroke={`${themeColors.StartColorLinear}`} />
-                            <Line type="monotone" dataKey="sale2" stroke={`${themeColors.EndColorLinear}`} />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </Paper>
-            </div>
-            <div className='relative w-2/6'>
-                <Paper sx={{ mt: 4, p: 2 }}>
-                    <Typography variant="h6" gutterBottom style={{color: `${themeColors.EndColorLinear}`}}>
-                        Traffic by Month
-                    </Typography>
-                    <ResponsiveContainer width="100%" height={250}>
-                        <PieChart>
-                            <Pie
-                                data={dataTrafficByMonth}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={50}
-                                outerRadius={90}
-                                fill="#8884d8"
-                                paddingAngle={3}
-                                dataKey="value"
-                                label
-                            >
-                                {dataTrafficByMonth.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend layout="horizontal" align="right" verticalAlign="top" height={30} />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </Paper>
-            </div>
-        </div>
-    );
+  return (
+    <Row gutter={[24, 24]}>
+      <Col xs={24} lg={16}>
+        <Card>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <Title level={4} style={{ margin: 0, color: themeColors.EndColorLinear }}>
+              Doanh số theo thời gian
+            </Title>
+            <Radio.Group value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
+              <Radio.Button value="daily">Hàng ngày</Radio.Button>
+              <Radio.Button value="weekly">Hàng tuần</Radio.Button>
+              <Radio.Button value="monthly">Hàng tháng</Radio.Button>
+            </Radio.Group>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="sale1" 
+                stroke={themeColors.StartColorLinear}
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="sale2" 
+                stroke={themeColors.EndColorLinear}
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+      </Col>
+      <Col xs={24} lg={8}>
+        <Card>
+          <Title level={4} style={{ margin: '0 0 16px 0', color: themeColors.EndColorLinear }}>
+            Lưu lượng theo tháng
+          </Title>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={dataTrafficByMonth}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="value"
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              >
+                {dataTrafficByMonth.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </Card>
+      </Col>
+    </Row>
+  );
 }
 
 export default AnalyticChart;

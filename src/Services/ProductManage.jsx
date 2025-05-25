@@ -2,6 +2,18 @@ import axios from "axios";
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 axios.defaults.withCredentials = true;
 
+// Tạo instance axios riêng cho upload
+const uploadAxios = axios.create({
+    baseURL: API_ENDPOINT,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'multipart/form-data',
+        'Accept': 'application/json'
+    },
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity
+});
+
 class ProductManage {
     GetProduct() {
         return axios.get(`${API_ENDPOINT}/api/Products`);
@@ -28,32 +40,13 @@ class ProductManage {
         return axios.get(`${API_ENDPOINT}/api/Products/VariantValue/${typeId}`);
     }
 
-    UpdateProduct(id, name, description, originalprice, discount, saleprice, quantity, weight, materials, categoryId, tags, rating, viewcount, reviewcount, favorites, sellcount, dateAdded, status) {
-        return axios.put(`${API_ENDPOINT}/api/Products/${id}`, {
-            id: id,
-            name: name,
-            description: description,
-            originalprice: originalprice,
-            discount: discount,
-            saleprice: saleprice,
-            quantity: quantity,
-            weight: weight,
-            materials: materials,
-            categoryId: categoryId,
-            tags: tags,
-            rating: rating,
-            viewcount: viewcount,
-            reviewcount: reviewcount,
-            favorites: favorites,
-            sellcount: sellcount,
-            dateAdded: dateAdded,
-            status: status
-        });
+    UpdateProduct(productData) {
+        return axios.put(`${API_ENDPOINT}/api/Products/${productData.id}`, productData);
     }
 
     async CreateProduct(productData) {
         try {
-            const reponse = await axios.post(`${API_ENDPOINT}/api/Products/CreateProduct`, productData);
+            const reponse = await axios.post(`${API_ENDPOINT}/api/Products`, productData);
             return reponse.data;
         } catch (error) {
             return {
@@ -67,6 +60,10 @@ class ProductManage {
         return axios.post(`${API_ENDPOINT}/api/Products/${productId}/images`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                console.log('Upload progress:', percentCompleted);
             }
         });
     }
@@ -77,6 +74,10 @@ class ProductManage {
 
     DeleteProduct(id) {
         return axios.delete(`${API_ENDPOINT}/api/Products/${id}`);
+    }
+
+    ImportProducts(products) {
+        return axios.post(`${API_ENDPOINT}/api/Products/import`, products);
     }
 }
 

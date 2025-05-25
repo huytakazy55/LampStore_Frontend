@@ -16,6 +16,7 @@ const LeftBar = () => {
         { name: "HomePage", icon: "bxs-home", path: "/admin" },
         { name: "Users", icon: "bxs-user", path: "/admin/users" },
         { name: "Category", icon: "bxs-category", path: "/admin/category" },
+        { name: "Tags", icon: "bxs-tag", path: "/admin/tags" },
         { name: "Products", icon: "bxs-package", path: "/admin/products" },
         { name: "Orders", icon: "bxs-store-alt", path: "/admin/orders" },
         { name: "Delivery", icon: "bxs-book-content", path: "/admin/delivery" },
