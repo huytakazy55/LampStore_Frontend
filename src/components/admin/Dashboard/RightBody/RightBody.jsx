@@ -34,7 +34,7 @@ const RightBody = () => {
   };
 
   return (
-    <div className='flex-1 h-full'>
+    <div className='flex-1 h-full rightbody-scroll' style={{height: 'calc(100vh - 4rem)', overflowY: 'auto', overflowX: 'hidden'}}>
       <div className='relative'>
         {renderContent()}
       </div>

@@ -58,9 +58,6 @@ class ProductManage {
 
     UploadImageProduct(productId, formData) {
         return axios.post(`${API_ENDPOINT}/api/Products/${productId}/images`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
             onUploadProgress: (progressEvent) => {
                 const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                 console.log('Upload progress:', percentCompleted);
@@ -78,6 +75,12 @@ class ProductManage {
 
     ImportProducts(products) {
         return axios.post(`${API_ENDPOINT}/api/Products/import`, products);
+    }
+
+    BulkDeleteProducts(ids) {
+        return axios.delete(`${API_ENDPOINT}/api/products/bulk`, {
+            data: ids
+        });
     }
 }
 

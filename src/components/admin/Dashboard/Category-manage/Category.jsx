@@ -154,18 +154,20 @@ const Category = () => {
   const handleBulkDelete = async () => {
     try {
       setBulkDeleteLoading(true);
-      const response = await axios.delete(`${API_URL}/categories/bulk`, {
-        data: { ids: selectedRowKeys }
-      });
-      
-      if (response.data.success) {
-        message.success(t('DeleteSuccess'));
+      if (!selectedRowKeys || selectedRowKeys.length === 0) {
+        message.error('Vui lòng chọn bản ghi để xóa!');
+        return;
+      }
+      const response = await CategoryManage.BulkDeleteCategories(selectedRowKeys);
+      if (response.data.success || response.status === 200 || response.status === 204) {
+        message.success(`Đã xóa ${selectedRowKeys.length} bản ghi!`);
         setSelectedRowKeys([]);
         fetchCategories();
+      } else {
+        message.error('Có lỗi xảy ra khi xóa bản ghi!');
       }
     } catch (error) {
-      console.error('Error deleting categories:', error);
-      message.error(t('DeleteFailed'));
+      message.error('Có lỗi xảy ra khi xóa bản ghi!');
     } finally {
       setBulkDeleteLoading(false);
       setOpenBulkDelete(false);

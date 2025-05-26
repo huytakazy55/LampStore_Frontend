@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const { Dragger, Title } = Upload;
-const { Text } = Typography;
+const { Dragger } = Upload;
+const { Text, Title } = Typography;
 
 const UploadModal = ({openUpload, handleUploadClose, setProductData, style, updateId}) => {
     const {themeColors} = useContext(ThemeContext);
@@ -67,15 +67,22 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
         try {
             const formData = new FormData();
             fileList.forEach((file) => {
-                formData.append('files', file.originFileObj);
+                if (file.originFileObj) {
+                    formData.append('imageFiles', file.originFileObj);
+                }
             });
 
             const totalFiles = fileList.length;
             let uploadedFiles = 0;
 
-            await ProductManage.UploadImage(updateId, formData, (progressEvent) => {
-                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                setUploadProgress(progress);
+            await ProductManage.UploadImageProduct(updateId, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: (progressEvent) => {
+                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(progress);
+                }
             });
 
             uploadedFiles++;
@@ -88,13 +95,19 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
                         prevData.map((item) => (item.id === res.data.id ? res.data : item))
                     );
                     toast.success("Tải lên hình ảnh thành công!");
+                    setFileList([]);
+                    ProductManage.GetProductById(updateId)
+                        .then((res) => {
+                            setProductImages(res.data.images.$values || []);
+                        });
                     handleUploadClose();
                 })
                 .catch((err) => {
                     toast.error("Có lỗi khi cập nhật dữ liệu sản phẩm.");
                 });
         } catch (error) {
-            toast.error("Có lỗi xảy ra khi tải lên hình ảnh!");
+            console.log('Upload error:', error);
+            toast.error("Có lỗi xảy ra khi tải lên hình ảnh! " + error.response.data);
         } finally {
             setUploading(false);
             setUploadProgress(0);
@@ -103,16 +116,25 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
 
     const handleDeleteImage = async (imageId) => {
         try {
-            await ProductManage.DeleteImage(imageId);
-            setProductImages(prevImages => prevImages.filter(img => img.id !== imageId));
+            await ProductManage.DeleteProductImage(imageId);
+            // Cập nhật lại danh sách hình ảnh sau khi xóa
+            const updatedImages = productImages.filter(img => img.id !== imageId);
+            setProductImages(updatedImages);
+            
+            // Cập nhật lại dữ liệu sản phẩm
+            const res = await ProductManage.GetProductById(updateId);
+            setProductData((prevData) =>
+                prevData.map((item) => (item.id === res.data.id ? res.data : item))
+            );
+            
             toast.success("Xóa hình ảnh thành công!");
         } catch (error) {
-            toast.error("Có lỗi xảy ra khi xóa hình ảnh!");
+            toast.error("Có lỗi xảy ra khi xóa hình ảnh! " + error);
         }
     };
 
     const uploadProps = {
-        name: 'file',
+        name: 'files',
         multiple: true,
         fileList,
         onChange: handleChange,
@@ -128,8 +150,9 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
                 message.error('Hình ảnh phải nhỏ hơn 5MB!');
                 return Upload.LIST_IGNORE;
             }
-            return false;
+            return false; // Chặn auto-upload
         },
+        accept: 'image/*'
     };
 
     // Thêm CSS cho modal
@@ -203,6 +226,7 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
             }
             open={openUpload}
             onCancel={handleUploadClose}
+            width={1000}
             footer={[
                 <Button 
                     key="cancel" 
@@ -225,20 +249,15 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
             ]}
             className="custom-modal"
         >
-            <div className="p-4 border border-dashed border-gray-300 rounded-lg">
-                <Upload {...uploadProps} listType="picture">
-                    <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-                </Upload>
-            </div>
-
             <Row gutter={[16, 16]}>
                 <Col span={24}>
                     <Card title="Hình ảnh hiện tại" bordered={false}>
-                        <Row gutter={[16, 16]}>
+                        <Row gutter={[5, 5]} style={{ display: 'flex', justifyContent: 'space-around' }}>
                             {productImages.map((image) => (
-                                <Col span={6} key={image.id}>
+                                <Col span={4} key={image.id} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                     <Card
                                         hoverable
+                                        style={{ width: '100%' }}
                                         cover={
                                             <img
                                                 alt={image.imagePath}
@@ -273,35 +292,6 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
                             <div style={{ marginTop: 16 }}>
                                 <Progress percent={uploadProgress} status="active" />
                                 <Text type="secondary">Đang tải lên... {uploadProgress}%</Text>
-                            </div>
-                        )}
-
-                        {fileList.length > 0 && (
-                            <div style={{ marginTop: 16 }}>
-                                <Text strong>Đã chọn {fileList.length} hình ảnh:</Text>
-                                <Row gutter={[8, 8]} style={{ marginTop: 8 }}>
-                                    {fileList.map((file) => (
-                                        <Col span={6} key={file.uid}>
-                                            <Card
-                                                hoverable
-                                                cover={
-                                                    <img
-                                                        alt={file.name}
-                                                        src={file.thumbUrl}
-                                                        style={{ height: 100, objectFit: 'cover' }}
-                                                    />
-                                                }
-                                                actions={[
-                                                    <DeleteOutlined key="delete" onClick={() => {
-                                                        setFileList(fileList.filter(f => f.uid !== file.uid));
-                                                    }} />
-                                                ]}
-                                            >
-                                                <Text ellipsis>{file.name}</Text>
-                                            </Card>
-                                        </Col>
-                                    ))}
-                                </Row>
                             </div>
                         )}
                     </Card>

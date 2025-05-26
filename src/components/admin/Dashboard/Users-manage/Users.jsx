@@ -194,17 +194,21 @@ const Users = () => {
   const handleBulkDelete = async () => {
     try {
       setBulkDeleteLoading(true);
+      if (!selectedRowKeys || selectedRowKeys.length === 0) {
+        message.error('Vui lòng chọn bản ghi để xóa!');
+        return;
+      }
       const response = await axios.delete(`${API_URL}/users/bulk`, {
         data: { ids: selectedRowKeys }
       });
-      
       if (response.data.success) {
         message.success(t('DeleteSuccess'));
         setSelectedRowKeys([]);
         fetchUsers();
+      } else {
+        message.error(t('DeleteFailed'));
       }
     } catch (error) {
-      console.error('Error deleting users:', error);
       message.error(t('DeleteFailed'));
     } finally {
       setBulkDeleteLoading(false);

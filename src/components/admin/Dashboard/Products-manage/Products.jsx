@@ -58,7 +58,7 @@ const Products = () => {
   const [openUpload, setOpenUpload] = React.useState(false);
   //Pagination
   const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   //Data
   const [productData, setProductData] = useState([]);
   const [productCreate, setProductCreate] = useState({
@@ -269,14 +269,26 @@ const Products = () => {
       align: 'center',
       sorter: (a, b) => a.minPrice - b.minPrice,
       render: (_, record) => (
-        <Space direction="vertical" size="small" style={{width: '100%', justifyContent: 'center'}}>
-          <Typography.Text strong style={{color: themeColors.EndColorLinear}}>
-            {formattedNumber(record.minPrice, language)} - {formattedNumber(record.maxPrice, language)}
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }}>
+          <Typography.Text strong style={{color: themeColors.EndColorLinear, whiteSpace: 'nowrap'}}>
+            {formattedNumber(record.minPrice, language)}
+            {record.minPrice !== record.maxPrice && (
+              <> - {formattedNumber(record.maxPrice, language)}</>
+            )}
           </Typography.Text>
           {record.minPrice !== record.maxPrice && (
-            <Tag color="blue">Nhiều mức giá</Tag>
+            <Tag color="blue" style={{marginTop: 2, whiteSpace: 'normal'}}>Nhiều mức giá</Tag>
           )}
-        </Space>
+        </div>
       )
     },
     {
@@ -393,18 +405,20 @@ const Products = () => {
   const handleBulkDelete = async () => {
     try {
       setBulkDeleteLoading(true);
-      const response = await axios.delete(`${API_ENDPOINT}/products/bulk`, {
-        data: { ids: selectedRowKeys }
-      });
-      
-      if (response.data.success) {
-        toast.success(t('DeleteSuccess'));
+      if (!selectedRowKeys || selectedRowKeys.length === 0) {
+        toast.error('Vui lòng chọn bản ghi để xóa!');
+        return;
+      }
+      const response = await ProductManage.BulkDeleteProducts(selectedRowKeys);
+      if (response.status === 200 || response.status === 204) {
+        toast.success(`Đã xóa ${selectedRowKeys.length} bản ghi!`);
         setSelectedRowKeys([]);
         fetchProducts();
+      } else {
+        toast.error('Có lỗi xảy ra khi xóa bản ghi!');
       }
     } catch (error) {
-      console.error('Error deleting products:', error);
-      toast.error(t('DeleteFailed'));
+      toast.error('Có lỗi xảy ra khi xóa bản ghi!');
     } finally {
       setBulkDeleteLoading(false);
       setOpenBulkDelete(false);
@@ -544,9 +558,12 @@ const Products = () => {
               current: page,
               pageSize: itemsPerPage,
               total: filteredProducts.length,
-              onChange: handleChangePage,
               showSizeChanger: true,
-              showTotal: (total) => `Tổng số ${total} sản phẩm`
+              showTotal: (total) => `Tổng số ${total} sản phẩm`,
+              onChange: (page, pageSize) => {
+                setPage(page);
+                setItemsPerPage(pageSize);
+              }
             }}
             style={{
               background: 'white',

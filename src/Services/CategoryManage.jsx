@@ -30,6 +30,12 @@ class CategoryManage {
     DeleteCategory(id) {
         return axios.delete(`${API_ENDPOINT}/api/Categories/${id}`);
     }
+
+    BulkDeleteCategories(ids) {
+        return axios.delete(`${API_ENDPOINT}/api/categories/bulk`, {
+            data: ids
+        });
+    }
 }
 
 export default new CategoryManage

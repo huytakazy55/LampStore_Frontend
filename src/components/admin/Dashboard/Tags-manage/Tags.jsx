@@ -226,18 +226,17 @@ const Tags = () => {
   const handleBulkDelete = async () => {
     try {
       setBulkDeleteLoading(true);
-      const response = await axios.delete(`${API_ENDPOINT}/tags/bulk`, {
-        data: { ids: selectedRowKeys }
-      });
+      const response = await TagManage.BulkDeleteTags(selectedRowKeys);
       
-      if (response.data.success) {
-        toast.success(t('DeleteSuccess'));
+      if (response.data.success || response.status === 200 || response.status === 204) {
+        toast.success(`Đã xóa ${selectedRowKeys.length} bản ghi!`);
         setSelectedRowKeys([]);
         fetchTags();
+      } else {
+        toast.error('Có lỗi xảy ra khi xóa bản ghi!');
       }
     } catch (error) {
-      console.error('Error deleting tags:', error);
-      toast.error(t('DeleteFailed'));
+      toast.error('Có lỗi xảy ra khi xóa bản ghi!');
     } finally {
       setBulkDeleteLoading(false);
       setOpenBulkDelete(false);

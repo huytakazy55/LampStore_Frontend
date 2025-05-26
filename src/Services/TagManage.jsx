@@ -27,6 +27,12 @@ class TagManage {
     DeleteTag(id) {
         return axios.delete(`${API_ENDPOINT}/api/Tags/${id}`);
     }
+
+    BulkDeleteTags(ids) {
+        return axios.delete(`${API_ENDPOINT}/api/tags/bulk`, {
+            data: ids
+        });
+    }
 }
 
 export default new TagManage
