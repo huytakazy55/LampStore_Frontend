@@ -3,8 +3,11 @@ import AuthService from '../../../../Services/AuthService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { jwtDecode } from 'jwt-decode';
+import { useDispatch } from 'react-redux';
+import { login as loginAction } from '../../../../redux/slices/authSlice';
 
 const FormLogin = ({ toggleLogin, setToggleLogin }) => {
+    const dispatch = useDispatch();
     const [stateSignin, setStateSignin] = useState({ username: '', password: '', rememberMe: false });
     const [stateSignup, setStateSignup] = useState({ username: '', password: '' });
     const [formErrors, setFormErrors] = useState({});
@@ -55,14 +58,14 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                     showToast('Đăng nhập thành công!');
                     localStorage.setItem("token", res.data);
                     setToggleLogin(false);
-    
-                    const role = jwtDecode(res.data).role;
-    
-                    if (role === 'Customer') {
-                        window.location.href = '/';
-                    } else if (role === 'Administrator') {
-                        window.location.href = '/admin';
-                    }
+
+                    const decoded = jwtDecode(res.data);
+                    dispatch(loginAction({ token: res.data, role: decoded.role }));
+
+                    // Nếu muốn chuyển trang, dùng navigate ở đây
+                    // if (decoded.role === 'Administrator') {
+                    //   navigate('/admin');
+                    // }
                 })
                 .catch((err) => {
                     if (err.response) {

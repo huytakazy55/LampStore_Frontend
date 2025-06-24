@@ -10,7 +10,7 @@ const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 const { Dragger } = Upload;
 const { Text, Title } = Typography;
 
-const UploadModal = ({openUpload, handleUploadClose, setProductData, style, updateId}) => {
+const UploadModal = ({openUpload, handleUploadClose, setProductData, style, updateId, fetchProducts}) => {
     const {themeColors} = useContext(ThemeContext);
     const {t} = useTranslation();
     const [fileList, setFileList] = useState([]);
@@ -89,22 +89,11 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
             const progress = Math.round((uploadedFiles * 100) / totalFiles);
             setUploadProgress(progress);
 
-            ProductManage.GetProductById(updateId)
-                .then((res) => {
-                    setProductData((prevData) =>
-                        prevData.map((item) => (item.id === res.data.id ? res.data : item))
-                    );
-                    toast.success("Tải lên hình ảnh thành công!");
-                    setFileList([]);
-                    ProductManage.GetProductById(updateId)
-                        .then((res) => {
-                            setProductImages(res.data.images.$values || []);
-                        });
-                    handleUploadClose();
-                })
-                .catch((err) => {
-                    toast.error("Có lỗi khi cập nhật dữ liệu sản phẩm.");
-                });
+            // Sau khi upload thành công, gọi lại fetchProducts để lấy lại toàn bộ danh sách sản phẩm
+            fetchProducts();
+            toast.success("Tải lên hình ảnh thành công!");
+            setFileList([]);
+            handleUploadClose();
         } catch (error) {
             console.log('Upload error:', error);
             toast.error("Có lỗi xảy ra khi tải lên hình ảnh! " + error.response.data);
@@ -117,16 +106,8 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
     const handleDeleteImage = async (imageId) => {
         try {
             await ProductManage.DeleteProductImage(imageId);
-            // Cập nhật lại danh sách hình ảnh sau khi xóa
-            const updatedImages = productImages.filter(img => img.id !== imageId);
-            setProductImages(updatedImages);
-            
-            // Cập nhật lại dữ liệu sản phẩm
-            const res = await ProductManage.GetProductById(updateId);
-            setProductData((prevData) =>
-                prevData.map((item) => (item.id === res.data.id ? res.data : item))
-            );
-            
+            // Sau khi xóa ảnh thành công, gọi lại fetchProducts để lấy lại toàn bộ danh sách sản phẩm
+            fetchProducts();
             toast.success("Xóa hình ảnh thành công!");
         } catch (error) {
             toast.error("Có lỗi xảy ra khi xóa hình ảnh! " + error);

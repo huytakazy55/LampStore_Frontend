@@ -1,10 +1,13 @@
 import React, {useState, useEffect, useRef} from 'react'
 import avatar from '../../../../assets/images/Avatar.jpg'
 import AuthService from '../../../../Services/AuthService'
+import { useDispatch } from 'react-redux'
+import { logout as logoutAction } from '../../../../redux/slices/authSlice'
 
 const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef}) => {
     const token = localStorage.getItem("token");
     const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+    const dispatch = useDispatch();
     const [profileData, setProfileData] = useState({
         Email: '',
         ProfileAvatar: ''
@@ -24,8 +27,12 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
         }
     }, [toggleActionLogin]);
 
-    const handleLogout = () => {
-        AuthService.logout();
+    const handleLogout = async () => {
+        const result = await AuthService.logout();
+        if(result) {
+            dispatch(logoutAction());
+            setToggleActionLogin(false);
+        }
     }
     const handleProfileClick = () => {
         setToggleActionLogin(false);

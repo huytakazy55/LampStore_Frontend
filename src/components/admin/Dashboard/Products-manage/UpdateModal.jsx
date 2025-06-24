@@ -112,7 +112,7 @@ const UpdateModal = ({openUpdate, handleUpdateClose, fetchProducts, style, categ
           };
   
           await ProductManage.UpdateProduct(updatedProduct)
-          .then((res) => {
+          .then(async (res) => {
             fetchProducts();
             toast.success("Cập nhật bản ghi thành công");
             handleUpdateClose();

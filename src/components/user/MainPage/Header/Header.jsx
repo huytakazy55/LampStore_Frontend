@@ -11,7 +11,7 @@ import FormProfile from './FormProfile';
 
 const Header = () => {
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-  const token = localStorage.getItem('token');
+  const { token, isAuthenticated, role } = useSelector((state) => state.auth);
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
   const [toggleCart, setToggleCart] = useState(false)
@@ -37,6 +37,8 @@ const Header = () => {
         .catch((error) => {
           console.error("Error fetching profile:", error);
         });
+    } else {
+      setAvatar({ProfileAvatar: ''});
     }
   }, [token]);
   
@@ -130,7 +132,7 @@ const Header = () => {
               <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} />
           </div>
           {
-            token ? 
+            isAuthenticated ? 
             <>
               <li onClick={toggleActionLoginForm} ref={buttonActionRef} className='relative w-8 h-8 leading-8 border-2 border-yellow-400 rounded-[20%] p-[1px] cursor-pointer'>
                 <img className='rounded-[20%] h-full w-full ' src={ avatarURL ? avatarURL : (avatar.ProfileAvatar ? `${API_ENDPOINT}${avatar.ProfileAvatar}` : avatarimg)} alt="" />

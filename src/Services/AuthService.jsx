@@ -25,13 +25,11 @@ class AuthService {
             await axios.post(API_ENDPOINT + "/api/Account/logout");
             localStorage.clear();
             await toast.success("Đã đăng xuất tài khoản!");
-            setInterval(() => {
-                window.location.href = '/';                
-            }, 2000);
-          } catch (error) {
+            return true;
+        } catch (error) {
             toast.error("Đã xảy ra lỗi khi đăng xuất!");
-            window.location.href = '/';
-          }
+            return false;
+        }
     }
 
     async profile() {

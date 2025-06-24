@@ -604,6 +604,7 @@ const Products = () => {
       <UploadModal 
         openUpload={openUpload} 
         handleUploadClose={handleUploadClose} 
+        fetchProducts={fetchProducts}
         setProductData={setProductData}
         style={style}
         updateId={updateId}
