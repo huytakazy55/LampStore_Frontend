@@ -11,7 +11,7 @@ import FormProfile from './FormProfile';
 
 const Header = () => {
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-  const { token, isAuthenticated, role } = useSelector((state) => state.auth);
+  const { token, isAuthenticated } = useSelector((state) => state.auth);
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
   const [toggleCart, setToggleCart] = useState(false)

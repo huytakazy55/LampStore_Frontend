@@ -11,10 +11,21 @@ class AuthService {
             rememberme: rememberme
         }, { withCredentials: true });
     }
-    signup(username, password) {
+    signup(username, email, password) {
         return axios.post(API_ENDPOINT+"/api/Account/SignUp", {
             username: username,
+            email: email,
             password: password
+        });
+    }
+
+    googleSignIn(googleUserData) {
+        return axios.post(API_ENDPOINT+"/api/Account/GoogleSignIn", {
+            email: googleUserData.email,
+            name: googleUserData.name,
+            picture: googleUserData.picture,
+            googleUserId: googleUserData.sub,
+            token: googleUserData.token
         });
     }
 
@@ -25,6 +36,7 @@ class AuthService {
             await axios.post(API_ENDPOINT + "/api/Account/logout");
             localStorage.clear();
             await toast.success("Đã đăng xuất tài khoản!");
+            window.location.reload();
             return true;
         } catch (error) {
             toast.error("Đã xảy ra lỗi khi đăng xuất!");

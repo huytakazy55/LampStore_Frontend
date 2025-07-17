@@ -3,11 +3,13 @@ import avatar from '../../../../assets/images/Avatar.jpg'
 import AuthService from '../../../../Services/AuthService'
 import { useDispatch } from 'react-redux'
 import { logout as logoutAction } from '../../../../redux/slices/authSlice'
+import { useNavigate } from 'react-router-dom'
 
 const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef}) => {
     const token = localStorage.getItem("token");
     const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [profileData, setProfileData] = useState({
         Email: '',
         ProfileAvatar: ''
@@ -32,6 +34,7 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
         if(result) {
             dispatch(logoutAction());
             setToggleActionLogin(false);
+            navigate('/');
         }
     }
     const handleProfileClick = () => {

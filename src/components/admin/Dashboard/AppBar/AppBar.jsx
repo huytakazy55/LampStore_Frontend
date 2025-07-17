@@ -8,7 +8,6 @@ import { setLeftBar } from '../../../../redux/slices/leftBarAdminSlice';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 import AuthService from '../../../../Services/AuthService';
-import { toast } from 'react-toastify';
 
 const AppBar = () => {
     const dispatch = useDispatch();

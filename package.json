@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@google-cloud/local-auth": "^3.0.1",
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.1.1",
     "@mui/x-date-pickers": "^7.17.0",
@@ -17,6 +18,7 @@
     "bootstrap": "4.6.0",
     "compressorjs": "^1.2.1",
     "dayjs": "^1.11.13",
+    "google-auth-library": "^10.1.0",
     "i18next": "^23.15.1",
     "i18next-browser-languagedetector": "^8.0.0",
     "immer": "^10.1.1",

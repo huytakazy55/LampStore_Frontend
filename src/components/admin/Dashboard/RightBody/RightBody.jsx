@@ -5,6 +5,7 @@ import RightBodyContent from './RightBodyContent';
 import Users from '../Users-manage/Users';
 import Products from '../Products-manage/Products';
 import Tags from '../Tags-manage/Tags';
+import Banners from '../Banner-manage/Banners';
 
 const RightBody = () => {
   const location = useLocation();
@@ -21,6 +22,10 @@ const RightBody = () => {
     else if (location.pathname === '/admin/tags')
     {
       return <Tags />;
+    }
+    else if(location.pathname === '/admin/banners')
+    {
+      return <Banners />;
     }
     else if(location.pathname === '/admin/users')
     {
