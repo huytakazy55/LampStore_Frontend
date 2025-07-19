@@ -93,8 +93,8 @@ const Tags = () => {
       const matchesSearch = tag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           tag.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesDate = !dateRange || (
-        new Date(tag.dateAdded) >= dateRange[0].startOf('day').toDate() &&
-        new Date(tag.dateAdded) <= dateRange[1].endOf('day').toDate()
+        new Date(tag.createdAt) >= dateRange[0].startOf('day').toDate() &&
+        new Date(tag.createdAt) <= dateRange[1].endOf('day').toDate()
       );
       
       return matchesSearch && matchesDate;
@@ -179,7 +179,7 @@ const Tags = () => {
       title: 'Số sản phẩm',
       dataIndex: 'productCount',
       key: 'productCount',
-      width: '15%',
+      width: '10%',
       align: 'center',
       sorter: (a, b) => a.productCount - b.productCount,
       render: (count) => (
@@ -187,6 +187,36 @@ const Tags = () => {
           {count}
         </Tag>
       )
+    },
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: '12%',
+      align: 'center',
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      render: (date) => new Date(date).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).replace(/\//g, '-')
+    },
+    {
+      title: 'Ngày sửa đổi',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: '12%',
+      align: 'center',
+      sorter: (a, b) => {
+        if (!a.updatedAt) return -1;
+        if (!b.updatedAt) return 1;
+        return new Date(a.updatedAt) - new Date(b.updatedAt);
+      },
+      render: (date) => date ? new Date(date).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).replace(/\//g, '-') : '--'
     },
     {
       title: 'Thao tác',

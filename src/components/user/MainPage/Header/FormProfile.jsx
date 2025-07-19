@@ -144,7 +144,7 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
           <p className='font-bold text-h3 mb-4'>{profileData.FullName ? profileData.FullName : "--"}</p>
           <div className='relative'>
             <div className='w-40 h-40 rounded-[50%] overflow-hidden border-2 border-yellow-400 p-[5px] mx-auto relative'>
-              <img className='w-full h-full rounded-[50%]' src={previewImage ? previewImage : (profileData.ProfileAvatar ? `${API_ENDPOINT}${profileData.ProfileAvatar}` : avatar)} alt="Avatar" />
+              <img className='w-full h-full rounded-[50%]' src={previewImage ? previewImage : (profileData.ProfileAvatar ? (profileData.ProfileAvatar.startsWith('http') ? profileData.ProfileAvatar : `${API_ENDPOINT}${profileData.ProfileAvatar}`) : avatar)} alt="Avatar" />
             </div>
             <div className='absolute w-[35px] h-[35px] top-[0.6rem] right-[3.5rem] bg-white border-2 border-yellow-400 rounded-[50%] text-[var(--darkness-color)]' onClick={(e) => handleDeleteAvatar(e)} ><a href='#'><i className='bx bx-trash text-h2 leading-[1.3] align-middle'></i></a></div>
           </div>

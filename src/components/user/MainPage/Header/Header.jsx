@@ -135,7 +135,7 @@ const Header = () => {
             isAuthenticated ? 
             <>
               <li onClick={toggleActionLoginForm} ref={buttonActionRef} className='relative w-8 h-8 leading-8 border-2 border-yellow-400 rounded-[20%] p-[1px] cursor-pointer'>
-                <img className='rounded-[20%] h-full w-full ' src={ avatarURL ? avatarURL : (avatar.ProfileAvatar ? `${API_ENDPOINT}${avatar.ProfileAvatar}` : avatarimg)} alt="" />
+                <img className='rounded-[20%] h-full w-full ' src={ avatarURL ? avatarURL : (avatar.ProfileAvatar ? (avatar.ProfileAvatar.startsWith('http') ? avatar.ProfileAvatar : `${API_ENDPOINT}${avatar.ProfileAvatar}`) : avatarimg)} alt="" />
                 <FormActionLogin toggleProfile={toggleProfile} setToggleProfile={setToggleProfile} buttonProfileRef={buttonProfileRef} popupActionRef={popupActionRef} toggleActionLogin={toggleActionLogin} setToggleActionLogin={setToggleActionLogin} />
               </li>
             </> : 

@@ -4,6 +4,7 @@ import { LockOutlined, UnlockOutlined, PlusOutlined, DeleteOutlined } from '@ant
 import { ThemeContext } from '../../../../ThemeContext';
 import UserManage from '../../../../Services/UserManage';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import CreateUser from './CreateUser';
 import EditUser from './EditUser';
@@ -13,6 +14,7 @@ const API_URL = process.env.REACT_APP_API_ENDPOINT;
 const Users = () => {
   const { themeColors } = useContext(ThemeContext);
   const { t } = useTranslation();
+  const location = useLocation();
   const [userData, setUserData] = useState([]);
   const [roleData, setRoleData] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +27,7 @@ const Users = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [openBulkDelete, setOpenBulkDelete] = useState(false);
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -39,9 +42,21 @@ const Users = () => {
       });
   };
 
+  // Load users khi component mount hoặc khi navigate đến trang users
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (location.pathname === '/admin/users') {
+      // Nếu đã initialized và đang navigate lại vào trang users, reset state
+      if (hasInitialized) {
+        setSearchTerm('');
+        setPage(1);
+        setSelectedRowKeys([]);
+        setRoleData({});
+      }
+      
+      fetchUsers();
+      setHasInitialized(true);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (userData.length > 0) {

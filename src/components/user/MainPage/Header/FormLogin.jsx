@@ -8,6 +8,7 @@ import { login as loginAction } from '../../../../redux/slices/authSlice';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import GoogleSignIn from './GoogleSignIn';
+import ForgotPassword from '../../ForgotPassword/ForgotPassword';
 
 const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const dispatch = useDispatch();
@@ -19,6 +20,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const [showPasswordSignup, setShowPasswordSignup] = useState(false);
     const [focusPasswordLogin, setFocusPasswordLogin] = useState(false);
     const [focusPasswordSignup, setFocusPasswordSignup] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
     const role = useSelector((state) => state.auth.role);
     const navigate = useNavigate();
 
@@ -70,6 +72,15 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
 
     const handlePasswordSignupBlur = () => {
         setFocusPasswordSignup(false);
+    };
+
+    const handleForgotPasswordClick = (e) => {
+        e.preventDefault();
+        setShowForgotPassword(true);
+    };
+
+    const handleForgotPasswordClose = () => {
+        setShowForgotPassword(false);
     };
 
     const handleGoogleLoginSuccess = async (googleUserData) => {
@@ -229,7 +240,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                             <span className='leading-none align-middle'>Remember me</span>
                         </div>
                         <div>
-                            <a className='text-white' href="#">Forget password!</a>
+                            <a className='text-white cursor-pointer' onClick={handleForgotPasswordClick}>Forget password!</a>
                         </div>
                     </div>
                     <button className='w-full py-[5px] rounded-2xl mb-4 border-2 border-white' type="submit" onClick={handleSignin}>Login</button>
@@ -289,6 +300,11 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                     </div>
                 </form>
             </div>
+            
+            <ForgotPassword 
+                visible={showForgotPassword}
+                onCancel={handleForgotPasswordClose}
+            />
         </div>
     )
 }

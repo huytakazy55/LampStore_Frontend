@@ -54,6 +54,12 @@ class AuthService {
             return null;
         }
     }
+
+    ForgotPassword(emailOrUsername) {
+        return axios.post(API_ENDPOINT + "/api/Account/ForgotPassword", {
+            emailOrUsername: emailOrUsername
+        });
+    }
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

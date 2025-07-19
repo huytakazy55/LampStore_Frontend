@@ -46,7 +46,7 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
         <div ref={popupActionRef} onClick={(e) => e.stopPropagation()} className={`w-[17rem] absolute shadow-lg -right-[0.3rem] top-14 z-[1000] border-t-2 border-yellow-400 bg-white transition-all duration-300 ease-in-out ${toggleActionLogin ? 'visible opacity-100 translate-y-0' : 'invisible opacity-0 translate-y-2'}`} id='FormActionLogin'>
             <div className='w-full mb-2'>
                 <div className='rounded-[50%] w-12 h-12 mt-[15px] mx-auto mb-[5px] overflow-hidden'>
-                    <img className='w-full h-full' src={profileData.ProfileAvatar ? `${API_ENDPOINT}${profileData.ProfileAvatar}` : avatar} alt="" />
+                    <img className='w-full h-full' src={profileData.ProfileAvatar ? (profileData.ProfileAvatar.startsWith('http') ? profileData.ProfileAvatar : `${API_ENDPOINT}${profileData.ProfileAvatar}`) : avatar} alt="" />
                 </div>
                 <p className='text-center'>{profileData.Email != '' ? profileData.Email : <a href='#' onClick={handleProfileClick}>Cập nhật tài khoản</a>}</p>
             </div>

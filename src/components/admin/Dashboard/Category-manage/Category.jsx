@@ -111,6 +111,36 @@ const Category = () => {
       onFilter: (value, record) => record.description === value,
     },
     {
+      title: 'Ngày tạo',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 120,
+      align: 'center',
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      render: (date) => new Date(date).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).replace(/\//g, '-')
+    },
+    {
+      title: 'Ngày sửa đổi',
+      dataIndex: 'updatedAt',
+      key: 'updatedAt',
+      width: 120,
+      align: 'center',
+      sorter: (a, b) => {
+        if (!a.updatedAt) return -1;
+        if (!b.updatedAt) return 1;
+        return new Date(a.updatedAt) - new Date(b.updatedAt);
+      },
+      render: (date) => date ? new Date(date).toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }).replace(/\//g, '-') : '--'
+    },
+    {
       title: 'Thao tác',
       key: 'action',
       width: 120,
