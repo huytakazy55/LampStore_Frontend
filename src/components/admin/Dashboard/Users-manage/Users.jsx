@@ -29,17 +29,25 @@ const Users = () => {
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  const fetchUsers = () => {
+  const fetchUsers = async () => {
     setLoading(true);
-    UserManage.GetUserAccount()
-      .then((res) => {
-        setUserData(res.$values);
-        setLoading(false);
-      })
-      .catch(() => {
-        message.error('Có lỗi xảy ra!');
-        setLoading(false);
-      });
+    try {
+      const res = await UserManage.GetUserAccount();
+      setUserData(res.$values || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      if (error.message === "No authentication token found") {
+        message.error('Bạn chưa đăng nhập hoặc phiên đăng nhập đã hết hạn!');
+      } else if (error.response?.status === 401) {
+        message.error('Bạn không có quyền truy cập chức năng này!');
+      } else if (error.response?.status === 403) {
+        message.error('Truy cập bị từ chối!');
+      } else {
+        message.error('Có lỗi xảy ra khi tải danh sách người dùng!');
+      }
+      setLoading(false);
+    }
   };
 
   // Load users khi component mount hoặc khi navigate đến trang users
@@ -60,17 +68,20 @@ const Users = () => {
 
   useEffect(() => {
     if (userData.length > 0) {
-      userData.forEach(user => {
-        UserManage.GetRoleById(user.id)
-          .then((res) => {
-            setRoleData(prevState => ({
-              ...prevState,
-              [user.id]: res.data.$values,
-            }));
-          })
-          .catch(() => {
-            message.error(`Lỗi khi lấy role của ${user.userName}`);
-          });
+      userData.forEach(async (user) => {
+        try {
+          const res = await UserManage.GetRoleById(user.id);
+          setRoleData(prevState => ({
+            ...prevState,
+            [user.id]: res.data.$values || [],
+          }));
+        } catch (error) {
+          console.error(`Error fetching role for user ${user.userName}:`, error);
+          setRoleData(prevState => ({
+            ...prevState,
+            [user.id]: ['Unknown'],
+          }));
+        }
       });
     }
   }, [userData]);
@@ -83,26 +94,34 @@ const Users = () => {
     );
   };
 
-  const LockUser = (userId, username) => {
-    UserManage.LockUser(userId, username)
-      .then(() => {
-        message.success(`Đã khóa tài khoản ${username}`);
-        updateUserLockStatus(userId, true);
-      })
-      .catch(() => {
-        message.error('Có lỗi xảy ra');
-      });
+  const LockUser = async (userId, username) => {
+    try {
+      await UserManage.LockUser(userId, username);
+      message.success(`Đã khóa tài khoản ${username}`);
+      updateUserLockStatus(userId, true);
+    } catch (error) {
+      console.error(`Error locking user ${username}:`, error);
+      if (error.response?.status === 401) {
+        message.error('Bạn không có quyền thực hiện hành động này!');
+      } else {
+        message.error('Có lỗi xảy ra khi khóa tài khoản');
+      }
+    }
   };
 
-  const UnLockUser = (userId, username) => {
-    UserManage.UnLockUser(userId, username)
-      .then(() => {
-        message.success(`Đã mở khóa tài khoản ${username}`);
-        updateUserLockStatus(userId, false);
-      })
-      .catch(() => {
-        message.error('Có lỗi xảy ra');
-      });
+  const UnLockUser = async (userId, username) => {
+    try {
+      await UserManage.UnLockUser(userId, username);
+      message.success(`Đã mở khóa tài khoản ${username}`);
+      updateUserLockStatus(userId, false);
+    } catch (error) {
+      console.error(`Error unlocking user ${username}:`, error);
+      if (error.response?.status === 401) {
+        message.error('Bạn không có quyền thực hiện hành động này!');
+      } else {
+        message.error('Có lỗi xảy ra khi mở khóa tài khoản');
+      }
+    }
   };
 
   const filteredUsers = useMemo(() => {

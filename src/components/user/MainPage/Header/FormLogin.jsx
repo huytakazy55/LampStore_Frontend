@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Modal } from 'antd';
 import AuthService from '../../../../Services/AuthService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +22,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const [focusPasswordLogin, setFocusPasswordLogin] = useState(false);
     const [focusPasswordSignup, setFocusPasswordSignup] = useState(false);
     const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [isRememberedAccount, setIsRememberedAccount] = useState(false);
     const role = useSelector((state) => state.auth.role);
     const navigate = useNavigate();
 
@@ -37,6 +39,21 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
             navigate('/admin');
         }
     }, [role, navigate]);
+
+    // Load remembered username when component mounts
+    useEffect(() => {
+        const rememberedUsername = localStorage.getItem('rememberedUsername');
+        const isRemembered = localStorage.getItem('rememberMe') === 'true';
+        
+        if (rememberedUsername && isRemembered) {
+            setStateSignin(prevState => ({
+                ...prevState,
+                username: rememberedUsername,
+                rememberMe: true
+            }));
+            setIsRememberedAccount(true);
+        }
+    }, []);
     
     const ChangeFormLogin = () => {
         setChangeForm(!changeForm);
@@ -48,6 +65,35 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         // Reset focus states when switching forms
         setFocusPasswordLogin(false);
         setFocusPasswordSignup(false);
+    }
+
+    const handleModalClose = () => {
+        setToggleLogin(false);
+        // Reset forms when modal closes
+        setChangeForm(false);
+        setFormErrors({});
+        setShowPasswordLogin(false);
+        setShowPasswordSignup(false);
+        setFocusPasswordLogin(false);
+        setFocusPasswordSignup(false);
+        setShowForgotPassword(false);
+        
+        // Reload remembered account if exists
+        const rememberedUsername = localStorage.getItem('rememberedUsername');
+        const isRemembered = localStorage.getItem('rememberMe') === 'true';
+        
+        if (rememberedUsername && isRemembered) {
+            setStateSignin(prevState => ({
+                ...prevState,
+                username: rememberedUsername,
+                rememberMe: true
+            }));
+            setIsRememberedAccount(true);
+        } else {
+            setStateSignin({ username: '', password: '', rememberMe: false });
+            setIsRememberedAccount(false);
+        }
+        setStateSignup({ username: '', email: '', password: '' });
     }
 
     const togglePasswordLoginVisibility = () => {
@@ -90,7 +136,13 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
             
             showToast('Đăng nhập Google thành công!');
             localStorage.setItem("token", response.data);
-            setToggleLogin(false);
+            window.dispatchEvent(new Event('userLoginStatusChanged'));
+            
+            // Clear remember me for Google login (since we don't save Google credentials)
+            localStorage.removeItem('rememberedUsername');
+            localStorage.removeItem('rememberMe');
+            
+            handleModalClose();
 
             const decoded = jwtDecode(response.data);
             dispatch(loginAction({ token: response.data, role: decoded.role }));
@@ -144,7 +196,18 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 .then((res) => {
                     showToast('Đăng nhập thành công!');
                     localStorage.setItem("token", res.data);
-                    setToggleLogin(false);
+                    window.dispatchEvent(new Event('userLoginStatusChanged'));
+                    
+                    // Handle Remember Me functionality
+                    if (stateSignin.rememberMe) {
+                        localStorage.setItem('rememberedUsername', stateSignin.username);
+                        localStorage.setItem('rememberMe', 'true');
+                    } else {
+                        localStorage.removeItem('rememberedUsername');
+                        localStorage.removeItem('rememberMe');
+                    }
+                    
+                    handleModalClose();
 
                     const decoded = jwtDecode(res.data);
                     dispatch(loginAction({ token: res.data, role: decoded.role }));                  
@@ -185,6 +248,21 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
             [name]: type === 'checkbox' ? checked : value,
         }));
 
+        // Handle Remember Me checkbox change
+        if (name === 'rememberMe' && !checked) {
+            // If unchecking Remember Me, remove stored credentials
+            localStorage.removeItem('rememberedUsername');
+            localStorage.removeItem('rememberMe');
+        }
+
+        // Reset remembered account indicator when username is manually changed
+        if (name === 'username' && isRememberedAccount) {
+            const rememberedUsername = localStorage.getItem('rememberedUsername');
+            if (value !== rememberedUsername) {
+                setIsRememberedAccount(false);
+            }
+        }
+
         setFormErrors((prevErrors) => ({
             ...prevErrors,
             [name]: "",
@@ -205,14 +283,55 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         }));
     }
     return (
-        <div onClick={(e) => e.stopPropagation()} className='form-login w-[25rem] h-[38rem] bg-white/13 backdrop-blur-2xl border-[2px] border-white rounded-[10px] p-10 text-white text-center overflow-hidden translate-y-[-15%] shadow-lg shadow-gray-400'>
+        <>
+            <style>
+                {`
+                    .login-modal .ant-modal-content {
+                        background: transparent !important;
+                        box-shadow: none !important;
+                        padding: 0 !important;
+                    }
+                    .login-modal .ant-modal-body {
+                        padding: 0 !important;
+                    }
+                    .login-modal input::placeholder {
+                        color: rgba(255, 255, 255, 0.7) !important;
+                    }
+                    .login-modal input {
+                        color: white !important;
+                    }
+                    .login-modal .ant-modal-mask {
+                        background: rgba(0, 0, 0, 0.5) !important;
+                    }
+                `}
+            </style>
+            <Modal
+                open={toggleLogin}
+                onCancel={handleModalClose}
+                footer={null}
+                width={450}
+                centered
+                closable={false}
+                className="login-modal"
+                styles={{
+                    body: { padding: 0 },
+                    content: { padding: 0, background: 'transparent' }
+                }}
+            >
+                <div 
+                    onClick={(e) => e.stopPropagation()} 
+                    className='form-login w-[25rem] h-[38rem] bg-white/13 backdrop-blur-2xl border-[2px] border-white rounded-[10px] p-10 text-white text-center overflow-hidden shadow-lg shadow-gray-400'
+                >
             <div className='relative'>
-                <form className={`absolute w-full transition-all duration-1000 ease-in-out ${changeForm ? 'opacity-0 invisible -rotate-90 -top-[500px] -left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="">
-                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px #fff' }}>Login</div>
+                <form className={`absolute w-full transition-all duration-1000 ease-in-out ${changeForm ? 'opacity-0 invisible -rotate-90 -top-[500px] -left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="" autoComplete="off">
+                    <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px #fff' }}>Đăng nhập</div>
                     <div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
                             <i className='bx bxs-user text-h3'></i>
-                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="text" autoFocus name="username" value={stateSignin.username} onChange={HandleOnChangeStateSignin} id="LoginUsername" placeholder='Username' />
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="text" autoFocus name="username" value={stateSignin.username} onChange={HandleOnChangeStateSignin} id="LoginUsername" placeholder='Username' autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" />
+                            {isRememberedAccount && stateSignin.username && (
+                                <i className='bx bxs-check-circle text-green-400 text-sm' title='Tài khoản đã được nhớ'></i>
+                            )}
                             <div className='absolute top-[0.8rem] left-32 text-red-600 font-black'>{formErrors.username && <p>{formErrors.username}</p>}</div>
                         </div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
@@ -227,6 +346,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                                 onBlur={handlePasswordLoginBlur}
                                 id="LoginPass" 
                                 placeholder='Password' 
+                                autoComplete="off"
                             />
                             {(focusPasswordLogin || stateSignin.password.length > 0) && (
                                 <i className={`bx ${showPasswordLogin ? 'bx-hide' : 'bx-show'} text-h3 cursor-pointer`} onClick={togglePasswordLoginVisibility}></i>
@@ -256,12 +376,12 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                         <p onClick={ChangeFormLogin}>Don't have an account? <a className='ml-1 text-yellow-400' href="#">Register</a></p>
                     </div>
                 </form>
-                <form className={`absolute w-full transition-all duration-1000 ease-in-out ${!changeForm ? 'opacity-0 invisible rotate-90 top-[500px] left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="">
+                <form className={`absolute w-full transition-all duration-1000 ease-in-out ${!changeForm ? 'opacity-0 invisible rotate-90 top-[500px] left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="" autoComplete="off">
                     <div className='text-h1 font-medium mb-20' style={{ textShadow: '1px 0 10px #fff' }}>Đăng ký</div>
                     <div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
                             <i className='bx bxs-user text-h3'></i>
-                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="text" name="username" value={stateSignup.username} onChange={HandleOnChangeStateSignup} id="SignupUsername" placeholder='Tên đăng nhập' />
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="text" name="username" value={stateSignup.username} onChange={HandleOnChangeStateSignup} id="SignupUsername" placeholder='Tên đăng nhập' autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" />
                             {formErrors.username && <div className='absolute top-[0.8rem] left-32 text-red-600 font-black text-xs'>{formErrors.username}</div>}
                         </div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
@@ -276,6 +396,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                                 onBlur={handlePasswordSignupBlur}
                                 id="SignupPass" 
                                 placeholder='Mật khẩu' 
+                                autoComplete="off"
                             />
                             {(focusPasswordSignup || stateSignup.password.length > 0) && (
                                 <i className={`bx ${showPasswordSignup ? 'bx-hide' : 'bx-show'} text-h3 cursor-pointer`} onClick={togglePasswordSignupVisibility}></i>
@@ -284,7 +405,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                         </div>
                         <div className='flex justify-between items-center border-b-2 border-white h-10 mb-6 relative'>
                             <i className='bx bxs-envelope text-h3'></i>
-                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="email" name="email" value={stateSignup.email} onChange={HandleOnChangeStateSignup} id="SignupEmail" placeholder='Email' />
+                            <input className='outline-none border-none bg-transparent w-full pt-[5px] pb-0 px-[10px] text-white' type="email" name="email" value={stateSignup.email} onChange={HandleOnChangeStateSignup} id="SignupEmail" placeholder='Email' autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" />
                             {formErrors.email && <div className='absolute top-[0.8rem] left-32 text-red-600 font-black text-xs'>{formErrors.email}</div>}
                         </div>
                     </div>
@@ -301,11 +422,13 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                 </form>
             </div>
             
-            <ForgotPassword 
-                visible={showForgotPassword}
-                onCancel={handleForgotPasswordClose}
-            />
-        </div>
+                <ForgotPassword 
+                    visible={showForgotPassword}
+                    onCancel={handleForgotPasswordClose}
+                />
+                </div>
+            </Modal>
+        </>
     )
 }
 

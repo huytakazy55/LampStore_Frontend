@@ -90,7 +90,7 @@ const Header = () => {
   return (
     <div className='w-full xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-28'>
       <div className='h-24'>
-        <a href="/"><img className='h-full max-w-full' src={Logo} alt="Logo" srcset="" /></a>        
+        <a href="/"><img className='h-full max-w-full' src={Logo} alt="Logo" /></a>        
       </div>
       <div>
         <i className='bx bx-menu leading-none align-middle text-h2'></i>
@@ -99,8 +99,8 @@ const Header = () => {
         <input className='caret-y border-yellow-400 outline-0 border-0 w-3/5 py-[2px] px-[20px] h-full' autoFocus type="text" placeholder='Search for Products ...' />
         <div className='w-1/3 h-full relative'> 
           <i className={`bx ${arrowIcon ? 'bxs-up-arrow' : 'bxs-down-arrow'} text-[0.7rem] text-gray-600 absolute leading-[3.5] h-full right-2`}></i>
-          <select onClick={toggleArrow} onBlur={closeArrow} className='appearance-none pr-24 pl-4 bg-white border-gray-300 rounded text-gray-600 cursor-pointer outline-0 border-0 text-small py-2 px-5 font-medium w-full h-full' name="">
-            <option selected value="1">All Categories</option>
+          <select onClick={toggleArrow} onBlur={closeArrow} className='appearance-none pr-24 pl-4 bg-white border-gray-300 rounded text-gray-600 cursor-pointer outline-0 border-0 text-small py-2 px-5 font-medium w-full h-full' name="" defaultValue="1">
+            <option value="1">All Categories</option>
             <option value="1">All Category</option>
             <option value="1">All Category</option>
             <option value="1">All Category</option>
@@ -125,9 +125,7 @@ const Header = () => {
               10.000.000
             </div>
           </li>
-          <div onClick={toggleLoginForm} className={`fixed bg-black/50 top-0 left-0 right-0 bottom-0 z-[1000] justify-center items-center max-h-screen ${toggleLogin ? 'flex' : 'hidden'}`}>
-            <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
-          </div>
+          <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
           <div onClick={toggleFormProfile} >
               <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} />
           </div>

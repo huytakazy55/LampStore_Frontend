@@ -35,79 +35,114 @@ const ForgotPassword = ({ visible, onCancel }) => {
   };
 
   return (
-    <Modal
-      title={
-        <div style={{ textAlign: 'center' }}>
-          <Title level={3} style={{ margin: 0, color: '#1890ff' }}>
-            Quên Mật Khẩu
-          </Title>
+    <>
+      <style>
+        {`
+          .ant-input::placeholder {
+            color: rgba(255, 255, 255, 0.7) !important;
+          }
+          .ant-form-item-explain-error {
+            color: #ff4d4f !important;
+            font-size: 12px !important;
+            position: absolute !important;
+            top: 2.5rem !important;
+            left: 2rem !important;
+          }
+        `}
+      </style>
+      <Modal
+        open={visible}
+        onCancel={handleCancel}
+        footer={null}
+        width={400}
+        centered
+        closable={false}
+        styles={{
+          body: { padding: 0 },
+          content: { padding: 0, background: 'transparent' }
+        }}
+      >
+      <div 
+        onClick={(e) => e.stopPropagation()} 
+        className='w-full h-auto bg-white/13 backdrop-blur-2xl border-[2px] border-white rounded-[10px] p-10 text-white text-center shadow-lg shadow-gray-400'
+      >
+
+        <div className='text-h1 font-medium mb-8' style={{ textShadow: '1px 0 10px #fff', fontSize: '2rem' }}>
+          Quên Mật Khẩu
         </div>
-      }
-      open={visible}
-      onCancel={handleCancel}
-      footer={null}
-      width={450}
-      centered
-    >
-      <div style={{ padding: '20px 0' }}>
-        <Alert
-          message="Hướng dẫn"
-          description="Nhập email hoặc tên đăng nhập của bạn. Chúng tôi sẽ gửi mật khẩu mới đến email đã đăng ký."
-          type="info"
-          showIcon
-          style={{ marginBottom: '20px' }}
-        />
+        
+        <div className='mb-6 text-sm opacity-80'>
+          Nhập email hoặc tên đăng nhập của bạn. Chúng tôi sẽ gửi mật khẩu mới đến email đã đăng ký.
+        </div>
 
         <Form
           form={form}
-          layout="vertical"
           onFinish={handleSubmit}
-          size="large"
+          layout="vertical"
         >
           <Form.Item
             name="emailOrUsername"
-            label="Email hoặc Tên đăng nhập"
             rules={[
               {
                 required: true,
                 message: 'Vui lòng nhập email hoặc tên đăng nhập!',
               },
             ]}
+            style={{ margin: 0 }}
           >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="Nhập email hoặc tên đăng nhập"
-              style={{ borderRadius: '6px' }}
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0 }}>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <Button 
-                onClick={handleCancel}
-                style={{ borderRadius: '6px' }}
-              >
-                Hủy
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                style={{ borderRadius: '6px' }}
-              >
-                Gửi Yêu Cầu
-              </Button>
+            <div className='flex justify-between items-center border-b-2 border-white h-10 mb-8 relative'>
+              <i className='bx bxs-user text-h3'></i>
+              <Input
+                type="text" 
+                placeholder='Email hoặc tên đăng nhập'
+                style={{ 
+                  width: '100%', 
+                  paddingLeft: '10px', 
+                  paddingTop: '5px',
+                  paddingBottom: '0px',
+                  color: 'white',
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  boxShadow: 'none',
+                  fontSize: '16px',
+                  lineHeight: '1.2'
+                }}
+                bordered={false}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+              />
             </div>
           </Form.Item>
+
+          <div className='flex gap-4 justify-center'>
+            <button 
+              type="button"
+              onClick={handleCancel}
+              className='px-6 py-2 rounded-2xl border-2 border-white bg-transparent text-white hover:bg-white/10 transition-all'
+              style={{ minWidth: '100px' }}
+            >
+              Hủy
+            </button>
+            <button 
+              type="submit"
+              disabled={loading}
+              className='px-6 py-2 rounded-2xl border-2 border-white bg-transparent text-white hover:bg-white/10 transition-all disabled:opacity-50'
+              style={{ minWidth: '100px' }}
+            >
+              {loading ? 'Đang gửi...' : 'Gửi Yêu Cầu'}
+            </button>
+          </div>
         </Form>
 
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <Text type="secondary" style={{ fontSize: '12px' }}>
-            Bạn sẽ nhận được email chứa mật khẩu mới trong vài phút.
-          </Text>
+        <div className='mt-6 text-xs opacity-70'>
+          Bạn sẽ nhận được email chứa mật khẩu mới trong vài phút.
         </div>
       </div>
     </Modal>
+    </>
   );
 };
 

@@ -20,6 +20,7 @@ const LeftBar = () => {
         { name: "Banners", icon: "bxs-image", path: "/admin/banners" },
         { name: "Products", icon: "bxs-package", path: "/admin/products" },
         { name: "Orders", icon: "bxs-store-alt", path: "/admin/orders" },
+        { name: "Chat", icon: "bxs-chat", path: "/admin/chat" },
         { name: "Delivery", icon: "bxs-book-content", path: "/admin/delivery" },
         { name: "Setting", icon: "bxs-cog", path: "/admin/settings" },
     ];
