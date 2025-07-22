@@ -432,27 +432,63 @@ const ChatWindow = ({ onClose }) => {
   // Chat List View
   const renderChatList = () => (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
-        <h3 className="font-semibold">Hỗ trợ khách hàng</h3>
-        <div className="flex space-x-2">
+      {/* Header đẹp */}
+      <div style={{
+        background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
+        color: 'white',
+        padding: '0.85rem 1.1rem',
+        borderTopLeftRadius: '1rem',
+        borderTopRightRadius: '1rem',
+        boxShadow: '0 2px 8px 0 rgba(60,60,180,0.10)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        position: 'relative',
+        minHeight: '3.1rem',
+      }}>
+        <h3 style={{margin:0,fontWeight:600,fontSize:'1.08rem',letterSpacing:'0.5px',textShadow:'0 1px 4px rgba(60,60,180,0.10)', color: 'white'}}>Hỗ trợ khách hàng</h3>
+        <div style={{display:'flex',gap:'0.5rem'}}>
           <button
             onClick={createNewChat}
-            className="hover:bg-blue-700 p-1 rounded"
             title="Tạo chat mới"
+            style={{
+              background:'rgba(255,255,255,0.13)',
+              border:'none',
+              borderRadius:'50%',
+              width:'2.1rem',height:'2.1rem',
+              display:'flex',alignItems:'center',justifyContent:'center',
+              color:'white',
+              cursor:'pointer',
+              transition:'background 0.18s',
+              boxShadow:'0 1px 4px rgba(60,60,180,0.10)'
+            }}
+            onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.22)'}
+            onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.13)'}
           >
-            <Plus size={20} />
+            <Plus size={18} />
           </button>
           <button
             onClick={onClose}
-            className="hover:bg-blue-700 p-1 rounded"
+            style={{
+              background:'rgba(255,255,255,0.13)',
+              border:'none',
+              borderRadius:'50%',
+              width:'2.1rem',height:'2.1rem',
+              display:'flex',alignItems:'center',justifyContent:'center',
+              color:'white',
+              cursor:'pointer',
+              transition:'background 0.18s',
+              boxShadow:'0 1px 4px rgba(60,60,180,0.10)'
+            }}
+            onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.22)'}
+            onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.13)'}
           >
-            <Minimize2 size={20} />
+            <Minimize2 size={18} />
           </button>
         </div>
       </div>
       {/* Chat List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 chat-scrollable">
         {loading ? (
           <div className="p-4 text-center text-gray-500">Đang tải...</div>
         ) : chats.length === 0 ? (
@@ -503,31 +539,68 @@ const ChatWindow = ({ onClose }) => {
   // Chat View
   const renderChatView = () => (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
-        <div className="flex items-center">
+      {/* Header đẹp */}
+      <div style={{
+        background: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)',
+        color: 'white',
+        padding: '0.85rem 1.1rem',
+        borderTopLeftRadius: '1rem',
+        borderTopRightRadius: '1rem',
+        boxShadow: '0 2px 8px 0 rgba(60,60,180,0.10)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        position: 'relative',
+        minHeight: '3.1rem',
+      }}>
+        <div style={{display:'flex',alignItems:'center'}}>
           <button
             onClick={backToList}
-            className="mr-3 hover:bg-blue-700 p-1 rounded"
+            style={{
+              marginRight:'0.7rem',
+              background:'rgba(255,255,255,0.13)',
+              border:'none',
+              borderRadius:'50%',
+              width:'2.1rem',height:'2.1rem',
+              display:'flex',alignItems:'center',justifyContent:'center',
+              color:'white',
+              cursor:'pointer',
+              transition:'background 0.18s',
+              boxShadow:'0 1px 4px rgba(60,60,180,0.10)'
+            }}
+            onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.22)'}
+            onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.13)'}
           >
             ←
           </button>
-          <div className="flex-1">
-            <h3 className="font-semibold text-sm">{currentChat?.subject}</h3>
-            <p className="text-xs opacity-75">
+          <div style={{flex:1}}>
+            <h3 style={{margin:0,fontWeight:600,fontSize:'1.02rem',letterSpacing:'0.2px',textShadow:'0 1px 4px rgba(60,60,180,0.10)'}}>{currentChat?.subject}</h3>
+            <p style={{fontSize:'0.82rem',opacity:0.8,margin:0}}>
               {currentChat?.assignedAdmin ? `Admin: ${currentChat.assignedAdmin.userName}` : 'Chờ admin phản hồi'}
             </p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="hover:bg-blue-700 p-1 rounded"
+          style={{
+            background:'rgba(255,255,255,0.13)',
+            border:'none',
+            borderRadius:'50%',
+            width:'2.1rem',height:'2.1rem',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            color:'white',
+            cursor:'pointer',
+            transition:'background 0.18s',
+            boxShadow:'0 1px 4px rgba(60,60,180,0.10)'
+          }}
+          onMouseOver={e=>e.currentTarget.style.background='rgba(255,255,255,0.22)'}
+          onMouseOut={e=>e.currentTarget.style.background='rgba(255,255,255,0.13)'}
         >
-          <Minimize2 size={20} />
+          <Minimize2 size={18} />
         </button>
       </div>
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 chat-scrollable p-4 space-y-3">
         {Array.isArray(messages) && messages.length > 0 ? messages.map((message) => {
           const currentUserId = getCurrentUserId();
           const isFromCurrentUser = message.senderId === currentUserId;
@@ -591,19 +664,21 @@ const ChatWindow = ({ onClose }) => {
         <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t">
-        <div className="flex space-x-2">
+        <div style={{display:'flex',gap:'10px',alignItems:'center'}}>
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Nhập tin nhắn..."
-            className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="chat-input flex-1"
+            style={{minWidth:'0'}}
           />
           <button
             onClick={sendMessage}
             disabled={!newMessage.trim()}
-            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="chat-send-btn"
+            style={{display:'flex',alignItems:'center',justifyContent:'center'}}
           >
             <Send size={20} />
           </button>
@@ -687,9 +762,76 @@ const ChatWindow = ({ onClose }) => {
   )
 
   return (
-    <div className="fixed bottom-20 right-6 w-80 h-96 bg-white rounded-lg shadow-2xl border z-40 flex flex-col">
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '0',
+        right: '30px',
+        width: '21rem',
+        height: '30rem',
+        background: 'white',
+        borderRadius: '1rem',
+        boxShadow: '0 6px 18px 0 rgba(60,60,180,0.13), 0 0 0 2.5px rgba(37,99,235,0.08)',
+        borderImage: 'linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) 1',
+        zIndex: 1001,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        transition: 'all 0.32s cubic-bezier(.4,2,.6,1)',
+        animation: 'chatWindowSlideIn 0.38s cubic-bezier(.4,2,.6,1)',
+      }}
+      onWheel={e => e.stopPropagation()}
+      tabIndex={0}
+    >
+      <style>{`
+        @keyframes chatWindowSlideIn {
+          0% { opacity: 0; transform: translateY(60px) scale(0.95); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .chat-send-btn {
+          background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+          color: white;
+          border-radius: 12px;
+          padding: 0.35rem 0.8rem;
+          font-weight: 600;
+          font-size: 0.95rem;
+          border: none;
+          box-shadow: 0 1.5px 5px rgba(37,99,235,0.10);
+          transition: all 0.18s cubic-bezier(.4,2,.6,1);
+        }
+        .chat-send-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        .chat-send-btn:hover:not(:disabled) {
+          background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%);
+          box-shadow: 0 2.5px 8px rgba(124,58,237,0.13);
+          transform: scale(1.06);
+        }
+        .chat-input {
+          border-radius: 12px;
+          border: 1.2px solid #e0e7ef;
+          padding: 0.38rem 0.8rem;
+          font-size: 0.97rem;
+          outline: none;
+          transition: border 0.2s;
+        }
+        .chat-input:focus {
+          border: 1.2px solid #7c3aed;
+          box-shadow: 0 0 0 1.5px #e0e7ef;
+        }
+        .chat-scrollable {
+          overflow-y: auto !important;
+          overscroll-behavior: contain !important;
+        }
+      `}</style>
       {currentView === 'list' && renderChatList()}
-      {currentView === 'chat' && renderChatView()}
+      {currentView === 'chat' && (
+        <div style={{display:'flex',flexDirection:'column',height:'100%'}}>
+          {/* Header giữ nguyên */}
+          {renderChatView()}
+        </div>
+      )}
       {currentView === 'newChat' && renderNewChatView()}
     </div>
   )

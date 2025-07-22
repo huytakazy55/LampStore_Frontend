@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Button, Table, Tag, Space, Modal, Select, Input } from 'antd';
+import React, { useState, useEffect, useContext } from 'react';
+import { Card, Row, Col, Statistic, Button, Table, Tag, Space, Modal, Select, Input, DatePicker } from 'antd';
 import { MessageOutlined, UserOutlined, ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import ChatService from '../../../../Services/ChatService';
 import AdminChatWindow from './AdminChatWindow';
 import { useDispatch, useSelector } from 'react-redux';
 import { setChats } from '../../../../redux/slices/chatSlice';
+import { ThemeContext } from '../../../../ThemeContext';
 
 const AdminChatDashboard = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,11 @@ const AdminChatDashboard = () => {
   const [statistics, setStatistics] = useState({});
   const [assignModalVisible, setAssignModalVisible] = useState(false);
   const [selectedChatForAssign, setSelectedChatForAssign] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [priorityFilter, setPriorityFilter] = useState(null);
+  const [dateRange, setDateRange] = useState([]);
+  const { themeColors } = useContext(ThemeContext);
 
   useEffect(() => {
     loadDashboardData();
@@ -98,6 +104,7 @@ const AdminChatDashboard = () => {
       dataIndex: 'id',
       key: 'id',
       width: 80,
+      align: 'center',
       render: (id) => id.slice(0, 8) + '...'
     },
     {
@@ -105,12 +112,14 @@ const AdminChatDashboard = () => {
       dataIndex: 'subject',
       key: 'subject',
       width: 200,
+      align: 'center',
     },
     {
       title: 'Người dùng',
       dataIndex: ['user', 'userName'],
       key: 'userName',
       width: 120,
+      align: 'center',
       render: (userName) => userName || 'N/A'
     },
     {
@@ -118,6 +127,7 @@ const AdminChatDashboard = () => {
       dataIndex: 'status',
       key: 'status',
       width: 120,
+      align: 'center',
       render: (status) => (
         <Tag color={getStatusColor(status)}>
           {getStatusText(status)}
@@ -129,6 +139,7 @@ const AdminChatDashboard = () => {
       dataIndex: 'priority',
       key: 'priority',
       width: 100,
+      align: 'center',
       render: (priority) => (
         <Tag color={getPriorityColor(priority)}>
           {getPriorityText(priority)}
@@ -140,6 +151,7 @@ const AdminChatDashboard = () => {
       dataIndex: ['assignedAdmin', 'userName'],
       key: 'assignedAdmin',
       width: 120,
+      align: 'center',
       render: (adminName) => adminName || 'Chưa giao'
     },
     {
@@ -147,12 +159,14 @@ const AdminChatDashboard = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 120,
+      align: 'center',
       render: (date) => new Date(date).toLocaleDateString('vi-VN')
     },
     {
       title: 'Thao tác',
       key: 'actions',
       width: 120,
+      align: 'center',
       render: (_, record) => (
         <Space>
           <Button 
@@ -167,61 +181,178 @@ const AdminChatDashboard = () => {
     }
   ];
 
+  // Lọc dữ liệu
+  const filteredChats = chats.filter(chat => {
+    // Tìm kiếm
+    const searchMatch = searchText
+      ? (
+          chat.user?.userName?.toLowerCase().includes(searchText.toLowerCase()) ||
+          chat.subject?.toLowerCase().includes(searchText.toLowerCase()) ||
+          chat.id?.toString().includes(searchText)
+        )
+      : true;
+    // Lọc trạng thái
+    const statusMatch = statusFilter ? chat.status === statusFilter : true;
+    // Lọc ưu tiên
+    const priorityMatch = priorityFilter ? chat.priority === priorityFilter : true;
+    // Lọc ngày (không dùng moment)
+    const dateMatch = dateRange.length === 2 && dateRange[0] && dateRange[1]
+      ? (
+          new Date(chat.createdAt).getTime() >= new Date(dateRange[0]).setHours(0,0,0,0) &&
+          new Date(chat.createdAt).getTime() <= new Date(dateRange[1]).setHours(23,59,59,999)
+        )
+      : true;
+    return searchMatch && statusMatch && priorityMatch && dateMatch;
+  });
+
+  // Tính toán số lượng nếu statistics không có dữ liệu
+  const totalChats = statistics?.total ?? chats.length;
+  const openChats = statistics?.open ?? chats.filter(c => c.status === 1).length;
+  const inProgressChats = statistics?.inProgress ?? chats.filter(c => c.status === 2).length;
+  const resolvedChats = statistics?.resolved ?? chats.filter(c => c.status === 3).length;
+
+  // Icon style giống dashboard
+  const chatIcons = {
+    total: (
+      <div className="bg-blue-100 p-1 rounded-full">
+        <MessageOutlined className="text-blue-400 text-base" />
+      </div>
+    ),
+    open: (
+      <div className="bg-green-100 p-1 rounded-full">
+        <ClockCircleOutlined className="text-green-500 text-base" />
+      </div>
+    ),
+    inProgress: (
+      <div className="bg-yellow-100 p-1 rounded-full">
+        <UserOutlined className="text-yellow-500 text-base" />
+      </div>
+    ),
+    resolved: (
+      <div className="bg-purple-100 p-1 rounded-full">
+        <CheckCircleOutlined className="text-purple-500 text-base" />
+      </div>
+    ),
+  };
+
   return (
     <div style={{ padding: '24px' }}>
+      {/* Title Bar */}
+      <div
+        className="admin-title-bar"
+        style={{
+          background: '#f6f8fc',
+          padding: '24px 24px 16px',
+          marginBottom: 0
+        }}
+      >
+        <div style={{fontSize: '1.5rem', fontWeight: 600, color: themeColors.StartColorLinear}}>
+          Quản lý Chat hỗ trợ
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <span style={{ color: '#888' }}>Trang chủ</span>
+          <span style={{ margin: '0 8px', color: '#bbb' }}>/</span>
+          <span style={{ color: themeColors.StartColorLinear }}>Quản lý Chat hỗ trợ</span>
+        </div>
+      </div>
       {/* Statistics Cards */}
-      <Row gutter={16} style={{ marginBottom: '24px' }}>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Tổng chats"
-              value={statistics?.total || 0}
-              prefix={<MessageOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
+      <Row gutter={24} style={{ margin: '24px' }}>
+        <Col flex={1}>
+          <div
+            className="bg-white rounded-xl shadow-lg p-2 flex items-center min-w-[100px] border-l-8 border-blue-400 hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
+            style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #f1f5f9 100%)' }}
+          >
+            {chatIcons.total}
+            <div className="ml-2">
+              <div className="text-base font-medium text-gray-800">{totalChats}</div>
+              <div className="text-gray-500 text-xs">Tổng chats</div>
+            </div>
+          </div>
         </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Đang mở"
-              value={statistics?.open || 0}
-              prefix={<ClockCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
+        <Col flex={1}>
+          <div
+            className="bg-white rounded-xl shadow-lg p-2 flex items-center min-w-[100px] border-l-8 border-green-400 hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
+            style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #f1f5f9 100%)' }}
+          >
+            {chatIcons.open}
+            <div className="ml-2">
+              <div className="text-base font-medium text-gray-800">{openChats}</div>
+              <div className="text-gray-500 text-xs">Đang mở</div>
+            </div>
+          </div>
         </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Đang xử lý"
-              value={statistics?.inProgress || 0}
-              prefix={<UserOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
+        <Col flex={1}>
+          <div
+            className="bg-white rounded-xl shadow-lg p-2 flex items-center min-w-[100px] border-l-8 border-yellow-400 hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
+            style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #f1f5f9 100%)' }}
+          >
+            {chatIcons.inProgress}
+            <div className="ml-2">
+              <div className="text-base font-medium text-gray-800">{inProgressChats}</div>
+              <div className="text-gray-500 text-xs">Đang xử lý</div>
+            </div>
+          </div>
         </Col>
-        <Col span={6}>
-          <Card>
-            <Statistic
-              title="Đã giải quyết"
-              value={statistics?.resolved || 0}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
+        <Col flex={1}>
+          <div
+            className="bg-white rounded-xl shadow-lg p-2 flex items-center min-w-[100px] border-l-8 border-purple-400 hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
+            style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #f1f5f9 100%)' }}
+          >
+            {chatIcons.resolved}
+            <div className="ml-2">
+              <div className="text-base font-medium text-gray-800">{resolvedChats}</div>
+              <div className="text-gray-500 text-xs">Đã giải quyết</div>
+            </div>
+          </div>
         </Col>
       </Row>
 
       {/* Chat List Table */}
-      <Card title="Danh sách Chat Hỗ trợ" extra={
-        <Button onClick={loadDashboardData} loading={loading}>
-          Làm mới
-        </Button>
-      }>
+      <Card>
+        {/* Bộ lọc và tìm kiếm */}
+        <Space style={{ marginBottom: 16 }}>
+          <Input.Search
+            placeholder="Tìm kiếm theo tên, tiêu đề, ID..."
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            allowClear
+            style={{ width: 220 }}
+          />
+          <Select
+            placeholder="Trạng thái"
+            value={statusFilter}
+            onChange={setStatusFilter}
+            allowClear
+            style={{ width: 120 }}
+          >
+            <Select.Option value={1}>Mở</Select.Option>
+            <Select.Option value={2}>Đang xử lý</Select.Option>
+            <Select.Option value={3}>Đã giải quyết</Select.Option>
+            <Select.Option value={4}>Đã đóng</Select.Option>
+          </Select>
+          <Select
+            placeholder="Ưu tiên"
+            value={priorityFilter}
+            onChange={setPriorityFilter}
+            allowClear
+            style={{ width: 120 }}
+          >
+            <Select.Option value={1}>Thấp</Select.Option>
+            <Select.Option value={2}>Bình thường</Select.Option>
+            <Select.Option value={3}>Cao</Select.Option>
+            <Select.Option value={4}>Khẩn cấp</Select.Option>
+          </Select>
+          <DatePicker.RangePicker
+            value={dateRange}
+            onChange={setDateRange}
+            style={{ width: 240 }}
+            format="DD/MM/YYYY"
+          />
+          <Button onClick={() => { setSearchText(''); setStatusFilter(null); setPriorityFilter(null); setDateRange([]); }}>Xóa lọc</Button>
+        </Space>
         <Table
           columns={columns}
-          dataSource={chats}
+          dataSource={filteredChats}
           rowKey="id"
           loading={loading}
           scroll={{ x: 800 }}

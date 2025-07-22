@@ -144,6 +144,16 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Auto scroll to bottom when chat window is opened (chat thay đổi)
+  useEffect(() => {
+    if (chat?.id) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+    // eslint-disable-next-line
+  }, [chat?.id]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
