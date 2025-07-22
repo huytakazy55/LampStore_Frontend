@@ -1,11 +1,22 @@
 import React from 'react';
+import { useEffect } from 'react';
 import AppBar from '../AppBar/AppBar';
 import LeftBar from '../LeftBar/LeftBar';
 import RightBody from '../RightBody/RightBody';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import NotificationService from '../../../../Services/NotificationService';
 
 const AdminDashboard = () => {
+  useEffect(() => {
+    // Khởi tạo thông báo real-time cho admin
+    NotificationService.setupSignalRNotifications();
+    NotificationService.requestNotificationPermission();
+    NotificationService.cleanOldNotifications();
+
+    console.log('📢 Admin Dashboard: Notification system initialized');
+  }, []);
+
   return (
     <div>
       <AppBar />

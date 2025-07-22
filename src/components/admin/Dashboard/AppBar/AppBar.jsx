@@ -8,6 +8,7 @@ import { setLeftBar } from '../../../../redux/slices/leftBarAdminSlice';
 import { useTranslation } from 'react-i18next';
 import {ThemeContext} from '../../../../ThemeContext';
 import AuthService from '../../../../Services/AuthService';
+import NotificationDropdown from './NotificationDropdown';
 
 const AppBar = () => {
     const dispatch = useDispatch();
@@ -123,9 +124,7 @@ const AppBar = () => {
                         </div>
                     </div>
                 </div>
-                <div className='flex relative after:absolute after:w-[7px] after:h-[7px] after:bg-red-700 after:rounded-[50%] after:right-[2px] after:top-[3px]'>
-                    <i className='bx bx-bell text-h2 cursor-pointer mt-1' ></i>
-                </div>
+                <NotificationDropdown themeColors={themeColors} />
                 <div className='flex justify-center items-center relative after:absolute after:w-2 after:h-2 after:bg-red-700 after:rounded-[50%] after:-right-[2px] after:top-[3px]'>
                     <i className='bx bx-envelope text-h2 cursor-pointer mt-1'></i>
                 </div>

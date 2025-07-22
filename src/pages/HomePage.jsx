@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import BannerProductCarousel from '../components/user/MainPage/BannerProductCarousel/BannerProductCarousel';
 import CategorySale from '../components/user/MainPage/CategorySale/CategorySale';
@@ -16,8 +17,18 @@ import BannerImage from '../components/user/MainPage/BannerImage/BannerImage';
 import BrandCarousel from '../components/user/MainPage/BrandCarousel/BrandCarousel';
 import Newsletter from '../components/user/MainPage/Newsletter/Newsletter';
 import CustomScrollbar from '../utils/CustomScrollbar';
+import NotificationService from '../Services/NotificationService';
 
 const HomePage = () => {
+  useEffect(() => {
+    // Khởi tạo thông báo real-time cho user
+    NotificationService.setupSignalRNotifications();
+    NotificationService.requestNotificationPermission();
+    NotificationService.cleanOldNotifications();
+
+    console.log('📢 HomePage: Notification system initialized for user');
+  }, []);
+
   return (
     <>
     <CustomScrollbar>
