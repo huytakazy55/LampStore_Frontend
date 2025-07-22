@@ -222,7 +222,6 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
         isOptimistic: true
       };
       
-      dispatch(addMessage({ chatId: chat.id, message: optimisticMessage }));
       const messageContent = newMessage;
       setNewMessage('');
       
