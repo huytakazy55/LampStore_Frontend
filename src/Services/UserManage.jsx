@@ -1,20 +1,10 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-axios.defaults.withCredentials = true;
 
 class UserManage {
     async GetUserAccount() {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("No authentication token found");
-            }
-            
-            const response = await axios.get(`${API_ENDPOINT}/api/Account/GetAllUserLogin`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axiosInstance.get("/api/Account/GetAllUserLogin");
             return response.data;            
         } catch (error) {
             console.error("Error fetching user accounts:", error);
@@ -24,16 +14,7 @@ class UserManage {
 
     async GetRoleById(userId) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("No authentication token found");
-            }
-            
-            const response = await axios.get(`${API_ENDPOINT}/api/Account/role/${userId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axiosInstance.get(`/api/Account/role/${userId}`);
             return response;
         } catch (error) {
             console.error(`Error fetching role for user ${userId}:`, error);
@@ -43,16 +24,7 @@ class UserManage {
     
     async LockUser(userId) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("No authentication token found");
-            }
-            
-            const response = await axios.post(`${API_ENDPOINT}/api/Account/LockUser/${userId}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axiosInstance.post(`/api/Account/LockUser/${userId}`, {});
             return response;
         } catch (error) {
             console.error(`Error locking user ${userId}:`, error);
@@ -62,16 +34,7 @@ class UserManage {
 
     async UnLockUser(userId) {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                throw new Error("No authentication token found");
-            }
-            
-            const response = await axios.post(`${API_ENDPOINT}/api/Account/UnLockUser/${userId}`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const response = await axiosInstance.post(`/api/Account/UnLockUser/${userId}`, {});
             return response;
         } catch (error) {
             console.error(`Error unlocking user ${userId}:`, error);

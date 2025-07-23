@@ -10,11 +10,19 @@ import NotificationService from '../../../../Services/NotificationService';
 const AdminDashboard = () => {
   useEffect(() => {
     // Khởi tạo thông báo real-time cho admin
-    NotificationService.setupSignalRNotifications();
-    NotificationService.requestNotificationPermission();
-    NotificationService.cleanOldNotifications();
+    const initializeNotifications = async () => {
+      try {
+        await NotificationService.setupSignalRNotifications();
+        NotificationService.requestNotificationPermission();
+        NotificationService.cleanOldNotifications();
+        
+        console.log('📢 Admin Dashboard: Notification system initialized');
+      } catch (error) {
+        console.error('❌ Admin Dashboard: Failed to initialize notifications:', error);
+      }
+    };
 
-    console.log('📢 Admin Dashboard: Notification system initialized');
+    initializeNotifications();
   }, []);
 
   return (

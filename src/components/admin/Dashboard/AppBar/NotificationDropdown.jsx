@@ -6,14 +6,12 @@ import {
   setDropdownOpen, 
   removeNotification 
 } from '../../../../redux/slices/notificationSlice';
-import NotificationService from '../../../../Services/NotificationService';
 
 const NotificationDropdown = ({ themeColors }) => {
   const dispatch = useDispatch();
   const { notifications, unreadCount, isDropdownOpen } = useSelector(state => state.notification);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
-  const [audioSettings, setAudioSettings] = useState({ isEnabled: true, volume: 0.7 });
 
   // Đóng dropdown khi click bên ngoài
   useEffect(() => {
@@ -32,12 +30,6 @@ const NotificationDropdown = ({ themeColors }) => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [dispatch]);
 
-  // Load audio settings khi component mount
-  useEffect(() => {
-    const settings = NotificationService.getAudioSettings();
-    setAudioSettings(settings);
-  }, []);
-
   const toggleDropdown = () => {
     dispatch(setDropdownOpen(!isDropdownOpen));
   };
@@ -49,26 +41,11 @@ const NotificationDropdown = ({ themeColors }) => {
   const handleMarkAllAsRead = (event) => {
     event.stopPropagation(); // Ngăn event bubbling
     dispatch(markAllAsRead());
+    // Không đóng dropdown, chỉ đánh dấu đã đọc
   };
 
   const handleRemoveNotification = (notificationId) => {
     dispatch(removeNotification(notificationId));
-  };
-
-  const handleToggleAudio = () => {
-    const newEnabled = !audioSettings.isEnabled;
-    NotificationService.setAudioEnabled(newEnabled);
-    setAudioSettings(prev => ({ ...prev, isEnabled: newEnabled }));
-  };
-
-  const handleVolumeChange = (event) => {
-    const newVolume = parseFloat(event.target.value);
-    NotificationService.setAudioVolume(newVolume);
-    setAudioSettings(prev => ({ ...prev, volume: newVolume }));
-  };
-
-  const handleTestSound = () => {
-    NotificationService.testNotificationSound();
   };
 
   const getNotificationIcon = (type) => {
@@ -245,63 +222,17 @@ const NotificationDropdown = ({ themeColors }) => {
             )}
           </div>
 
-          {/* Footer với Audio Controls */}
-          <div className="p-3 border-t bg-gray-50">
-            {/* Audio Controls */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-gray-700">Âm thanh thông báo</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleTestSound}
-                    className="text-xs px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition-colors"
-                  >
-                    🔊 Test
-                  </button>
-                  <button
-                    onClick={handleToggleAudio}
-                    className={`text-xs px-2 py-1 rounded transition-colors ${
-                      audioSettings.isEnabled
-                        ? 'bg-green-100 hover:bg-green-200 text-green-700'
-                        : 'bg-red-100 hover:bg-red-200 text-red-700'
-                    }`}
-                  >
-                    {audioSettings.isEnabled ? '🔊 Bật' : '🔇 Tắt'}
-                  </button>
-                </div>
-              </div>
-              
-              {audioSettings.isEnabled && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">Âm lượng:</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={audioSettings.volume}
-                    onChange={handleVolumeChange}
-                    className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <span className="text-xs text-gray-500 w-8">
-                    {Math.round(audioSettings.volume * 100)}%
-                  </span>
-                </div>
-              )}
+          {/* Footer */}
+          {notifications.length > 0 && (
+            <div className="p-3 border-t bg-gray-50 text-center">
+              <button 
+                className="text-xs text-gray-600 hover:text-gray-800 transition-colors"
+                style={{ color: themeColors.StartColorLinear }}
+              >
+                Xem tất cả thông báo
+              </button>
             </div>
-            
-            {/* Xem tất cả link */}
-            {notifications.length > 0 && (
-              <div className="text-center border-t pt-2">
-                <button 
-                  className="text-xs text-gray-600 hover:text-gray-800 transition-colors"
-                  style={{ color: themeColors.StartColorLinear }}
-                >
-                  Xem tất cả thông báo
-                </button>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
     </div>

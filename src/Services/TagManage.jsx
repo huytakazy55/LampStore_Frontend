@@ -1,19 +1,18 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-axios.defaults.withCredentials = true;
 
 class TagManage {
     GetTag() {
-        return axios.get(`${API_ENDPOINT}/api/Tags`);
+        return axiosInstance.get("/api/Tags");
         
     }
 
     GetTagById(id) {
-        return axios.get(`${API_ENDPOINT}/api/Tags/${id}`);
+        return axiosInstance.get(`/api/Tags/${id}`);
     }
 
     UpdateTag(id, name, description) {
-        return axios.put(`${API_ENDPOINT}/api/Tags/${id}`, {
+        return axiosInstance.put(`/api/Tags/${id}`, {
             id: id,
             name: name,
             description: description
@@ -21,15 +20,15 @@ class TagManage {
     }
 
     CreateTag(tag) {
-        return axios.post(`${API_ENDPOINT}/api/Tags`, tag);
+        return axiosInstance.post("/api/Tags", tag);
     }
 
     DeleteTag(id) {
-        return axios.delete(`${API_ENDPOINT}/api/Tags/${id}`);
+        return axiosInstance.delete(`/api/Tags/${id}`);
     }
 
     BulkDeleteTags(ids) {
-        return axios.delete(`${API_ENDPOINT}/api/tags/bulk`, {
+        return axiosInstance.delete("/api/tags/bulk", {
             data: ids
         });
     }

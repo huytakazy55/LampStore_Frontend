@@ -6,7 +6,10 @@ import AdminDashboard from './components/admin/Dashboard/AdminDashboard/AdminDas
 import ProtectedRoute from './utils/ProtectedRoute';
 import ProductDetail from './components/user/ProductDetailPage/ProductDetail';
 import ChatButton from './components/user/Chat/ChatButton';
+import TokenExpiryWarning from './components/common/TokenExpiryWarning';
 import './App.css';
+// Import axiosConfig để khởi tạo interceptor
+import './Services/axiosConfig';
 
 function AppContent() {
   const location = useLocation();
@@ -54,6 +57,9 @@ function AppContent() {
       
       {/* Chat Button - chỉ hiển thị cho user đã login và không ở trang admin */}
       {!isAdminPage && isUserLoggedIn && <ChatButton />}
+      
+      {/* Token Expiry Warning */}
+      <TokenExpiryWarning />
     </>
   );
 }

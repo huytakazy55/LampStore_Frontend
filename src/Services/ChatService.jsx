@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 import * as signalR from "@microsoft/signalr";
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
@@ -49,10 +49,54 @@ class ChatService {
     }
 
     async initializeConnection() {
-        if (!this.isConnected && !this.connection) {
-            return await this.startConnection();
+        // Nếu đã kết nối thành công, return true
+        if (this.isConnected && this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
+            console.log('🔗 SignalR already connected');
+            return true;
         }
-        return this.isConnected;
+
+        // Nếu connection đang trong quá trình kết nối, đợi
+        if (this.connection && this.connection.state === signalR.HubConnectionState.Connecting) {
+            console.log('🔄 SignalR connection in progress, waiting...');
+            try {
+                // Đợi tối đa 10 giây
+                const timeout = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Connection timeout')), 10000)
+                );
+                await Promise.race([
+                    new Promise(resolve => {
+                        const checkConnection = () => {
+                            if (this.connection.state === signalR.HubConnectionState.Connected) {
+                                this.isConnected = true;
+                                resolve(true);
+                            } else {
+                                setTimeout(checkConnection, 100);
+                            }
+                        };
+                        checkConnection();
+                    }),
+                    timeout
+                ]);
+                return this.isConnected;
+            } catch (error) {
+                console.warn('⚠️ SignalR connection timeout, force restart');
+            }
+        }
+
+        // Disconnect connection cũ nếu có
+        if (this.connection) {
+            try {
+                await this.connection.stop();
+            } catch (error) {
+                console.warn('Warning stopping old connection:', error);
+            }
+            this.connection = null;
+            this.isConnected = false;
+        }
+
+        // Bắt đầu kết nối mới
+        console.log('🔗 Starting new SignalR connection...');
+        return await this.startConnection();
     }
 
     async disconnect() {
@@ -233,32 +277,20 @@ class ChatService {
 
     // API calls
     async createChat(subject, priority = 2) { // Normal = 2
-        const token = localStorage.getItem("token");
         const requestData = {
             subject,
             priority
         };
         
         console.log('Creating chat with data:', requestData);
-        console.log('API endpoint:', `${API_ENDPOINT}/api/Chat/create`);
-        console.log('Token exists:', !!token);
+        console.log('API endpoint:', `/api/Chat/create`);
         
-        const response = await axios.post(`${API_ENDPOINT}/api/Chat/create`, requestData, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await axiosInstance.post("/api/Chat/create", requestData);
         return response.data;
     }
 
     async getMyChats() {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_ENDPOINT}/api/Chat/my-chats`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.get("/api/Chat/my-chats");
         return response.data;
     }
 
@@ -268,56 +300,33 @@ class ChatService {
     }
 
     async getAllChats() {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_ENDPOINT}/api/Chat/all`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.get("/api/Chat/all");
         return response.data;
     }
 
     async getChat(chatId) {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_ENDPOINT}/api/Chat/${chatId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.get(`/api/Chat/${chatId}`);
         return response.data;
     }
 
     async sendMessageApi(chatId, content, type = 1) { // Text = 1
-        const token = localStorage.getItem("token");
         const requestData = {
             content,
             type
         };
         
         console.log('Sending message with data:', requestData);
-        console.log('Message API endpoint:', `${API_ENDPOINT}/api/Chat/${chatId}/messages`);
+        console.log('Message API endpoint:', `/api/Chat/${chatId}/messages`);
         
-        const response = await axios.post(`${API_ENDPOINT}/api/Chat/${chatId}/messages`, requestData, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await axiosInstance.post(`/api/Chat/${chatId}/messages`, requestData);
         return response.data;
     }
 
     async getChatMessages(chatId) {
-        const token = localStorage.getItem("token");
-        
         console.log('🔗 API Call: GET messages for chat', chatId);
-        console.log('🔗 Endpoint:', `${API_ENDPOINT}/api/Chat/${chatId}/messages`);
-        console.log('🔑 Token available:', !!token);
+        console.log('🔗 Endpoint:', `/api/Chat/${chatId}/messages`);
         
-        const response = await axios.get(`${API_ENDPOINT}/api/Chat/${chatId}/messages`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.get(`/api/Chat/${chatId}/messages`);
         
         console.log('🔗 API Response Status:', response.status);
         console.log('🔗 API Response Data:', response.data);
@@ -326,56 +335,31 @@ class ChatService {
     }
 
     async assignChat(chatId, adminId) {
-        const token = localStorage.getItem("token");
-        const response = await axios.post(`${API_ENDPOINT}/api/Chat/${chatId}/assign`, {
+        const response = await axiosInstance.post(`/api/Chat/${chatId}/assign`, {
             adminId
-        }, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
         });
         return response.data;
     }
 
     async updateChatStatus(chatId, status) {
-        const token = localStorage.getItem("token");
-        const response = await axios.put(`${API_ENDPOINT}/api/Chat/${chatId}/status`, {
+        const response = await axiosInstance.put(`/api/Chat/${chatId}/status`, {
             status
-        }, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
         });
         return response.data;
     }
 
     async closeChat(chatId) {
-        const token = localStorage.getItem("token");
-        const response = await axios.post(`${API_ENDPOINT}/api/Chat/${chatId}/close`, {}, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.post(`/api/Chat/${chatId}/close`, {});
         return response.data;
     }
 
     async getUnreadCount() {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_ENDPOINT}/api/Chat/unread-count`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.get("/api/Chat/unread-count");
         return response.data;
     }
 
     async getChatStatistics() {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_ENDPOINT}/api/Chat/statistics`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        const response = await axiosInstance.get("/api/Chat/statistics");
         return response.data;
     }
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from './axiosConfig';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
@@ -6,7 +6,7 @@ class BannerService {
     // Lấy tất cả banner
     async getAllBanners() {
         try {
-            const response = await axios.get(`${API_ENDPOINT}/api/Banners`);
+            const response = await axiosInstance.get("/api/Banners");
             return response.data.$values || response.data || [];
         } catch (error) {
             console.error('Error fetching banners:', error);
@@ -17,7 +17,7 @@ class BannerService {
     // Lấy banner đang hoạt động
     async getActiveBanners() {
         try {
-            const response = await axios.get(`${API_ENDPOINT}/api/Banners/active`);
+            const response = await axiosInstance.get("/api/Banners/active");
             return response.data.$values || response.data || [];
         } catch (error) {
             console.error('Error fetching active banners:', error);
@@ -28,7 +28,7 @@ class BannerService {
     // Lấy banner theo ID
     async getBannerById(id) {
         try {
-            const response = await axios.get(`${API_ENDPOINT}/api/Banners/${id}`);
+            const response = await axiosInstance.get(`/api/Banners/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching banner:', error);
@@ -39,7 +39,7 @@ class BannerService {
     // Tạo banner mới
     async createBanner(bannerData) {
         try {
-            const response = await axios.post(`${API_ENDPOINT}/api/Banners`, bannerData);
+            const response = await axiosInstance.post("/api/Banners", bannerData);
             return response.data;
         } catch (error) {
             console.error('Error creating banner:', error);
@@ -50,7 +50,7 @@ class BannerService {
     // Cập nhật banner
     async updateBanner(id, bannerData) {
         try {
-            const response = await axios.put(`${API_ENDPOINT}/api/Banners/${id}`, bannerData);
+            const response = await axiosInstance.put(`/api/Banners/${id}`, bannerData);
             return response.data;
         } catch (error) {
             console.error('Error updating banner:', error);
@@ -61,7 +61,7 @@ class BannerService {
     // Xóa banner
     async deleteBanner(id) {
         try {
-            const response = await axios.delete(`${API_ENDPOINT}/api/Banners/${id}`);
+            const response = await axiosInstance.delete(`/api/Banners/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error deleting banner:', error);
@@ -75,7 +75,7 @@ class BannerService {
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await axios.post(`${API_ENDPOINT}/api/Banners/upload`, formData, {
+            const response = await axiosInstance.post("/api/Banners/upload", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

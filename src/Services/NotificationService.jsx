@@ -1,10 +1,12 @@
 import store from '../redux/store';
 import { addNotification, initNotifications, markAsRead } from '../redux/slices/notificationSlice';
 import AudioService from './AudioService';
+import ChatService from './ChatService';
 
 class NotificationService {
   constructor() {
     this.storageKey = 'chat_notifications';
+    this.signalRInitialized = false;
     this.init();
   }
 
@@ -50,6 +52,46 @@ class NotificationService {
     } catch (error) {
       console.error('Error getting user info:', error);
       return null;
+    }
+  }
+
+  // Khởi tạo kết nối SignalR cho thông báo
+  async initializeSignalRConnection() {
+    try {
+      const currentUser = this.getCurrentUserInfo();
+      if (!currentUser) {
+        console.warn('📢 NotificationService: No user token, skipping SignalR connection');
+        return false;
+      }
+
+      console.log('📢 NotificationService: Initializing SignalR connection for user:', currentUser.name, 'Role:', currentUser.role);
+      
+      // Sử dụng ChatService để kết nối SignalR
+      const connected = await ChatService.initializeConnection();
+      
+      if (connected) {
+        this.signalRInitialized = true;
+        console.log('✅ NotificationService: SignalR connected successfully for notifications');
+        
+        // Thêm delay nhỏ để đảm bảo connection ổn định
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Test connection bằng cách gửi ping
+        try {
+          const testResult = await ChatService.testConnection();
+          console.log('🧪 NotificationService: Connection test result:', testResult);
+        } catch (testError) {
+          console.warn('⚠️ NotificationService: Connection test failed:', testError);
+        }
+        
+        return true;
+      } else {
+        console.warn('⚠️ NotificationService: SignalR connection failed');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ NotificationService: SignalR connection error:', error);
+      return false;
     }
   }
 
@@ -200,14 +242,48 @@ class NotificationService {
   }
 
   // Khởi tạo listener cho SignalR
-  setupSignalRNotifications() {
+  async setupSignalRNotifications() {
+    console.log('📢 NotificationService: Setting up SignalR notifications...');
+    
     // Lắng nghe sự kiện tin nhắn mới từ SignalR
     window.addEventListener('newMessage', (event) => {
       const messageData = event.detail;
+      console.log('📩 NotificationService: Received newMessage event:', messageData);
       this.createChatNotification(messageData);
     });
 
     console.log('📢 NotificationService: SignalR listeners setup completed');
+
+    // Tự động khởi tạo kết nối SignalR với retry logic
+    const maxRetries = 3;
+    let retryCount = 0;
+    
+    while (retryCount < maxRetries) {
+      try {
+        console.log(`📢 NotificationService: Connection attempt ${retryCount + 1}/${maxRetries}`);
+        const connected = await this.initializeSignalRConnection();
+        
+        if (connected) {
+          console.log('✅ NotificationService: SignalR setup completed successfully');
+          return true;
+        }
+        
+        retryCount++;
+        if (retryCount < maxRetries) {
+          console.log(`⏳ NotificationService: Retrying connection in ${retryCount * 2} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+        }
+      } catch (error) {
+        console.error(`❌ NotificationService: Setup attempt ${retryCount + 1} failed:`, error);
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+        }
+      }
+    }
+    
+    console.error('❌ NotificationService: Failed to setup SignalR after all retries');
+    return false;
   }
 
   // Test thông báo (chỉ để demo)
@@ -245,6 +321,54 @@ class NotificationService {
     if (chatNotifications.length > 0) {
       this.saveToStorage();
     }
+  }
+
+  // Kiểm tra trạng thái SignalR
+  isSignalRConnected() {
+    return this.signalRInitialized && ChatService.isConnected;
+  }
+
+  // Reconnect SignalR nếu cần
+  async reconnectSignalR() {
+    if (!this.isSignalRConnected()) {
+      console.log('📢 NotificationService: Reconnecting SignalR...');
+      return await this.initializeSignalRConnection();
+    }
+    return true;
+  }
+
+  // Debug connection status
+  debugConnection() {
+    const currentUser = this.getCurrentUserInfo();
+    const connectionInfo = {
+      hasToken: !!localStorage.getItem('token'),
+      currentUser: currentUser,
+      signalRInitialized: this.signalRInitialized,
+      chatServiceConnected: ChatService.isConnected,
+      connectionState: ChatService.connection?.state,
+      apiEndpoint: process.env.REACT_APP_API_ENDPOINT
+    };
+    
+    console.log('🔍 NotificationService Debug Info:', connectionInfo);
+    return connectionInfo;
+  }
+
+  // Force reconnect (for debugging)
+  async forceReconnect() {
+    console.log('🔄 NotificationService: Force reconnecting...');
+    this.signalRInitialized = false;
+    ChatService.isConnected = false;
+    
+    if (ChatService.connection) {
+      try {
+        await ChatService.connection.stop();
+      } catch (error) {
+        console.warn('Warning stopping connection:', error);
+      }
+      ChatService.connection = null;
+    }
+    
+    return await this.setupSignalRNotifications();
   }
 
   // Audio settings methods

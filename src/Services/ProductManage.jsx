@@ -1,6 +1,6 @@
+import axiosInstance from "./axiosConfig";
 import axios from "axios";
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-axios.defaults.withCredentials = true;
 
 // Tạo instance axios riêng cho upload
 const uploadAxios = axios.create({
@@ -16,37 +16,37 @@ const uploadAxios = axios.create({
 
 class ProductManage {
     GetProduct() {
-        return axios.get(`${API_ENDPOINT}/api/Products`);
+        return axiosInstance.get("/api/Products");
         
     }
 
     GetProductById(id) {
-        return axios.get(`${API_ENDPOINT}/api/Products/${id}`);
+        return axiosInstance.get(`/api/Products/${id}`);
     }
 
     GetVariantById(id) {
-        return axios.get(`${API_ENDPOINT}/api/Products/Variant/${id}`);
+        return axiosInstance.get(`/api/Products/Variant/${id}`);
     }
 
     GetProductImageById(id) {
-        return axios.get(`${API_ENDPOINT}/api/Products/${id}/images`);
+        return axiosInstance.get(`/api/Products/${id}/images`);
     }
 
     GetProductTypeByProductId(productId) {
-        return axios.get(`${API_ENDPOINT}/api/Products/VariantType/${productId}`);
+        return axiosInstance.get(`/api/Products/VariantType/${productId}`);
     }
 
     GetProductValueByTypeId(typeId) {
-        return axios.get(`${API_ENDPOINT}/api/Products/VariantValue/${typeId}`);
+        return axiosInstance.get(`/api/Products/VariantValue/${typeId}`);
     }
 
     UpdateProduct(productData) {
-        return axios.put(`${API_ENDPOINT}/api/Products/${productData.id}`, productData);
+        return axiosInstance.put(`/api/Products/${productData.id}`, productData);
     }
 
     async CreateProduct(productData) {
         try {
-            const reponse = await axios.post(`${API_ENDPOINT}/api/Products`, productData);
+            const reponse = await axiosInstance.post("/api/Products", productData);
             return reponse.data;
         } catch (error) {
             return {

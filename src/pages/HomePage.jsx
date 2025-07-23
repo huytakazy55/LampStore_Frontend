@@ -22,11 +22,19 @@ import NotificationService from '../Services/NotificationService';
 const HomePage = () => {
   useEffect(() => {
     // Khởi tạo thông báo real-time cho user
-    NotificationService.setupSignalRNotifications();
-    NotificationService.requestNotificationPermission();
-    NotificationService.cleanOldNotifications();
+    const initializeNotifications = async () => {
+      try {
+        await NotificationService.setupSignalRNotifications();
+        NotificationService.requestNotificationPermission();
+        NotificationService.cleanOldNotifications();
+        
+        console.log('📢 HomePage: Notification system initialized for user');
+      } catch (error) {
+        console.error('❌ HomePage: Failed to initialize notifications:', error);
+      }
+    };
 
-    console.log('📢 HomePage: Notification system initialized for user');
+    initializeNotifications();
   }, []);
 
   return (

@@ -7,6 +7,7 @@ import Products from '../Products-manage/Products';
 import Tags from '../Tags-manage/Tags';
 import Banners from '../Banner-manage/Banners';
 import AdminChatDashboard from '../Chat-manage/AdminChatDashboard';
+import Settings from '../Settings-manage/Settings';
 
 const RightBody = () => {
   const location = useLocation();
@@ -39,6 +40,10 @@ const RightBody = () => {
     else if(location.pathname === '/admin/chat')
     {
       return <AdminChatDashboard />
+    }
+    else if(location.pathname === '/admin/settings')
+    {
+      return <Settings />
     }
     return null;
   };

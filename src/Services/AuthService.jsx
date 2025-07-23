@@ -1,18 +1,17 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 import { toast } from 'react-toastify';
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-axios.defaults.withCredentials = true; // cho phép gửi cookie hay token
 
 class AuthService {
     signin(username, password, rememberme){
-        return axios.post(API_ENDPOINT+"/api/Account/SignIn", {
+        return axiosInstance.post("/api/Account/SignIn", {
             username: username,
             password: password,
             rememberme: rememberme
-        }, { withCredentials: true });
+        });
     }
     signup(username, email, password) {
-        return axios.post(API_ENDPOINT+"/api/Account/SignUp", {
+        return axiosInstance.post("/api/Account/SignUp", {
             username: username,
             email: email,
             password: password
@@ -20,7 +19,7 @@ class AuthService {
     }
 
     googleSignIn(googleUserData) {
-        return axios.post(API_ENDPOINT+"/api/Account/GoogleSignIn", {
+        return axiosInstance.post("/api/Account/GoogleSignIn", {
             email: googleUserData.email,
             name: googleUserData.name,
             picture: googleUserData.picture,
@@ -31,9 +30,7 @@ class AuthService {
 
     async logout() {
         try {
-            const token = localStorage.getItem("token");
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            await axios.post(API_ENDPOINT + "/api/Account/logout");
+            await axiosInstance.post("/api/Account/logout");
             localStorage.clear();
             await toast.success("Đã đăng xuất tài khoản!");
             window.location.reload();
@@ -46,9 +43,7 @@ class AuthService {
 
     async profile() {
         try {
-            const token = localStorage.getItem("token");
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            const response = await axios.get(API_ENDPOINT + "/api/Account/profile");
+            const response = await axiosInstance.get("/api/Account/profile");
             return response.data;
         } catch (error) {
             return null;
@@ -56,7 +51,7 @@ class AuthService {
     }
 
     ForgotPassword(emailOrUsername) {
-        return axios.post(API_ENDPOINT + "/api/Account/ForgotPassword", {
+        return axiosInstance.post("/api/Account/ForgotPassword", {
             emailOrUsername: emailOrUsername
         });
     }
