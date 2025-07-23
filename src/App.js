@@ -1,6 +1,7 @@
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Routes, useLocation, UNSAFE_future } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import HomePage from './pages/HomePage';
 import AdminDashboard from './components/admin/Dashboard/AdminDashboard/AdminDashboard';
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -10,6 +11,11 @@ import TokenExpiryWarning from './components/common/TokenExpiryWarning';
 import './App.css';
 // Import axiosConfig để khởi tạo interceptor
 import './Services/axiosConfig';
+
+// Expose toast to global scope for NotificationService
+if (typeof window !== 'undefined') {
+  window.toast = toast;
+}
 
 function AppContent() {
   const location = useLocation();

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Card, Row, Col, Statistic, Button, Table, Tag, Space, Modal, Select, Input, DatePicker } from 'antd';
+import { Card, Row, Col, Statistic, Button, Table, Tag, Space, Modal, Select, Input, DatePicker, message } from 'antd';
 import { MessageOutlined, UserOutlined, ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import ChatService from '../../../../Services/ChatService';
 import AdminChatWindow from './AdminChatWindow';
 import { useDispatch, useSelector } from 'react-redux';
 import { setChats } from '../../../../redux/slices/chatSlice';
 import { ThemeContext } from '../../../../ThemeContext';
+import NotificationService from '../../../../Services/NotificationService';
+import './AdminChatDashboard.css';
 
 const AdminChatDashboard = () => {
   const dispatch = useDispatch();
@@ -21,10 +23,136 @@ const AdminChatDashboard = () => {
   const [priorityFilter, setPriorityFilter] = useState(null);
   const [dateRange, setDateRange] = useState([]);
   const { themeColors } = useContext(ThemeContext);
+  const [realtimeNotifications, setRealtimeNotifications] = useState([]);
 
   useEffect(() => {
     loadDashboardData();
+    // Khởi tạo notification system cho admin chat dashboard
+    const initAdminNotifications = async () => {
+      try {
+        console.log('🎯 AdminChatDashboard: Initializing notifications...');
+        await NotificationService.setupSignalRNotifications();
+        console.log('✅ AdminChatDashboard: Notifications initialized');
+        
+        // Setup listener cho real-time updates
+        setupRealTimeListeners();
+      } catch (error) {
+        console.error('❌ AdminChatDashboard: Failed to initialize notifications:', error);
+      }
+    };
+    initAdminNotifications();
+
+    // Cleanup
+    return () => {
+      removeRealTimeListeners();
+    };
   }, []);
+
+  // Setup real-time listeners cho admin dashboard
+  const setupRealTimeListeners = () => {
+    // Listen for new messages từ users
+    window.addEventListener('newMessage', handleNewMessageNotification);
+    
+    // Listen for in-app notifications (fallback khi browser notification bị từ chối)
+    window.addEventListener('inAppNotification', handleInAppNotification);
+  };
+
+  const removeRealTimeListeners = () => {
+    window.removeEventListener('newMessage', handleNewMessageNotification);
+    window.removeEventListener('inAppNotification', handleInAppNotification);
+  };
+
+  const handleInAppNotification = (event) => {
+    const notification = event.detail;
+    console.log('📱 AdminChatDashboard received in-app notification:', notification);
+    
+    // Hiển thị notification popup bằng Ant Design message
+    message.info({
+      content: `📨 ${notification.title}: ${notification.message}`,
+      duration: 6,
+      style: {
+        marginTop: '60px',
+      }
+    });
+  };
+
+  const handleNewMessageNotification = (event) => {
+    const messageData = event.detail;
+    console.log('📨 AdminChatDashboard received new message:', messageData);
+    
+    // Chỉ xử lý nếu có thông tin đặc biệt từ group "admins" (tin nhắn từ user)
+    if (messageData.ChatSubject || messageData.UserName) {
+      const notification = {
+        id: Date.now(),
+        chatId: messageData.ChatId,
+        userName: messageData.UserName || 'Khách hàng',
+        content: messageData.Content || '',
+        subject: messageData.ChatSubject || '',
+        timestamp: new Date().toLocaleTimeString('vi-VN'),
+        isNew: true
+      };
+      
+      // Thêm vào list notifications
+      setRealtimeNotifications(prev => [notification, ...prev.slice(0, 4)]); // Chỉ giữ 5 notifications gần nhất
+      
+      // Hiển thị toast notification trong dashboard
+      message.info(
+        `📨 Tin nhắn mới từ ${messageData.UserName || 'khách hàng'}: "${(messageData.Content || '').substring(0, 50)}..."`,
+        4
+      );
+      
+      // Refresh chat list để cập nhật
+      setTimeout(() => {
+        loadDashboardData();
+      }, 1000);
+      
+      // Tự động ẩn notification sau 30 giây
+      setTimeout(() => {
+        setRealtimeNotifications(prev => prev.map(n => 
+          n.id === notification.id ? { ...n, isNew: false } : n
+        ));
+      }, 30000);
+    }
+  };
+
+  const clearNotification = (notificationId) => {
+    setRealtimeNotifications(prev => prev.filter(n => n.id !== notificationId));
+  };
+
+  // Debug functions
+  const debugSignalRConnection = () => {
+    const debugInfo = NotificationService.debugConnection();
+    console.log('🔍 Debug Info:', debugInfo);
+    message.info(`SignalR Connected: ${debugInfo.signalRInitialized && debugInfo.chatServiceConnected}`);
+  };
+
+  const forceReconnectSignalR = async () => {
+    try {
+      message.loading('Đang kết nối lại SignalR...', 2);
+      const result = await NotificationService.forceReconnect();
+      if (result) {
+        message.success('Kết nối lại thành công!');
+      } else {
+        message.error('Kết nối lại thất bại');
+      }
+    } catch (error) {
+      message.error('Lỗi khi kết nối lại SignalR');
+    }
+  };
+
+  const testAdminNotification = () => {
+    NotificationService.addTestNotification();
+    message.info('Đã tạo test notification');
+  };
+
+  const testJoinAdminsGroup = async () => {
+    try {
+      const result = await ChatService.joinAdminsGroupIfAdmin();
+      message.info(`Join admins group: ${result ? 'Thành công' : 'Thất bại'}`);
+    } catch (error) {
+      message.error('Lỗi khi join admins group');
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -254,7 +382,127 @@ const AdminChatDashboard = () => {
           <span style={{ margin: '0 8px', color: '#bbb' }}>/</span>
           <span style={{ color: themeColors.StartColorLinear }}>Quản lý Chat hỗ trợ</span>
         </div>
+        
+                 {/* Debug Panel - chỉ hiển thị trong dev mode */}
+         {process.env.NODE_ENV === 'development' && (
+           <div className="debug-panel">
+             <div className="debug-panel-title">
+               🛠️ Debug Panel (Dev Mode Only)
+             </div>
+             <div style={{ fontSize: '12px', marginBottom: '8px', padding: '4px', background: '#fff', borderRadius: '4px' }}>
+               <strong>Notification Permission:</strong> 
+               <span style={{ 
+                 marginLeft: '4px',
+                 padding: '2px 6px', 
+                 borderRadius: '3px',
+                 background: Notification.permission === 'granted' ? '#52c41a' : 
+                           Notification.permission === 'denied' ? '#ff4d4f' : '#faad14',
+                 color: 'white',
+                 fontSize: '11px'
+               }}>
+                 {Notification.permission === 'granted' ? '✅ Granted' : 
+                  Notification.permission === 'denied' ? '❌ Denied' : '⏳ Default'}
+               </span>
+               {Notification.permission === 'denied' && (
+                 <div style={{ fontSize: '10px', color: '#ff4d4f', marginTop: '2px' }}>
+                   💡 Click 🔒 icon next to URL → Notifications → Allow
+                 </div>
+               )}
+             </div>
+             <Space wrap>
+               <Button size="small" onClick={debugSignalRConnection}>
+                 Kiểm tra kết nối
+               </Button>
+               <Button size="small" type="primary" onClick={forceReconnectSignalR}>
+                 Kết nối lại SignalR
+               </Button>
+               <Button size="small" onClick={testAdminNotification}>
+                 Test thông báo
+               </Button>
+               <Button size="small" onClick={testJoinAdminsGroup}>
+                 Join group admins
+               </Button>
+               <Button size="small" onClick={() => {
+                 NotificationService.testAdminNotificationSystem();
+                 message.info('Kiểm tra console để xem kết quả test');
+               }}>
+                 Test toàn bộ hệ thống
+               </Button>
+               <Button size="small" onClick={async () => {
+                 const result = await NotificationService.testAdminGroupMembership();
+                 message.info(`Admin group test: ${result ? 'Thành công' : 'Thất bại'}`);
+               }}>
+                 Test admin group
+               </Button>
+               <Button size="small" onClick={async () => {
+                 try {
+                   const granted = await NotificationService.requestNotificationPermission();
+                   message.info(`Notification permission: ${granted ? 'Được cấp' : 'Bị từ chối'}`);
+                 } catch (error) {
+                   message.error('Lỗi khi yêu cầu permission');
+                 }
+               }}>
+                 Request permission
+               </Button>
+             </Space>
+          </div>
+                 )}
       </div>
+
+      {/* Real-time Notifications Panel */}
+      {realtimeNotifications.length > 0 && (
+        <div style={{ 
+          position: 'fixed', 
+          top: 100, 
+          right: 24, 
+          zIndex: 1000,
+          maxWidth: 350,
+          maxHeight: 400,
+          overflowY: 'auto'
+        }}>
+                     {realtimeNotifications.filter(n => n.isNew).map(notification => (
+             <div 
+               key={notification.id}
+               className="realtime-notification notification-slide-in"
+             >
+               <div className="notification-header">
+                 📨 TIN NHẮN MỚI - {notification.timestamp}
+               </div>
+               <div className="notification-user">
+                 👤 {notification.userName}
+               </div>
+               <div className="notification-subject">
+                 💬 Chủ đề: {notification.subject}
+               </div>
+               <div className="notification-content">
+                 "{notification.content.substring(0, 100)}{notification.content.length > 100 ? '...' : ''}"
+               </div>
+               <div className="notification-actions">
+                 <Button 
+                   size="small" 
+                   type="primary"
+                   onClick={() => {
+                     const chat = chats.find(c => c.id === notification.chatId);
+                     if (chat) {
+                       openChat(chat);
+                       clearNotification(notification.id);
+                     }
+                   }}
+                 >
+                   Xem chat
+                 </Button>
+                 <Button 
+                   size="small" 
+                   onClick={() => clearNotification(notification.id)}
+                 >
+                   Đóng
+                 </Button>
+               </div>
+             </div>
+           ))}
+        </div>
+      )}
+
       {/* Statistics Cards */}
       <Row gutter={24} style={{ margin: '24px' }}>
         <Col flex={1}>

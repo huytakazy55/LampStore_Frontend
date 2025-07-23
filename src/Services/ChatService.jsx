@@ -52,6 +52,8 @@ class ChatService {
         // Nếu đã kết nối thành công, return true
         if (this.isConnected && this.connection && this.connection.state === signalR.HubConnectionState.Connected) {
             console.log('🔗 SignalR already connected');
+            // Nếu là admin, join group admins
+            this.joinAdminsGroupIfAdmin();
             return true;
         }
 
@@ -96,7 +98,12 @@ class ChatService {
 
         // Bắt đầu kết nối mới
         console.log('🔗 Starting new SignalR connection...');
-        return await this.startConnection();
+        const connected = await this.startConnection();
+        if (connected) {
+            // Nếu là admin, join group admins
+            await this.joinAdminsGroupIfAdmin();
+        }
+        return connected;
     }
 
     async disconnect() {
@@ -117,8 +124,8 @@ class ChatService {
 
         // Nhận tin nhắn real-time
         this.connection.on("ReceiveMessage", (message) => {
-            console.log("📩 Received real-time message:", message);
-            // Emit custom event for components to listen
+            console.log("📩 [SignalR] Received real-time message:", message);
+            // Luôn phát window event cho NotificationService
             window.dispatchEvent(new CustomEvent("newMessage", { detail: message }));
         });
 
@@ -164,14 +171,37 @@ class ChatService {
 
     // Chat management
     async joinChat(chatId) {
-        if (this.connection && this.isConnected) {
-            await this.connection.invoke("JoinChat", chatId);
+        try {
+            if (this.connection && this.isConnected) {
+                console.log('🏠 Joining chat room:', chatId);
+                await this.connection.invoke("JoinChat", chatId);
+                console.log('✅ Successfully joined chat room:', chatId);
+                return true;
+            } else {
+                console.warn('⚠️ Cannot join chat - SignalR not connected:', {
+                    hasConnection: !!this.connection,
+                    isConnected: this.isConnected,
+                    connectionState: this.connection?.state
+                });
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Error joining chat room:', chatId, error);
+            return false;
         }
     }
 
     async leaveChat(chatId) {
-        if (this.connection && this.isConnected) {
-            await this.connection.invoke("LeaveChat", chatId);
+        try {
+            if (this.connection && this.isConnected) {
+                console.log('🚪 Leaving chat room:', chatId);
+                await this.connection.invoke("LeaveChat", chatId);
+                console.log('✅ Successfully left chat room:', chatId);
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ Error leaving chat room:', chatId, error);
+            return false;
         }
     }
 
@@ -205,11 +235,29 @@ class ChatService {
     // Enhanced send message (API + SignalR)
     async sendMessage(chatId, content, type = 1) {
         try {
+            console.log('📤 User sending message:', { chatId, content, type });
+            
             // 1. Send via API first (persistent storage)
             const result = await this.sendMessageApi(chatId, content, type);
+            console.log('✅ Message sent via API:', result);
+            
+            // 2. Send via SignalR for real-time notification (thông báo cho admin)
+            if (this.connection && this.isConnected) {
+                try {
+                    console.log('📡 Sending message via SignalR to notify admin...');
+                    await this.connection.invoke("SendMessage", chatId, content);
+                    console.log('✅ Message sent via SignalR for real-time notification');
+                } catch (signalRError) {
+                    console.warn('⚠️ SignalR send failed (API still succeeded):', signalRError);
+                    // API đã thành công, nên không throw error
+                }
+            } else {
+                console.warn('⚠️ SignalR not connected, message sent via API only');
+            }
+            
             return result;
         } catch (error) {
-            console.error("Error sending message:", error);
+            console.error("❌ Error sending message:", error);
             throw error;
         }
     }
@@ -373,6 +421,73 @@ class ChatService {
         } catch (error) {
             console.error('🧪 Test Error:', error);
             return null;
+        }
+    }
+
+    // Join group 'admins' để nhận notification toàn hệ thống
+    async joinAdminsGroup() {
+        try {
+            if (this.connection && this.isConnected) {
+                console.log('🎯 Joining admins group via SignalR...');
+                await this.connection.invoke("JoinAdminsGroup");
+                console.log('✅ Successfully joined admins group');
+                return true;
+            } else {
+                console.warn('⚠️ Cannot join admins group - connection not ready:', {
+                    hasConnection: !!this.connection,
+                    isConnected: this.isConnected,
+                    connectionState: this.connection?.state
+                });
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Error joining admins group:', error);
+            return false;
+        }
+    }
+
+    async leaveAdminsGroup() {
+        try {
+            if (this.connection && this.isConnected) {
+                console.log('🚪 Leaving admins group via SignalR...');
+                await this.connection.invoke("LeaveAdminsGroup");
+                console.log('✅ Successfully left admins group');
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ Error leaving admins group:', error);
+            return false;
+        }
+    }
+
+    // Hàm kiểm tra role và join group admins nếu là admin
+    async joinAdminsGroupIfAdmin() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn('📢 No token found, cannot check admin role');
+                return false;
+            }
+            
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const role = payload.role || '';
+            const userId = payload.nameid || payload.sub || payload.userId || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+            const userName = payload.unique_name || payload.name || 'Unknown';
+            
+            console.log('🔍 Checking user role:', { role, userId, userName });
+            
+            if (role === 'Administrator' || role === 'Admin') {
+                console.log('✅ User is admin, joining admins group...');
+                await this.joinAdminsGroup();
+                console.log('🎯 Successfully joined admins group for user:', userName);
+                return true;
+            } else {
+                console.log('👤 User is not admin, role:', role);
+                return false;
+            }
+        } catch (e) {
+            console.error('❌ Error checking admin role:', e);
+            return false;
         }
     }
 }

@@ -139,6 +139,8 @@ class AudioService {
 
   // Phát âm thanh thông báo chat
   playNotificationSound(notificationType = 'notification') {
+    console.log(`🔊 AudioService: Playing notification sound type: ${notificationType}`);
+    
     let soundKey;
     
     switch (notificationType) {
@@ -153,6 +155,10 @@ class AudioService {
         soundKey = 'notification';
         break;
     }
+    
+    console.log(`🔊 AudioService: Mapped to sound key: ${soundKey}`);
+    console.log(`🔊 AudioService: Audio enabled: ${this.isEnabled}`);
+    console.log(`🔊 AudioService: Volume: ${Math.round(this.volume * 100)}%`);
     
     this.playSound(soundKey);
   }

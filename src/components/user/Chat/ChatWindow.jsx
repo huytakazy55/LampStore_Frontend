@@ -111,15 +111,27 @@ const ChatWindow = ({ onClose }) => {
 
   const initializeSignalR = async () => {
     try {
+      console.log('🔗 User ChatWindow: Initializing SignalR connection...');
       const connected = await ChatService.initializeConnection();
       if (connected) {
-        console.log('🔗 SignalR connected in ChatWindow');
+        console.log('✅ User ChatWindow: SignalR connected successfully');
         setupRealTimeListeners();
+        
+        // Test connection bằng cách kiểm tra user role
+        const token = localStorage.getItem('token');
+        if (token) {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          console.log('👤 User info:', {
+            userId: payload.nameid || payload.sub,
+            role: payload.role || 'User',
+            userName: payload.unique_name
+          });
+        }
       } else {
-        console.warn('⚠️ SignalR connection failed, using API only');
+        console.warn('⚠️ User ChatWindow: SignalR connection failed, using API only');
       }
     } catch (error) {
-      console.error('❌ SignalR initialization error:', error);
+      console.error('❌ User ChatWindow: SignalR initialization error:', error);
     }
   };
 
@@ -359,31 +371,48 @@ const ChatWindow = ({ onClose }) => {
   };
 
   const openChat = async (chat) => {
-    // Leave previous chat room if any
-    if (currentChat) {
-      await ChatService.leaveChat(currentChat.id);
+    try {
+      console.log('👤 User opening chat:', { chatId: chat.id, subject: chat.subject });
+      
+      // Leave previous chat room if any
+      if (currentChat) {
+        console.log('👤 User leaving previous chat:', currentChat.id);
+        await ChatService.leaveChat(currentChat.id);
+      }
+      
+      setCurrentChat(chat);
+      setCurrentView('chat');
+      
+      // Join new chat room for real-time updates
+      console.log('👤 User joining chat room:', chat.id);
+      await ChatService.joinChat(chat.id);
+      console.log('✅ User successfully joined chat room:', chat.id);
+      
+      loadMessages(chat.id);
+    } catch (error) {
+      console.error('❌ User error opening chat:', error);
     }
-    
-    setCurrentChat(chat);
-    setCurrentView('chat');
-    
-    // Join new chat room for real-time updates
-    await ChatService.joinChat(chat.id);
-    
-    loadMessages(chat.id);
   };
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentChat) return;
 
     try {
+      console.log('👤 User sending message:', { 
+        chatId: currentChat.id, 
+        content: newMessage.substring(0, 50) + '...',
+        chatSubject: currentChat.subject 
+      });
+      
       await ChatService.sendMessage(currentChat.id, newMessage);
+      console.log('✅ User message sent successfully');
+      
       setNewMessage('');
       
       // Reload messages to get updated list (will include the new message)
       await loadMessages(currentChat.id);
     } catch (error) {
-      // Handle error silently
+      console.error('❌ User error sending message:', error);
     }
   };
 
@@ -687,6 +716,26 @@ const ChatWindow = ({ onClose }) => {
     </div>
   )
 
+  // Debug functions for development  
+  const debugSignalR = () => {
+    console.log('🔍 User Chat Debug Info:', {
+      isConnected: ChatService.isConnected,
+      connectionState: ChatService.connection?.state,
+      currentChatId: currentChat?.id,
+      hasToken: !!localStorage.getItem('token')
+    });
+  };
+
+  const testSignalRConnection = async () => {
+    try {
+      console.log('🧪 Testing SignalR connection...');
+      const result = await ChatService.testConnection();
+      console.log('🧪 Connection test result:', result);
+    } catch (error) {
+      console.error('🧪 Connection test failed:', error);
+    }
+  };
+
   // New Chat View
   const renderNewChatView = () => (
     <div className="flex flex-col h-full">
@@ -709,7 +758,7 @@ const ChatWindow = ({ onClose }) => {
         </button>
       </div>
       {/* Form */}
-      <div className="flex-1 p-4 space-y-4">
+      <div className="flex-1 p-4 space-y-4"> 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Tiêu đề <span className="text-red-500">*</span>

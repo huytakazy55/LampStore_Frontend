@@ -7,6 +7,7 @@ class NotificationService {
   constructor() {
     this.storageKey = 'chat_notifications';
     this.signalRInitialized = false;
+    this.hasSetupListeners = false; // Thêm flag để tránh addEventListener nhiều lần
     this.init();
   }
 
@@ -97,15 +98,21 @@ class NotificationService {
 
   // Tạo thông báo tin nhắn mới
   createChatNotification(messageData) {
+    
     const currentUser = this.getCurrentUserInfo();
-    if (!currentUser) return;
+    if (!currentUser) {
+      console.warn('📢 NotificationService: No current user, cannot create notification');
+      return;
+    }
 
     // Phân biệt admin và user
     const isAdmin = currentUser.role === 'Administrator' || currentUser.role === 'Admin';
-    const isFromCurrentUser = messageData.senderId === currentUser.id;
+    const isFromCurrentUser = (messageData.SenderId || messageData.senderId) === currentUser.id;
 
     // Chỉ tạo thông báo nếu tin nhắn không phải từ user hiện tại
-    if (isFromCurrentUser) return;
+    if (isFromCurrentUser) {
+      return;
+    }
 
     let title, message, priority;
 
@@ -138,14 +145,20 @@ class NotificationService {
 
   // Thêm thông báo mới
   addNotification(notificationData) {
+    
     store.dispatch(addNotification(notificationData));
+    
     this.saveToStorage();
 
-    // Phát âm thanh thông báo
+    // Phát âm thanh thông báo (luôn chạy)
     this.playNotificationSound(notificationData);
 
     // Hiển thị browser notification nếu được phép
     this.showBrowserNotification(notificationData);
+    
+    // Fallback: Hiển thị in-app notification nếu browser notification bị từ chối
+    this.showInAppNotification(notificationData);
+    
   }
 
   // Phát âm thanh thông báo
@@ -172,7 +185,6 @@ class NotificationService {
       // Phát âm thanh với priority
       AudioService.playNotificationSound(soundType);
       
-      console.log(`🔊 Playing notification sound: ${soundType} for ${isAdmin ? 'admin' : 'user'}`);
     } catch (error) {
       console.error('Error playing notification sound:', error);
     }
@@ -180,9 +192,14 @@ class NotificationService {
 
   // Hiển thị browser notification
   showBrowserNotification(notification) {
+    console.log('🔔 NotificationService: Checking browser notification permission...');
+    console.log('🔔 Notification API available:', 'Notification' in window);
+    console.log('🔔 Permission status:', Notification.permission);
+    
     if ('Notification' in window && Notification.permission === 'granted') {
       try {
-        new Notification(notification.title, {
+        console.log('🔔 NotificationService: Creating browser notification...');
+        const browserNotification = new Notification(notification.title, {
           body: notification.message,
           icon: '/favicon.ico',
           badge: '/favicon.ico',
@@ -190,9 +207,55 @@ class NotificationService {
           requireInteraction: false,
           silent: false
         });
+        
+        console.log('✅ NotificationService: Browser notification created successfully');
+        
+        // Auto close after 5 seconds
+        setTimeout(() => {
+          browserNotification.close();
+        }, 5000);
+        
       } catch (error) {
-        console.error('Error showing browser notification:', error);
+        console.error('❌ NotificationService: Error showing browser notification:', error);
       }
+    } else {
+      console.warn('⚠️ NotificationService: Cannot show browser notification - permission not granted or API not available');
+      if (Notification.permission === 'denied') {
+        console.warn('⚠️ Browser notifications are BLOCKED. User needs to enable them manually.');
+      }
+    }
+  }
+
+  // Hiển thị in-app notification (fallback)
+  showInAppNotification(notification) {
+    console.log('📱 NotificationService: Showing in-app notification...');
+    
+    try {
+      // Tạo toast notification bằng React-Toastify
+      if (typeof window !== 'undefined' && window.toast) {
+        const toastContent = `${notification.title}: ${notification.message}`;
+        window.toast.info(toastContent, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        console.log('✅ NotificationService: Toast notification shown');
+      } else {
+        // Fallback: console notification
+        console.log(`🔔 IN-APP NOTIFICATION: ${notification.title} - ${notification.message}`);
+      }
+      
+      // Dispatch custom event cho các component khác (như AdminChatDashboard) 
+      window.dispatchEvent(new CustomEvent('inAppNotification', { 
+        detail: notification 
+      }));
+      
+    } catch (error) {
+      console.error('❌ NotificationService: Error showing in-app notification:', error);
     }
   }
 
@@ -241,17 +304,79 @@ class NotificationService {
     }
   }
 
+  // Hàm lấy notification missed khi vừa đăng nhập (chỉ cho admin)
+  async fetchMissedChatNotifications() {
+    const currentUser = this.getCurrentUserInfo();
+    if (!currentUser || !(currentUser.role === 'Administrator' || currentUser.role === 'Admin')) return;
+
+    try {
+      // Lấy tất cả chat
+      const allChats = await ChatService.getAllChats();
+      const chatList = allChats?.$values || allChats || [];
+      // Lấy notification đã có
+      const state = store.getState().notification;
+      const notifiedChatIds = new Set(state.notifications.filter(n => n.type === 'chat').map(n => n.chatId));
+
+      chatList.forEach(chat => {
+        // Lấy tin nhắn cuối cùng
+        const lastMsg = chat.messages?.$values ? chat.messages.$values[chat.messages.$values.length - 1] : (chat.messages ? chat.messages[chat.messages.length - 1] : null);
+        if (!lastMsg) return;
+        // Nếu tin nhắn chưa đọc, không phải do admin gửi, và chưa có notification
+        if (!lastMsg.isRead && lastMsg.senderId !== currentUser.id && !notifiedChatIds.has(chat.id)) {
+          this.createChatNotification({
+            chatId: chat.id,
+            senderId: lastMsg.senderId,
+            senderName: lastMsg.sender?.userName || 'Khách hàng',
+            content: lastMsg.content,
+            createdAt: lastMsg.createdAt,
+            priority: chat.priority,
+            senderAvatar: lastMsg.sender?.avatar || undefined
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching missed chat notifications:', error);
+    }
+  }
+
   // Khởi tạo listener cho SignalR
   async setupSignalRNotifications() {
-    console.log('📢 NotificationService: Setting up SignalR notifications...');
+    if (this.hasSetupListeners) return; // Nếu đã setup thì không setup lại
+    this.hasSetupListeners = true;
+
+    console.log('🚨 📢 NotificationService: Setting up SignalR notifications...');
+    console.log('🚨 📢 NotificationService: Adding newMessage event listener...');
     
+    // Bổ sung: lấy missed notification trước khi lắng nghe signalR
+    await this.fetchMissedChatNotifications();
     // Lắng nghe sự kiện tin nhắn mới từ SignalR
     window.addEventListener('newMessage', (event) => {
       const messageData = event.detail;
-      console.log('📩 NotificationService: Received newMessage event:', messageData);
-      this.createChatNotification(messageData);
+      const currentUser = this.getCurrentUserInfo();
+      if (!currentUser) return;
+
+      const isAdmin = currentUser.role === 'Administrator' || currentUser.role === 'Admin';
+      const isFromCurrentUser = (messageData.SenderId || messageData.senderId) === currentUser.id;
+
+      // Nếu là admin và tin nhắn không phải do mình gửi thì tạo notification
+      if (isAdmin && !isFromCurrentUser) {
+        this.createChatNotification({
+          chatId: messageData.ChatId || messageData.chatId,
+          senderId: messageData.SenderId || messageData.senderId,
+          senderName: messageData.UserName || messageData.SenderName || messageData.senderName || 'Khách hàng',
+          content: messageData.Content || messageData.content,
+          createdAt: messageData.Timestamp || messageData.timestamp || messageData.createdAt,
+          priority: messageData.Priority || messageData.priority,
+          subject: messageData.ChatSubject,
+          senderAvatar: messageData.SenderAvatar || messageData.senderAvatar || undefined
+        });
+      } else if (!isAdmin && !isFromCurrentUser) {
+        // User nhận phản hồi từ admin
+        this.createChatNotification(messageData);
+      }
     });
 
+    console.log('🚨 📢 NotificationService: newMessage event listener added successfully!');
     console.log('📢 NotificationService: SignalR listeners setup completed');
 
     // Tự động khởi tạo kết nối SignalR với retry logic
@@ -387,9 +512,139 @@ class NotificationService {
   testNotificationSound() {
     AudioService.testSound('notification');
   }
+
+  // Debug function để check event listeners
+  checkEventListeners() {
+    console.log('🔍 Checking event listeners...');
+    
+    // Test manual event dispatch
+    console.log('🧪 Testing manual newMessage event dispatch...');
+    const testEvent = new CustomEvent('newMessage', {
+      detail: {
+        ChatId: 'manual-test-123',
+        SenderId: 'manual-user-456', 
+        UserName: 'Manual Test User',
+        SenderName: 'Manual Test User',
+        Content: 'Manual test message to check event listener',
+        Timestamp: new Date().toISOString(),
+        Type: 'Text',
+        ChatSubject: 'Manual Test Subject',
+        Priority: 2
+      }
+    });
+    
+    console.log('🧪 Dispatching manual event...');
+    window.dispatchEvent(testEvent);
+    console.log('🧪 Manual event dispatched');
+    
+    return true;
+  }
+
+  // Test function để debug notification system
+  testAdminNotificationSystem() {
+    console.log('🧪 Testing admin notification system...');
+    
+    // 1. Kiểm tra user role
+    const currentUser = this.getCurrentUserInfo();
+    console.log('🧪 Current user:', currentUser);
+    
+    if (!currentUser) {
+      console.error('❌ No current user found');
+      return false;
+    }
+    
+    const isAdmin = currentUser.role === 'Administrator' || currentUser.role === 'Admin';
+    console.log('🧪 Is admin?', isAdmin);
+    
+    if (!isAdmin) {
+      console.warn('⚠️ User is not admin, cannot test admin notifications');
+      return false;
+    }
+    
+    // 2. Test manual newMessage event
+    console.log('🧪 Dispatching manual newMessage event...');
+    const testMessage = {
+      ChatId: 'test-chat-123',
+      SenderId: 'test-user-456',
+      UserName: 'Test User',
+      SenderName: 'Test User',
+      Content: 'This is a test message from user to admin',
+      Timestamp: new Date().toISOString(),
+      Type: 'Text',
+      ChatSubject: 'Test Chat Subject',
+      Priority: 2
+    };
+    
+    window.dispatchEvent(new CustomEvent('newMessage', { detail: testMessage }));
+    
+    // 3. Test direct notification creation
+    console.log('🧪 Creating direct test notification...');
+    this.createChatNotification({
+      chatId: 'test-direct-789',
+      senderId: 'test-user-direct',
+      senderName: 'Direct Test User',
+      content: 'Direct test notification message',
+      createdAt: new Date().toISOString(),
+      priority: 3,
+      subject: 'Direct Test Subject'
+    });
+    
+    // 4. Test audio service
+    console.log('🧪 Testing audio service...');
+    try {
+      AudioService.playNotificationSound('chat_received');
+      console.log('✅ Audio test completed');
+    } catch (error) {
+      console.error('❌ Audio test failed:', error);
+    }
+    
+    // 5. Test notification permissions
+    console.log('🧪 Testing notification permissions...');
+    console.log('Permission status:', Notification.permission);
+    if (Notification.permission === 'denied') {
+      console.warn('⚠️ Browser notifications are BLOCKED!');
+      console.log('📱 Testing fallback in-app notification...');
+      this.showInAppNotification({
+        type: 'chat',
+        title: 'Test Fallback Notification',
+        message: 'This is a fallback notification because browser notifications are blocked',
+        chatId: 'test-fallback',
+        priority: 'normal'
+      });
+    }
+    
+    return true;
+  }
+
+  // Test SignalR admin group membership
+  async testAdminGroupMembership() {
+    console.log('🧪 Testing admin group membership...');
+    
+    try {
+      const result = await ChatService.joinAdminsGroupIfAdmin();
+      console.log('🧪 Admin group join result:', result);
+      
+      // Test SignalR connection
+      const debugInfo = ChatService.debugConnection ? ChatService.debugConnection() : this.debugConnection();
+      console.log('🧪 SignalR debug info:', debugInfo);
+      
+      return result;
+    } catch (error) {
+      console.error('❌ Admin group test failed:', error);
+      return false;
+    }
+  }
 }
 
 // Tạo instance duy nhất
 const notificationService = new NotificationService();
+
+// Expose to global scope for debugging
+if (typeof window !== 'undefined') {
+  window.NotificationService = notificationService;
+  window.testAdminNotification = () => notificationService.testAdminNotificationSystem();
+  window.testAdminGroup = () => notificationService.testAdminGroupMembership();
+  window.checkEventListeners = () => notificationService.checkEventListeners();
+}
 
 export default notificationService; 
