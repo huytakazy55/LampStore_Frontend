@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { Table, Input, Button, Breadcrumb, Pagination, Modal, message, Space, Row, Col, Card } from 'antd';
+import { Table, Input, Button, Breadcrumb, Pagination, Modal, message, Space, Row, Col, Card, Image, Switch } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ThemeContext } from '../../../../ThemeContext';
 import CategoryManage from '../../../../Services/CategoryManage';
@@ -64,6 +64,45 @@ const Category = () => {
     });
   };
 
+  const handleToggleDisplay = async (id, currentStatus, categoryName) => {
+    try {
+      const category = categoryData.find(cat => cat.id === id);
+      if (!category) {
+        console.error('Category not found:', id);
+        return;
+      }
+
+      console.log('Toggling display for:', { id, categoryName, currentStatus, newStatus: !currentStatus });
+
+      const response = await CategoryManage.UpdateCategory(
+        id, 
+        category.name, 
+        category.description, 
+        category.imageUrl, 
+        !currentStatus
+      );
+
+      console.log('Update response:', response);
+
+      if (response.status === 200 || response.status === 204) {
+        setCategoryData(prev => {
+          const newData = prev.map(cat => 
+            cat.id === id ? { ...cat, isDisplayed: !currentStatus } : cat
+          );
+          console.log('Updated categoryData:', newData);
+          return newData;
+        });
+        message.success(`Đã ${!currentStatus ? 'hiển thị' : 'ẩn'} danh mục "${categoryName}"`);
+      } else {
+        console.error('Unexpected response status:', response.status);
+        message.error('Có lỗi xảy ra khi cập nhật trạng thái hiển thị');
+      }
+    } catch (error) {
+      message.error('Có lỗi xảy ra khi cập nhật trạng thái hiển thị');
+      console.error('Toggle display error:', error);
+    }
+  };
+
   const filteredCategories = useMemo(() => {
     return categoryData.filter(category =>
       category.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -78,6 +117,28 @@ const Category = () => {
       width: 60,
       align: 'center',
       render: (text, record, index) => (page - 1) * itemsPerPage + index + 1,
+    },
+    {
+      title: 'Ảnh',
+      dataIndex: 'imageUrl',
+      key: 'imageUrl',
+      width: 80,
+      align: 'center',
+      render: (imageUrl) => (
+        imageUrl ? (
+          <Image
+            width={50}
+            height={50}
+            src={`${process.env.REACT_APP_API_ENDPOINT}${imageUrl}`}
+            style={{ objectFit: 'cover', borderRadius: 4 }}
+            fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsSQpBobtQPdLciLEVJYzMPBHMDBsayhILEqEO4DxG0txmrERhM29nYGBddr//5/DGRjYNRkY/l7////39v///y4Dmn+LgeHANwDrkl1AuO+pmgAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAwqADAAQAAAABAAAAwwAAAAD9b/HnAAAHlklEQVR4Ae3dP3Ik1RUG8A+9Ggtsu1VUYbMGYrIGgdWAgtqM7qHr3Tlu3Vsr7nXZR6jUagDMH0Eh3vW2yIiLFQUJqShJI2kyj9SdNepI+vGe5Pql5+dft+"
+          />
+        ) : (
+          <div style={{ width: 50, height: 50, backgroundColor: '#f0f0f0', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: 12, color: '#999' }}>No Image</span>
+          </div>
+        )
+      ),
     },
     {
       title: 'Tên danh mục',
@@ -139,6 +200,29 @@ const Category = () => {
         month: '2-digit',
         year: 'numeric'
       }).replace(/\//g, '-') : '--'
+    },
+    {
+      title: 'Hiển thị',
+      dataIndex: 'isDisplayed',
+      key: 'isDisplayed',
+      width: 100,
+      align: 'center',
+      filters: [
+        { text: 'Hiển thị', value: true },
+        { text: 'Ẩn', value: false },
+      ],
+      onFilter: (value, record) => record.isDisplayed === value,
+      render: (isDisplayed, record) => {
+        console.log('Rendering switch for:', record.name, 'isDisplayed:', isDisplayed, 'record:', record);
+        return (
+          <Switch
+            checked={isDisplayed !== false} // Default to true if undefined
+            onChange={() => handleToggleDisplay(record.id, isDisplayed !== false, record.name)}
+            checkedChildren="Hiện"
+            unCheckedChildren="Ẩn"
+          />
+        );
+      },
     },
     {
       title: 'Thao tác',

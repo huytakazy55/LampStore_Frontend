@@ -764,7 +764,6 @@ const customStyles = `
     background: #f5f5f5;
   }
 `;
-
 // Thêm style vào head
 const styleSheet = document.createElement("style");
 styleSheet.type = "text/css";

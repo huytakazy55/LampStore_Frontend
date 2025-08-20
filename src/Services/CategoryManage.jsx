@@ -11,18 +11,22 @@ class CategoryManage {
         return axiosInstance.get(`/api/Categories/${id}`);
     }
 
-    UpdateCategory(id, name, description) {
+    UpdateCategory(id, name, description, imageUrl, isDisplayed = true) {
         return axiosInstance.put(`/api/Categories/${id}`, {
             id: id,
             name: name,
-            description: description
+            description: description,
+            imageUrl: imageUrl,
+            isDisplayed: isDisplayed
         });
     }
 
-    CreateCategory(name, description) {
+    CreateCategory(name, description, imageUrl, isDisplayed = true) {
         return axiosInstance.post("/api/Categories",{
             name: name,
-            description: description
+            description: description,
+            imageUrl: imageUrl,
+            isDisplayed: isDisplayed
         });
     }
 
@@ -33,6 +37,16 @@ class CategoryManage {
     BulkDeleteCategories(ids) {
         return axiosInstance.delete("/api/categories/bulk", {
             data: ids
+        });
+    }
+
+    UploadImage(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        return axiosInstance.post("/api/Categories/upload", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         });
     }
 }
