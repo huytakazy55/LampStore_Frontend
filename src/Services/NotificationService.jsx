@@ -341,65 +341,70 @@ class NotificationService {
 
   // Khởi tạo listener cho SignalR
   async setupSignalRNotifications() {
-    if (this.hasSetupListeners) return; // Nếu đã setup thì không setup lại
-    this.hasSetupListeners = true;
-
-    console.log('🚨 📢 NotificationService: Setting up SignalR notifications...');
-    console.log('🚨 📢 NotificationService: Adding newMessage event listener...');
-    
     // Bổ sung: lấy missed notification trước khi lắng nghe signalR
     await this.fetchMissedChatNotifications();
-    // Lắng nghe sự kiện tin nhắn mới từ SignalR
-    window.addEventListener('newMessage', (event) => {
-      const messageData = event.detail;
-      const currentUser = this.getCurrentUserInfo();
-      if (!currentUser) return;
 
-      const isAdmin = currentUser.role === 'Administrator' || currentUser.role === 'Admin';
-      const isFromCurrentUser = (messageData.SenderId || messageData.senderId) === currentUser.id;
-
-      // Nếu là admin và tin nhắn không phải do mình gửi thì tạo notification
-      if (isAdmin && !isFromCurrentUser) {
-        this.createChatNotification({
-          chatId: messageData.ChatId || messageData.chatId,
-          senderId: messageData.SenderId || messageData.senderId,
-          senderName: messageData.UserName || messageData.SenderName || messageData.senderName || 'Khách hàng',
-          content: messageData.Content || messageData.content,
-          createdAt: messageData.Timestamp || messageData.timestamp || messageData.createdAt,
-          priority: messageData.Priority || messageData.priority,
-          subject: messageData.ChatSubject,
-          senderAvatar: messageData.SenderAvatar || messageData.senderAvatar || undefined
-        });
-      } else if (!isAdmin && !isFromCurrentUser) {
-        // User nhận phản hồi từ admin
-        this.createChatNotification(messageData);
-      }
-    });
-
-    console.log('🚨 📢 NotificationService: newMessage event listener added successfully!');
-    console.log('📢 NotificationService: SignalR listeners setup completed');
-
-    // Tự động khởi tạo kết nối SignalR với retry logic
-    const maxRetries = 3;
+    // Tự động khởi tạo và đảm bảo kết nối SignalR với retry logic
+    const maxRetries = 5;
     let retryCount = 0;
+    let isConnectionReady = false;
     
-    while (retryCount < maxRetries) {
+    while (retryCount < maxRetries && !isConnectionReady) {
       try {
-        console.log(`📢 NotificationService: Connection attempt ${retryCount + 1}/${maxRetries}`);
+        // Khởi tạo SignalR connection
         const connected = await this.initializeSignalRConnection();
         
         if (connected) {
-          console.log('✅ NotificationService: SignalR setup completed successfully');
-          return true;
+          // Đảm bảo admin join group admins nếu là admin
+          const currentUser = this.getCurrentUserInfo();
+          if (currentUser && (currentUser.role === 'Administrator' || currentUser.role === 'Admin')) {
+            // Retry join admin group với delay
+            let joinRetries = 3;
+            let joinSuccess = false;
+            
+            while (joinRetries > 0 && !joinSuccess) {
+              try {
+                // Thêm delay để đảm bảo connection ổn định
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                joinSuccess = await ChatService.joinAdminsGroupIfAdmin();
+                
+                if (joinSuccess) {
+                  break;
+                } else {
+                  joinRetries--;
+                  if (joinRetries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                  }
+                }
+              } catch (error) {
+                console.error('Error joining admin group:', error);
+                joinRetries--;
+                if (joinRetries > 0) {
+                  await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+              }
+            }
+          }
+          
+          // Test connection để đảm bảo hoạt động tốt
+          try {
+            const testResult = await ChatService.testConnection();
+            isConnectionReady = true;
+          } catch (testError) {
+            isConnectionReady = connected; // Vẫn coi như ok nếu connected
+          }
+        }
+        
+        if (isConnectionReady) {
+          break;
         }
         
         retryCount++;
         if (retryCount < maxRetries) {
-          console.log(`⏳ NotificationService: Retrying connection in ${retryCount * 2} seconds...`);
           await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
         }
       } catch (error) {
-        console.error(`❌ NotificationService: Setup attempt ${retryCount + 1} failed:`, error);
+        console.error(`NotificationService setup attempt ${retryCount + 1} failed:`, error);
         retryCount++;
         if (retryCount < maxRetries) {
           await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
@@ -407,8 +412,76 @@ class NotificationService {
       }
     }
     
-    console.error('❌ NotificationService: Failed to setup SignalR after all retries');
-    return false;
+    if (!isConnectionReady) {
+      console.error('Failed to setup SignalR after all retries');
+      return false;
+    }
+
+    // Bây giờ mới setup event listeners khi đã đảm bảo connection sẵn sàng
+    if (!this.hasSetupListeners) {
+      this.hasSetupListeners = true;
+
+      // Tạo bound function để có thể remove sau này
+      this.boundMessageHandler = (event) => {
+        const messageData = event.detail;
+        const currentUser = this.getCurrentUserInfo();
+        if (!currentUser) return;
+
+        const isAdmin = currentUser.role === 'Administrator' || currentUser.role === 'Admin';
+        const isFromCurrentUser = (messageData.SenderId || messageData.senderId) === currentUser.id;
+
+        // Nếu là admin và tin nhắn không phải do mình gửi thì tạo notification
+        if (isAdmin && !isFromCurrentUser) {
+          this.createChatNotification({
+            chatId: messageData.ChatId || messageData.chatId,
+            senderId: messageData.SenderId || messageData.senderId,
+            senderName: messageData.UserName || messageData.SenderName || messageData.senderName || 'Khách hàng',
+            content: messageData.Content || messageData.content,
+            createdAt: messageData.Timestamp || messageData.timestamp || messageData.createdAt,
+            priority: messageData.Priority || messageData.priority,
+            subject: messageData.ChatSubject,
+            senderAvatar: messageData.SenderAvatar || messageData.senderAvatar || undefined
+          });
+        } else if (!isAdmin && !isFromCurrentUser) {
+          // User nhận phản hồi từ admin
+          this.createChatNotification(messageData);
+        }
+      };
+
+      // Lắng nghe sự kiện tin nhắn mới từ SignalR
+      window.addEventListener('newMessage', this.boundMessageHandler);
+    }
+
+    
+    return true;
+  }
+
+  // Thêm method để reset setup state khi cần thiết
+  resetSetupState() {
+    // Remove existing event listener if any
+    if (this.boundMessageHandler) {
+      window.removeEventListener('newMessage', this.boundMessageHandler);
+      this.boundMessageHandler = null;
+    }
+    this.hasSetupListeners = false;
+    this.signalRInitialized = false;
+  }
+
+  // Thêm method để force reconnect và setup lại
+  async forceReconnectAndSetup() {
+    // Reset state
+    this.resetSetupState();
+    
+    // Force reconnect ChatService
+    try {
+      await ChatService.disconnect();
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.warn('Warning disconnecting ChatService:', error);
+    }
+    
+    // Setup lại từ đầu
+    return await this.setupSignalRNotifications();
   }
 
   // Test thông báo (chỉ để demo)

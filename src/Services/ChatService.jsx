@@ -97,7 +97,6 @@ class ChatService {
         }
 
         // Bắt đầu kết nối mới
-        console.log('🔗 Starting new SignalR connection...');
         const connected = await this.startConnection();
         if (connected) {
             // Nếu là admin, join group admins
@@ -122,33 +121,39 @@ class ChatService {
     setupEventHandlers() {
         if (!this.connection) return;
 
+        // Xóa các handler cũ để tránh duplicate
+        try {
+            this.connection.off("ReceiveMessage");
+            this.connection.off("UserTyping");
+            this.connection.off("MessageRead");
+            this.connection.off("UserOnline");
+            this.connection.off("UserOffline");
+        } catch (error) {
+            // Silent ignore if no handlers to remove
+        }
+
         // Nhận tin nhắn real-time
         this.connection.on("ReceiveMessage", (message) => {
-            console.log("📩 [SignalR] Received real-time message:", message);
             // Luôn phát window event cho NotificationService
             window.dispatchEvent(new CustomEvent("newMessage", { detail: message }));
         });
 
         // User typing indicator
         this.connection.on("UserTyping", (data) => {
-            console.log("✍️ User typing:", data);
             window.dispatchEvent(new CustomEvent("userTyping", { detail: data }));
         });
 
         // Message read status
         this.connection.on("MessageRead", (data) => {
-            console.log("✓ Message read:", data);
             window.dispatchEvent(new CustomEvent("messageRead", { detail: data }));
         });
 
         // User online/offline
         this.connection.on("UserOnline", (userId) => {
-            console.log("🟢 User online:", userId);
             window.dispatchEvent(new CustomEvent("userOnline", { detail: userId }));
         });
 
         this.connection.on("UserOffline", (userId) => {
-            console.log("🔴 User offline:", userId);
             window.dispatchEvent(new CustomEvent("userOffline", { detail: userId }));
         });
 

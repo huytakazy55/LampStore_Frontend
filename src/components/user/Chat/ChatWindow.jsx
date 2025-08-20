@@ -14,6 +14,7 @@ const ChatWindow = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const processedMessagesRef = useRef(new Set());
+  const hasSetupListenersRef = useRef(false); // Flag để đảm bảo chỉ setup 1 lần
 
   // New chat form states
   const [subject, setSubject] = useState('');
@@ -38,22 +39,12 @@ const ChatWindow = ({ onClose }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.warn('No token found for user');
         return null;
       }
       
       // Decode JWT token to get user ID
       const payload = JSON.parse(atob(token.split('.')[1]));
       const userId = payload.nameid || payload.sub || payload.userId || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-      
-      console.log('🔍 User Token Payload:', {
-        nameid: payload.nameid,
-        sub: payload.sub,
-        userId: payload.userId,
-        role: payload.role,
-        unique_name: payload.unique_name,
-        extractedUserId: userId
-      });
       
       return userId;
     } catch (error) {
@@ -100,42 +91,43 @@ const ChatWindow = ({ onClose }) => {
   useEffect(() => {
     loadChats();
     initializeSignalR();
-    console.log('ChatWindow initialized - with real-time support');
-
+    
     // Cleanup function
     return () => {
-      ChatService.disconnect();
+      // Leave current chat room
+      if (currentChat) {
+        ChatService.leaveChat(currentChat.id);
+      }
+      // Remove event listeners
       removeEventListeners();
+      // Reset flag
+      hasSetupListenersRef.current = false;
     };
   }, []);
 
   const initializeSignalR = async () => {
     try {
-      console.log('🔗 User ChatWindow: Initializing SignalR connection...');
+      // Đảm bảo chỉ setup listeners 1 lần duy nhất
+      if (hasSetupListenersRef.current) {
+        return;
+      }
+      
       const connected = await ChatService.initializeConnection();
       if (connected) {
-        console.log('✅ User ChatWindow: SignalR connected successfully');
         setupRealTimeListeners();
-        
-        // Test connection bằng cách kiểm tra user role
-        const token = localStorage.getItem('token');
-        if (token) {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          console.log('👤 User info:', {
-            userId: payload.nameid || payload.sub,
-            role: payload.role || 'User',
-            userName: payload.unique_name
-          });
-        }
-      } else {
-        console.warn('⚠️ User ChatWindow: SignalR connection failed, using API only');
+        hasSetupListenersRef.current = true;
       }
     } catch (error) {
-      console.error('❌ User ChatWindow: SignalR initialization error:', error);
+      console.error('SignalR initialization error:', error);
     }
   };
 
   const setupRealTimeListeners = () => {
+    // Đảm bảo không setup trùng lặp
+    if (hasSetupListenersRef.current) {
+      return;
+    }
+    
     // Listen for new messages
     window.addEventListener('newMessage', handleNewMessage);
     
@@ -155,57 +147,44 @@ const ChatWindow = ({ onClose }) => {
   const handleNewMessage = (event) => {
     const newMsg = event.detail;
     const targetChatId = newMsg.chatId || newMsg.ChatId;
+    const messageId = newMsg.messageId || newMsg.MessageId || newMsg.id;
+    const content = newMsg.content || newMsg.Content;
+    const senderId = newMsg.senderId || newMsg.SenderId;
+    const timestamp = newMsg.timestamp || newMsg.Timestamp || newMsg.createdAt || new Date().toISOString();
     
-    console.log('👤 User: Received SignalR event:', {
-      targetChatId,
-      currentChatId: currentChat?.id,
-      currentView,
-      isMatchingChat: currentChat && targetChatId === currentChat.id,
-      fullMessage: newMsg
-    });
+    // Tạo unique key cho message
+    const messageKey = messageId || `${content}_${senderId}_${Math.floor(new Date(timestamp).getTime() / 1000)}`;
+    
+    // Kiểm tra đã xử lý message này chưa (chống duplicate)
+    if (processedMessagesRef.current.has(messageKey)) {
+      return;
+    }
+    
+    // Đánh dấu đã xử lý
+    processedMessagesRef.current.add(messageKey);
+    setTimeout(() => {
+      processedMessagesRef.current.delete(messageKey);
+    }, 30000); // Tăng thời gian cache lên 30s
+    
+    let messageType = newMsg.type || newMsg.Type || 1;
+    if (typeof messageType === 'string') {
+      messageType = messageType.toLowerCase() === 'text' ? 1 : 1;
+    }
+    
+    const messageToAdd = {
+      id: messageId || `signalr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      content,
+      createdAt: timestamp,
+      senderId,
+      senderName: newMsg.senderName || newMsg.SenderName,
+      isRead: false,
+      type: messageType,
+      isFromSignalR: true
+    };
     
     // Nếu user đang trong chat và tin nhắn thuộc chat hiện tại
     if (currentChat && targetChatId === currentChat.id) {
-      const messageId = newMsg.messageId || newMsg.MessageId || newMsg.id;
-      const content = newMsg.content || newMsg.Content;
-      const senderId = newMsg.senderId || newMsg.SenderId;
-      const timestamp = newMsg.timestamp || newMsg.Timestamp || newMsg.createdAt || new Date().toISOString();
-      
-      console.log('👤 User: Processing message for current chat:', {
-        messageId,
-        content,
-        senderId,
-        timestamp
-      });
-      
-      const messageKey = messageId || `${content}_${senderId}_${Math.floor(new Date(timestamp).getTime() / 1000)}`;
-      
-      if (processedMessagesRef.current.has(messageKey)) {
-        console.log('🔄 User: Skipping duplicate message:', messageKey);
-        return;
-      }
-      
-      processedMessagesRef.current.add(messageKey);
-      setTimeout(() => {
-        processedMessagesRef.current.delete(messageKey);
-      }, 10000);
-      
-      let messageType = newMsg.type || newMsg.Type || 1;
-      if (typeof messageType === 'string') {
-        messageType = messageType.toLowerCase() === 'text' ? 1 : 1;
-      }
-      
-      const messageToAdd = {
-        id: messageId || `signalr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        content,
-        createdAt: timestamp,
-        senderId,
-        senderName: newMsg.senderName || newMsg.SenderName,
-        isRead: false,
-        type: messageType,
-        isFromSignalR: true
-      };
-      
+      // Kiểm tra message đã tồn tại trong messages của chat hiện tại chưa
       const exists = messages.some(msg => {
         if (messageId && msg.id === messageId) return true;
         if (msg.content === messageToAdd.content && 
@@ -217,46 +196,14 @@ const ChatWindow = ({ onClose }) => {
       });
       
       if (!exists) {
-        console.log('✅ User: Adding new message to current chat UI:', messageToAdd);
         dispatch(addMessage({ chatId: currentChat.id, message: messageToAdd }));
-      } else {
-        console.log('⚠️ User: Message already exists, skipping:', messageToAdd.id);
       }
     } 
     // Nếu user không ở trong chat hiện tại nhưng nhận được tin nhắn
     else if (targetChatId) {
-      console.log('👤 User: Received message for different/no chat, updating redux only');
-      
-      const messageId = newMsg.messageId || newMsg.MessageId || newMsg.id;
-      const content = newMsg.content || newMsg.Content;
-      const senderId = newMsg.senderId || newMsg.SenderId;
-      const timestamp = newMsg.timestamp || newMsg.Timestamp || newMsg.createdAt || new Date().toISOString();
-      
-      let messageType = newMsg.type || newMsg.Type || 1;
-      if (typeof messageType === 'string') {
-        messageType = messageType.toLowerCase() === 'text' ? 1 : 1;
-      }
-      
-      const messageToAdd = {
-        id: messageId || `signalr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        content,
-        createdAt: timestamp,
-        senderId,
-        senderName: newMsg.senderName || newMsg.SenderName,
-        isRead: false,
-        type: messageType,
-        isFromSignalR: true
-      };
-      
       // Cập nhật vào redux để khi user mở chat sẽ thấy tin nhắn mới
       dispatch(addMessage({ chatId: targetChatId, message: messageToAdd }));
-      console.log('✅ User: Added message to redux for chat:', targetChatId);
-    } else {
-      console.log('👤 User: No targetChatId found in message');
     }
-    
-    // Always refresh chat list to update last message
-    loadChats();
   };
 
   const handleUserTyping = (event) => {
@@ -372,11 +319,8 @@ const ChatWindow = ({ onClose }) => {
 
   const openChat = async (chat) => {
     try {
-      console.log('👤 User opening chat:', { chatId: chat.id, subject: chat.subject });
-      
       // Leave previous chat room if any
       if (currentChat) {
-        console.log('👤 User leaving previous chat:', currentChat.id);
         await ChatService.leaveChat(currentChat.id);
       }
       
@@ -384,13 +328,11 @@ const ChatWindow = ({ onClose }) => {
       setCurrentView('chat');
       
       // Join new chat room for real-time updates
-      console.log('👤 User joining chat room:', chat.id);
       await ChatService.joinChat(chat.id);
-      console.log('✅ User successfully joined chat room:', chat.id);
       
       loadMessages(chat.id);
     } catch (error) {
-      console.error('❌ User error opening chat:', error);
+      console.error('Error opening chat:', error);
     }
   };
 
@@ -398,21 +340,14 @@ const ChatWindow = ({ onClose }) => {
     if (!newMessage.trim() || !currentChat) return;
 
     try {
-      console.log('👤 User sending message:', { 
-        chatId: currentChat.id, 
-        content: newMessage.substring(0, 50) + '...',
-        chatSubject: currentChat.subject 
-      });
-      
       await ChatService.sendMessage(currentChat.id, newMessage);
-      console.log('✅ User message sent successfully');
       
       setNewMessage('');
       
       // Reload messages to get updated list (will include the new message)
       await loadMessages(currentChat.id);
     } catch (error) {
-      console.error('❌ User error sending message:', error);
+      console.error('Error sending message:', error);
     }
   };
 
