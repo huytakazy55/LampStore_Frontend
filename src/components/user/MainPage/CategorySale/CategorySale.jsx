@@ -1,36 +1,35 @@
-import React, { useState, useEffect } from 'react'
-import CategoryManage from '../../../../Services/CategoryManage'
+import React from 'react'
+import { useCategories } from '../../../../hooks/useCategories'
 import Product1 from '../../../../assets/images/cameras-2.jpg'
 
 const CategorySale = () => {
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
+  
+  // Sử dụng React Query hook thay vì useState/useEffect
+  const { 
+    data: allCategories = [], 
+    isLoading: loading, 
+    error,
+    isError 
+  } = useCategories()
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
+  // Filter và limit categories (được cache tự động)
+  const categories = React.useMemo(() => {
+    const displayedCategories = allCategories.filter(category => category.isDisplayed !== false)
+    return displayedCategories.slice(0, 4)
+  }, [allCategories])
 
-  const fetchCategories = async () => {
-    try {
-      setLoading(true)
-      const response = await CategoryManage.GetCategory()
-      const categoriesData = response.data.$values || response.data || []
-      // Chỉ hiển thị categories có IsDisplayed = true, sau đó lấy tối đa 4 danh mục đầu tiên
-      const displayedCategories = categoriesData.filter(category => category.isDisplayed !== false)
-      setCategories(displayedCategories.slice(0, 4))
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
   console.log(categories);
 
   const getImageSrc = (category) => {
     if (category.imageUrl) {
-      // Nếu có ảnh từ database
-      return `${API_ENDPOINT}${category.imageUrl}`
+      // Kiểm tra nếu là URL từ Cloudinary (bắt đầu với https://)
+      if (category.imageUrl.startsWith('http')) {
+        return category.imageUrl // URL đầy đủ từ Cloudinary
+      } else {
+        // Legacy local images (cũ)
+        return `${API_ENDPOINT}${category.imageUrl}`
+      }
     } else {
       // Fallback về ảnh mặc định
       return Product1
@@ -74,7 +73,18 @@ const CategorySale = () => {
       <div className='w-full h-36 flex justify-center items-center mb-6 xl:mx-auto xl:max-w-[1440px]'>
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Đang tải danh mục...</p>
+          <p className="mt-2 text-gray-600">Đang tải danh mục... (React Query Cache)</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className='w-full h-36 flex justify-center items-center mb-6 xl:mx-auto xl:max-w-[1440px]'>
+        <div className="text-center">
+          <div className="text-red-500 text-lg mb-2">⚠️</div>
+          <p className="text-red-600">Lỗi tải danh mục: {error?.message || 'Không xác định'}</p>
         </div>
       </div>
     )
@@ -82,7 +92,7 @@ const CategorySale = () => {
 
   return (
     <div className='w-full mb-8'>
-      <div className='xl:mx-auto xl:max-w-[1440px] px-4'>
+      <div className='xl:mx-auto xl:max-w-[1440px]'>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
           {categories.map((category, index) => {
             const nameLines = formatCategoryName(category.name)
@@ -94,7 +104,7 @@ const CategorySale = () => {
                 <div className="relative h-40 overflow-hidden">
                   <img 
                     className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300' 
-                    src={getImageSrc(category)} 
+                    src={getImageSrc(category)}
                     alt={category.name}
                     onError={(e) => {
                       e.target.src = Product1
@@ -111,10 +121,12 @@ const CategorySale = () => {
                   </div>
                 </div>
                 <div className="p-4 bg-white">
-                  <div className="space-y-3">
-                    <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
-                      {getDisplayDescription(category)}
-                    </p>
+                  <div className="flex flex-col h-20">
+                    <div className="flex-1 mb-3">
+                      <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed h-10 overflow-hidden">
+                        {getDisplayDescription(category)}
+                      </p>
+                    </div>
                     <div className="flex justify-end">
                       <a 
                         className='inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold text-sm transition-colors duration-200 whitespace-nowrap' 

@@ -81,7 +81,11 @@ const NavbarPrimary = () => {
 
   const getImageSrc = (category) => {
     if (category.imageUrl) {
-      return `${API_ENDPOINT}${category.imageUrl}`
+      if (category.imageUrl.startsWith('http')) {
+        return category.imageUrl // URL đầy đủ từ Cloudinary
+      } else {
+        return `${API_ENDPOINT}${category.imageUrl}`
+      }
     }
     return Product1
   }
@@ -89,11 +93,22 @@ const NavbarPrimary = () => {
   const getProductImageSrc = (product) => {
     // Check for Images collection (capital I) with ImagePath
     if (product.Images && product.Images.length > 0) {
-      return `${API_ENDPOINT}${product.Images[0].imagePath}`
+      const imagePath = product.Images[0].imagePath
+      // Kiểm tra nếu là URL từ Cloudinary
+      if (imagePath.startsWith('http')) {
+        return imagePath // URL đầy đủ từ Cloudinary
+      } else {
+        return `${API_ENDPOINT}${imagePath}`
+      }
     }
     // Check for images collection (lowercase i) - fallback
     if (product.images && product.images.length > 0) {
-      return `${API_ENDPOINT}${product.images[0].imagePath}`
+      const imagePath = product.images[0].imagePath
+      if (imagePath.startsWith('http')) {
+        return imagePath
+      } else {
+        return `${API_ENDPOINT}${imagePath}`
+      }
     }
     return Product1
   }

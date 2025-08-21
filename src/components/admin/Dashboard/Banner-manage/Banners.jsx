@@ -99,21 +99,24 @@ const Banners = () => {
             key: 'imageUrl',
             width: 120,
             align: 'center',
-            render: (imageUrl, record) => (
-                <div style={{ textAlign: 'center' }}>
-                    <img
-                        src={`${API_ENDPOINT}${imageUrl}`}
-                        alt={record.title}
-                        style={{
-                            width: '80px',
-                            height: '60px',
-                            objectFit: 'cover',
-                            borderRadius: '4px',
-                            border: '1px solid #f0f0f0'
-                        }}
-                    />
-                </div>
-            ),
+            render: (imageUrl, record) => {
+                const imageSrc = imageUrl.startsWith('http') ? imageUrl : `${API_ENDPOINT}${imageUrl}`
+                return (
+                    <div style={{ textAlign: 'center' }}>
+                        <img
+                            src={imageSrc}
+                            alt={record.title}
+                            style={{
+                                width: '80px',
+                                height: '60px',
+                                objectFit: 'cover',
+                                borderRadius: '4px',
+                                border: '1px solid #f0f0f0'
+                            }}
+                        />
+                    </div>
+                )
+            },
         },
         {
             title: 'Tiêu đề',

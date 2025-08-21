@@ -228,21 +228,26 @@ const Products = () => {
       key: 'images',
       width: '6%',
       align: 'center',
-      render: (images) => (
-        images && images.$values.length > 0 ? (
-          <img 
-            src={`${API_ENDPOINT}${images.$values[0].imagePath}`} 
-            alt="Product" 
-            style={{
-              width: '100%', 
-              height: '64px', 
-              objectFit: 'cover',
-              borderRadius: '4px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }} 
-          />
-        ) : 'No Image'
-      )
+      render: (images) => {
+        if (images && images.$values.length > 0) {
+          const imagePath = images.$values[0].imagePath
+          const imageUrl = imagePath.startsWith('http') ? imagePath : `${API_ENDPOINT}${imagePath}`
+          return (
+            <img 
+              src={imageUrl} 
+              alt="Product" 
+              style={{
+                width: '100%', 
+                height: '64px', 
+                objectFit: 'cover',
+                borderRadius: '4px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }} 
+            />
+          )
+        }
+        return 'No Image'
+      }
     },
     {
       title: 'Tên sản phẩm',
