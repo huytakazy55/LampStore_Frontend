@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || (typeof window !== 'undefined' ? window.location.origin : undefined);
 
 // Tạo axios instance chính
 const axiosInstance = axios.create({
@@ -22,16 +22,16 @@ axiosInstance.interceptors.request.use(
         const currentTime = Date.now() / 1000;
         
         if (decoded.exp < currentTime) {
-          // Token đã hết hạn
+          // Token đã hết hạn: dọn dẹp nhưng vẫn cho phép request public tiếp tục không kèm token
           handleTokenExpired();
-          return Promise.reject(new Error('Token đã hết hạn'));
+          delete config.headers.Authorization;
+        } else {
+          config.headers.Authorization = `Bearer ${token}`;
         }
-        
-        config.headers.Authorization = `Bearer ${token}`;
       } catch (error) {
-        // Token không hợp lệ
+        // Token không hợp lệ: dọn dẹp nhưng không chặn request
         handleTokenExpired();
-        return Promise.reject(new Error('Token không hợp lệ'));
+        delete config.headers.Authorization;
       }
     }
     return config;
@@ -78,21 +78,17 @@ axiosInstance.interceptors.response.use(
 
 // Hàm xử lý khi token hết hạn
 const handleTokenExpired = () => {
-  // Xóa token và dữ liệu người dùng
   localStorage.clear();
   
-  // Hiển thị thông báo
   toast.error('Phiên đăng nhập đã hết hạn! Vui lòng đăng nhập lại.');
   
   // Dispatch event để cập nhật UI
   window.dispatchEvent(new Event('userLoginStatusChanged'));
   
-  // Chuyển về trang chủ
   if (window.location.pathname.startsWith('/admin')) {
     window.location.href = '/';
   }
   
-  // Reload trang để reset state
   setTimeout(() => {
     window.location.reload();
   }, 1000);

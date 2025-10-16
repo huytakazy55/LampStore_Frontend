@@ -237,29 +237,12 @@ class ChatService {
         }
     }
 
-    // Enhanced send message (API + SignalR)
+    // Send message qua API, để backend phát realtime qua SignalR (tránh duplicate)
     async sendMessage(chatId, content, type = 1) {
         try {
             console.log('📤 User sending message:', { chatId, content, type });
-            
-            // 1. Send via API first (persistent storage)
             const result = await this.sendMessageApi(chatId, content, type);
             console.log('✅ Message sent via API:', result);
-            
-            // 2. Send via SignalR for real-time notification (thông báo cho admin)
-            if (this.connection && this.isConnected) {
-                try {
-                    console.log('📡 Sending message via SignalR to notify admin...');
-                    await this.connection.invoke("SendMessage", chatId, content);
-                    console.log('✅ Message sent via SignalR for real-time notification');
-                } catch (signalRError) {
-                    console.warn('⚠️ SignalR send failed (API still succeeded):', signalRError);
-                    // API đã thành công, nên không throw error
-                }
-            } else {
-                console.warn('⚠️ SignalR not connected, message sent via API only');
-            }
-            
             return result;
         } catch (error) {
             console.error("❌ Error sending message:", error);
@@ -282,48 +265,56 @@ class ChatService {
     // Event listeners
     onReceiveMessage(callback) {
         if (this.connection) {
+            this.connection.off("ReceiveMessage", callback);
             this.connection.on("ReceiveMessage", callback);
         }
     }
 
     onUserTyping(callback) {
         if (this.connection) {
+            this.connection.off("UserTyping", callback);
             this.connection.on("UserTyping", callback);
         }
     }
 
     onMessageRead(callback) {
         if (this.connection) {
+            this.connection.off("MessageRead", callback);
             this.connection.on("MessageRead", callback);
         }
     }
 
     onUserOnline(callback) {
         if (this.connection) {
+            this.connection.off("UserOnline", callback);
             this.connection.on("UserOnline", callback);
         }
     }
 
     onUserOffline(callback) {
         if (this.connection) {
+            this.connection.off("UserOffline", callback);
             this.connection.on("UserOffline", callback);
         }
     }
 
     onNewChatCreated(callback) {
         if (this.connection) {
+            this.connection.off("NewChatCreated", callback);
             this.connection.on("NewChatCreated", callback);
         }
     }
 
     onChatStatusUpdated(callback) {
         if (this.connection) {
+            this.connection.off("ChatStatusUpdated", callback);
             this.connection.on("ChatStatusUpdated", callback);
         }
     }
 
     onChatClosed(callback) {
         if (this.connection) {
+            this.connection.off("ChatClosed", callback);
             this.connection.on("ChatClosed", callback);
         }
     }

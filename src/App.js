@@ -9,8 +9,8 @@ import ProductDetail from './components/user/ProductDetailPage/ProductDetail';
 import ChatButton from './components/user/Chat/ChatButton';
 import TokenExpiryWarning from './components/common/TokenExpiryWarning';
 import './App.css';
-// Import axiosConfig để khởi tạo interceptor
 import './Services/axiosConfig';
+import NotificationService from './Services/NotificationService';
 
 // Expose toast to global scope for NotificationService
 if (typeof window !== 'undefined') {
@@ -29,6 +29,11 @@ function AppContent() {
       const loggedIn = token !== null && token !== '';
 
       setIsUserLoggedIn(loggedIn);
+
+      // Khởi tạo SignalR notifications sớm sau khi đăng nhập
+      if (loggedIn) {
+        NotificationService.setupSignalRNotifications();
+      }
     };
 
     // Check ngay lập tức

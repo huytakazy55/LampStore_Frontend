@@ -30,7 +30,7 @@ class AuthService {
 
     async logout() {
         try {
-            await axiosInstance.post("/api/Account/logout");
+            await axiosInstance.post("/api/Account/Logout");
             localStorage.clear();
             await toast.success("Đã đăng xuất tài khoản!");
             window.location.reload();
