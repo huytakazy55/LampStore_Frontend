@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { Table, Input, Button, Breadcrumb, Modal, Pagination, message, Space, Row, Col, Card } from 'antd';
+import { Table, Input, Button, Breadcrumb, Modal, Pagination, message, Space, Row, Col, Card, Checkbox, Tag } from 'antd';
 import { LockOutlined, UnlockOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ThemeContext } from '../../../../ThemeContext';
 import UserManage from '../../../../Services/UserManage';
@@ -28,6 +28,11 @@ const Users = () => {
   const [openBulkDelete, setOpenBulkDelete] = useState(false);
   const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [availableRoles, setAvailableRoles] = useState([]);
+  const [roleModalVisible, setRoleModalVisible] = useState(false);
+  const [roleModalLoading, setRoleModalLoading] = useState(false);
+  const [roleModalUser, setRoleModalUser] = useState(null);
+  const [selectedRoles, setSelectedRoles] = useState([]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -65,6 +70,18 @@ const Users = () => {
       setHasInitialized(true);
     }
   }, [location.pathname]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const roles = await UserManage.GetAvailableRoles();
+        setAvailableRoles(roles.$values || roles || []);
+      } catch (error) {
+        console.error('Error fetching available roles:', error);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   useEffect(() => {
     if (userData.length > 0) {
@@ -169,19 +186,24 @@ const Users = () => {
       key: 'role',
       width: 150,
       align: 'center',
-      render: (text, record) => roleData[record.id] ? roleData[record.id] : 'Loading...',
+      render: (text, record) => {
+        const roles = roleData[record.id];
+        if (!roles) return 'Loading...';
+        return (
+          <Space wrap style={{ justifyContent: 'center' }}>
+            {(roles.$values || roles).map(role => (
+              <Tag color="blue" key={role}>{role}</Tag>
+            ))}
+          </Space>
+        );
+      },
       sorter: (a, b) => {
-        const roleA = roleData[a.id] || '';
-        const roleB = roleData[b.id] || '';
+        const roleA = (roleData[a.id]?.[0] || '').toString();
+        const roleB = (roleData[b.id]?.[0] || '').toString();
         return roleA.localeCompare(roleB);
       },
-      filters: [
-        ...Array.from(new Set(Object.values(roleData))).map(role => ({
-          text: role,
-          value: role,
-        }))
-      ],
-      onFilter: (value, record) => (roleData[record.id] || '') === value,
+      filters: availableRoles.map(role => ({ text: role, value: role })),
+      onFilter: (value, record) => (roleData[record.id] || []).includes(value),
     },
     {
       title: 'Thao tác',
@@ -209,6 +231,9 @@ const Users = () => {
               Khóa
             </Button>
           )}
+          <Button size="small" onClick={() => openRoleModal(record)}>
+            Phân quyền
+          </Button>
         </Space>
       ),
     },
@@ -247,6 +272,41 @@ const Users = () => {
     } finally {
       setBulkDeleteLoading(false);
       setOpenBulkDelete(false);
+    }
+  };
+
+  const openRoleModal = (user) => {
+    setRoleModalUser(user);
+    const roles = roleData[user.id];
+    const normalized = roles?.$values || roles || [];
+    setSelectedRoles(normalized);
+    setRoleModalVisible(true);
+  };
+
+  const handleAssignRoles = async () => {
+    if (!roleModalUser) return;
+    setRoleModalLoading(true);
+    try {
+      await UserManage.AssignRoles(roleModalUser.id, selectedRoles);
+      message.success('Cập nhật quyền thành công');
+      // refresh roles for that user
+      const res = await UserManage.GetRoleById(roleModalUser.id);
+      setRoleData(prev => ({
+        ...prev,
+        [roleModalUser.id]: res.data.$values || [],
+      }));
+      setRoleModalVisible(false);
+    } catch (error) {
+      console.error('Error assigning roles:', error);
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        message.error('Bạn không có quyền thực hiện hành động này!');
+      } else if (error.response?.data) {
+        message.error(error.response.data);
+      } else {
+        message.error('Có lỗi xảy ra khi cập nhật quyền');
+      }
+    } finally {
+      setRoleModalLoading(false);
     }
   };
 
@@ -484,6 +544,29 @@ const Users = () => {
         confirmLoading={bulkDeleteLoading}
       >
         <p>{t('ConfirmDeleteSelected', { count: selectedRowKeys.length })}</p>
+      </Modal>
+
+      {/* Assign Roles Modal */}
+      <Modal
+        title={`Phân quyền - ${roleModalUser?.userName || ''}`}
+        open={roleModalVisible}
+        onOk={handleAssignRoles}
+        onCancel={() => setRoleModalVisible(false)}
+        confirmLoading={roleModalLoading}
+      >
+        <Checkbox.Group
+          style={{ width: '100%' }}
+          value={selectedRoles}
+          onChange={setSelectedRoles}
+        >
+          <Row gutter={[0, 8]}>
+            {availableRoles.map(role => (
+              <Col span={24} key={role}>
+                <Checkbox value={role}>{role}</Checkbox>
+              </Col>
+            ))}
+          </Row>
+        </Checkbox.Group>
       </Modal>
     </div>
   );

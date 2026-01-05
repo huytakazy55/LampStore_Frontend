@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../../../../ThemeContext';
 import { setCurrentBar } from '../../../../redux/slices/leftBarAdminSlice';
+import { jwtDecode } from 'jwt-decode';
 
 const LeftBar = () => {
     const { t } = useTranslation();
@@ -12,18 +13,37 @@ const LeftBar = () => {
     const currentBar = useSelector((state) => state.leftbar.currentBar); // Sửa lỗi sai tên state
     const { themeColors } = useContext(ThemeContext);
 
+    const userRoles = useMemo(() => {
+        const token = localStorage.getItem('token');
+        if (!token) return [];
+        try {
+            const decoded = jwtDecode(token);
+            const roleClaim = decoded.role;
+            return Array.isArray(roleClaim) ? roleClaim : roleClaim ? [roleClaim] : [];
+        } catch (error) {
+            console.error('Cannot decode token roles:', error);
+            return [];
+        }
+    }, []);
+
     const menuItems = [
-        { name: "HomePage", icon: "bxs-home", path: "/admin" },
-        { name: "Users", icon: "bxs-user", path: "/admin/users" },
-        { name: "Category", icon: "bxs-category", path: "/admin/category" },
-        { name: "Tags", icon: "bxs-tag", path: "/admin/tags" },
-        { name: "Banners", icon: "bxs-image", path: "/admin/banners" },
-        { name: "Products", icon: "bxs-package", path: "/admin/products" },
-        { name: "Orders", icon: "bxs-store-alt", path: "/admin/orders" },
-        { name: "Chat", icon: "bxs-chat", path: "/admin/chat" },
-        { name: "Delivery", icon: "bxs-book-content", path: "/admin/delivery" },
-        { name: "Setting", icon: "bxs-cog", path: "/admin/settings" },
+        { name: "HomePage", icon: "bxs-home", path: "/admin", roles: null },
+        { name: "Users", icon: "bxs-user", path: "/admin/users", roles: ["Administrator"] },
+        { name: "Roles", icon: "bxs-shield-alt-2", path: "/admin/roles", roles: ["Administrator"] },
+        { name: "Category", icon: "bxs-category", path: "/admin/category", roles: ["Administrator","Manager","Warehouse staff"] },
+        { name: "Tags", icon: "bxs-tag", path: "/admin/tags", roles: ["Administrator","Manager"] },
+        { name: "Banners", icon: "bxs-image", path: "/admin/banners", roles: ["Administrator","Manager"] },
+        { name: "Products", icon: "bxs-package", path: "/admin/products", roles: ["Administrator","Manager","Warehouse staff"] },
+        { name: "Orders", icon: "bxs-store-alt", path: "/admin/orders", roles: ["Administrator","Manager","Accountant"] },
+        { name: "Chat", icon: "bxs-chat", path: "/admin/chat", roles: null },
+        { name: "Delivery", icon: "bxs-book-content", path: "/admin/delivery", roles: ["Administrator","Manager","Warehouse staff"] },
+        { name: "Setting", icon: "bxs-cog", path: "/admin/settings", roles: ["Administrator"] },
     ];
+
+    const visibleMenuItems = menuItems.filter(item => {
+        if (!item.roles || item.roles.length === 0) return true;
+        return item.roles.some(r => userRoles.includes(r));
+    });
 
     return (
         <div
@@ -35,7 +55,7 @@ const LeftBar = () => {
             }`}
         >
             <ul className="p-4 text-white">
-                {menuItems.map((item) => (
+                {visibleMenuItems.map((item) => (
                     <Link
                         key={item.name}
                         onClick={() => dispatch(setCurrentBar(item.name))}

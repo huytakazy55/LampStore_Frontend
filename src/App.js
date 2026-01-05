@@ -58,7 +58,13 @@ function AppContent() {
         <Route 
           path='/admin/*' 
           element={
-            <ProtectedRoute roleRequired="Administrator">
+            <ProtectedRoute rolesRequired={[
+              "Administrator",
+              "Manager",
+              "Accountant",
+              "Human Resource",
+              "Warehouse staff"
+            ]}>
               <AdminDashboard />
             </ProtectedRoute>
           } 

@@ -3,12 +3,21 @@ import { toast } from 'react-toastify';
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
 class AuthService {
-    signin(username, password, rememberme){
-        return axiosInstance.post("/api/Account/SignIn", {
+    async signin(username, password, rememberme){
+        const response = await axiosInstance.post("/api/Account/SignIn", {
             username: username,
             password: password,
             rememberme: rememberme
         });
+        
+        // Lưu cả access token và refresh token
+        if (response.data && response.data.accessToken) {
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('refreshToken', response.data.refreshToken);
+            localStorage.setItem('tokenExpiry', Date.now() + (response.data.expiresIn * 1000));
+        }
+        
+        return response;
     }
     signup(username, email, password) {
         return axiosInstance.post("/api/Account/SignUp", {
@@ -18,24 +27,40 @@ class AuthService {
         });
     }
 
-    googleSignIn(googleUserData) {
-        return axiosInstance.post("/api/Account/GoogleSignIn", {
+    async googleSignIn(googleUserData) {
+        const response = await axiosInstance.post("/api/Account/GoogleSignIn", {
             email: googleUserData.email,
             name: googleUserData.name,
             picture: googleUserData.picture,
             googleUserId: googleUserData.sub,
             token: googleUserData.token
         });
+        
+        // Lưu cả access token và refresh token
+        if (response.data && response.data.accessToken) {
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('refreshToken', response.data.refreshToken);
+            localStorage.setItem('tokenExpiry', Date.now() + (response.data.expiresIn * 1000));
+        }
+        
+        return response;
     }
 
     async logout() {
         try {
             await axiosInstance.post("/api/Account/Logout");
-            localStorage.clear();
+            // Xóa tokens
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('tokenExpiry');
             await toast.success("Đã đăng xuất tài khoản!");
             window.location.reload();
             return true;
         } catch (error) {
+            // Vẫn xóa tokens ngay cả khi API call thất bại
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('tokenExpiry');
             toast.error("Đã xảy ra lỗi khi đăng xuất!");
             return false;
         }

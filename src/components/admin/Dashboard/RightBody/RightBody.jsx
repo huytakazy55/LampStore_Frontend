@@ -8,6 +8,7 @@ import Tags from '../Tags-manage/Tags';
 import Banners from '../Banner-manage/Banners';
 import AdminChatDashboard from '../Chat-manage/AdminChatDashboard';
 import Settings from '../Settings-manage/Settings';
+import Roles from '../Roles-manage/Roles';
 
 const RightBody = () => {
   const location = useLocation();
@@ -33,6 +34,10 @@ const RightBody = () => {
     {
       return <Users />
     } 
+    else if(location.pathname === '/admin/roles')
+    {
+      return <Roles />
+    }
     else if(location.pathname === '/admin/products')
     {
       return <Products />
