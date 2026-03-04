@@ -133,9 +133,10 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         try {
             // Gọi API backend để xử lý Google login
             const response = await AuthService.googleSignIn(googleUserData);
+            const tokenResponse = response.data;
             
             showToast('Đăng nhập Google thành công!');
-            localStorage.setItem("token", response.data);
+            // AuthService đã tự lưu token vào localStorage
             window.dispatchEvent(new Event('userLoginStatusChanged'));
             
             // Clear remember me for Google login (since we don't save Google credentials)
@@ -144,8 +145,10 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
             
             handleModalClose();
 
-            const decoded = jwtDecode(response.data);
-            dispatch(loginAction({ token: response.data, role: decoded.role }));
+            if (tokenResponse && tokenResponse.accessToken) {
+                const decoded = jwtDecode(tokenResponse.accessToken);
+                dispatch(loginAction({ token: tokenResponse.accessToken, role: decoded.role }));
+            }
         } catch (error) {
             console.error('Google login error:', error);
             showToast('Đăng nhập Google thất bại!', 'error');
@@ -194,8 +197,9 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
         if (validateFormSignin()) {
             AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
                 .then((res) => {
+                    const tokenResponse = res.data;
+
                     showToast('Đăng nhập thành công!');
-                    localStorage.setItem("token", res.data);
                     window.dispatchEvent(new Event('userLoginStatusChanged'));
                     
                     // Handle Remember Me functionality
@@ -209,8 +213,10 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                     
                     handleModalClose();
 
-                    const decoded = jwtDecode(res.data);
-                    dispatch(loginAction({ token: res.data, role: decoded.role }));                  
+                    if (tokenResponse && tokenResponse.accessToken) {
+                        const decoded = jwtDecode(tokenResponse.accessToken);
+                        dispatch(loginAction({ token: tokenResponse.accessToken, role: decoded.role }));
+                    }              
                 })
                 .catch((err) => {
                     if (err.response) {
