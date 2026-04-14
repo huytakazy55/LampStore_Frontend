@@ -1,197 +1,410 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import Header from '../MainPage/Header/Header'
 import TopBar from '../MainPage/TopBar/TopBar'
 import Footer from '../MainPage/Footer/Footer'
-import mainimg from '../../../assets/images/Ultrabooks.jpg'
+import ProductManage from '../../../Services/ProductManage'
+import defaultImg from '../../../assets/images/cameras-2.jpg'
+
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
+const SITE_URL = window.location.origin;
+
+const formatPrice = (price) => {
+    if (!price) return '0';
+    return price.toLocaleString('vi-VN');
+};
+
+const getImgSrc = (path) => {
+    if (!path) return defaultImg;
+    return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
+};
+
+// Loại bỏ HTML tags cho meta description
+const stripHtml = (html) => {
+    if (!html) return '';
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+};
 
 const ProductDetail = () => {
-    const [activeProduct, setActiveProduct] = useState(false);
-
-    const toggleProduct = () => {
-        setActiveProduct(!activeProduct);
-    }
-
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [variants, setVariants] = useState([]);
+    const [images, setImages] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [selectedVariant, setSelectedVariant] = useState(null);
+    const [variantLabels, setVariantLabels] = useState({});
     const [quantity, setQuantity] = useState(1);
 
-    const handleDecrease = () => {
-        setQuantity((prev) => Math.max(prev - 1, 1)); // Giới hạn min = 1
+    useEffect(() => {
+        // Scroll lên đầu trang khi vào chi tiết
+        window.scrollTo(0, 0);
+
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                const res = await ProductManage.GetProductById(id);
+                const data = res.data;
+                
+                if (data) {
+                    setProduct(data);
+                    
+                    // Extract variants from product data
+                    const vData = data.variants?.$values || data.variants;
+                    const v = Array.isArray(vData) ? vData : (vData ? [vData] : []);
+                    setVariants(v);
+                    if (v.length > 0) setSelectedVariant(v[0]);
+                    
+                    // Extract images from product data
+                    const imgData = data.images?.$values || data.images;
+                    setImages(Array.isArray(imgData) ? imgData : []);
+                    
+                    // Extract variant labels (filter out $id from JSON serializer)
+                    const rawLabels = data.variantLabels || {};
+                    const cleanLabels = {};
+                    Object.keys(rawLabels).forEach(k => {
+                        if (k !== '$id') cleanLabels[k] = rawLabels[k];
+                    });
+                    setVariantLabels(cleanLabels);
+                }
+            } catch (e) {
+                console.error('Error fetching product:', e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) fetchProduct();
+    }, [id]);
+
+    const handleDecrease = () => setQuantity((prev) => Math.max(prev - 1, 1));
+    const handleIncrease = () => setQuantity((prev) => Math.min(prev + 1, 999));
+
+    // --- SEO Helpers ---
+    const getPageTitle = () => {
+        if (!product) return 'Đang tải... | Lamp Store';
+        return `${product.name} | Mua ngay tại Lamp Store`;
     };
 
-    const handleIncrease = () => {
-        setQuantity((prev) => Math.min(prev + 1, 999)); // Giới hạn max = 999
+    const getMetaDescription = () => {
+        if (!product) return 'Lamp Store - Cửa hàng đèn trang trí cao cấp';
+        const desc = stripHtml(product.description);
+        const price = currentVariant?.discountPrice || currentVariant?.price || product.minPrice || 0;
+        const priceText = `Giá chỉ ₫${formatPrice(price)}.`;
+        const truncated = desc.length > 120 ? desc.substring(0, 120) + '...' : desc;
+        return `${product.name} - ${priceText} ${truncated || 'Mua ngay tại Lamp Store với ưu đãi hấp dẫn.'}`;
     };
 
-  return (
-    <>
-      <TopBar />
-      <Header />
-        <div className='w-full mb-2 xl:mx-auto xl:max-w-[1440px]'>
-            <div className='flex justify-start items-center'>
-               <a className='font-medium text-black' href="/">Shop</a> <i className='bx bx-chevron-right text-h3 -mt-[1px] px-[5px]'></i> Product Detail
-            </div>
-            <div className='w-full h-[39rem] py-6 bg-white flex justify-between gap-[3%] mb-4'>
-                <div className='w-[37%] h-full'>
-                    <div className='w-full h-3/4 border-[1px] border-black'>
-                        <img className='w-full h-full' src={mainimg} alt="" />
-                    </div>
-                    <div className='flex justify-between items-center w-full h-1/5'>
-                        <img className='w-[17%] border-[1px] border-transparent hover:border-rose-700' src={mainimg} alt="" />
-                        <img className='w-[17%] border-[1px] border-transparent hover:border-rose-700' src={mainimg} alt="" />
-                        <img className='w-[17%] border-[1px] border-transparent hover:border-rose-700' src={mainimg} alt="" />
-                        <img className='w-[17%] border-[1px] border-transparent hover:border-rose-700' src={mainimg} alt="" />
-                        <img className='w-[17%] border-[1px] border-transparent hover:border-rose-700' src={mainimg} alt="" />
-                    </div>
-                    <div className='flex justify-end items-center text-normal h-[5%] cursor-pointer'>
-                       <i className='bx bx-heart text-h3 -mt-[1px] mr-1 text-rose-700'></i> Đã thích (219)
-                    </div>
-                </div>
-                <div className='w-[60%] h-full'>
-                    <div className='text-h3 leading-[1.3] mb-2'>OFFWHITE Ốp Điện Thoại Da Mềm Off White Cho IPhone 6S 7 Plus 8 Plus X XS XR XS Max 11 13 12 14 PRO Max 14 Plus 12 13 Mini</div>
-                    <div className='flex justify-start items-center text-normal gap-3 py-1'>
-                        <div className='range-start'>
-                            4.8 
-                            <span className='ml-1'>
-                                <i className='bx bxs-star text-orange-600 text-small'></i>
-                                <i className='bx bxs-star text-orange-600 text-small'></i>
-                                <i className='bx bxs-star text-orange-600 text-small'></i>
-                                <i className='bx bxs-star text-orange-600 text-small'></i>
-                                <i className='bx bxs-star text-orange-600 text-small'></i>
-                            </span>                            
-                        </div>
-                        <div>|</div>
-                        <div className='range-count'>170 Đánh giá</div>
-                        <div>|</div>
-                        <div className='range-sellcount'>162 Đã bán</div>
-                    </div>
-                    <div className='flex justify-start items-center bg-slate-100 text-h2 gap-2 py-4 px-6 my-4'>
-                        <div className='text-rose-700 font-medium'>₫200.000</div>
-                        <div className='text-small text-black -mt-2'><del>₫180.000</del></div>
-                        <div className='bg-orange-500 text-small text-rose-700 px-1'>-10%</div>
-                    </div>
-                    <div className='flex justify-start items-center w-full gap-8 mb-8'>
-                        <div className='w-[10%] font-medium'>Phân loại</div>
-                        <div className='max-h-32 overflow-y-scroll w-[90%] flex flex-wrap gap-2'>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Điện thoại</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Điện thoại</div>
-                        </div>
-                    </div>
-                    <div className='flex justify-start items-center w-full gap-8 mb-8'>
-                        <div className='w-[10%] font-medium'>Sản phẩm</div>
-                        <div className='max-h-32 overflow-y-scroll w-[90%] flex flex-wrap gap-2'>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11 màu cám lợn</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11 màu cám lợn</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11 màu cám lợn</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11 màu cám lợn</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11 màu cám lợn</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                            <div onClick={toggleProduct} className={`py-1 px-4 cursor-pointer relative after:content-["✔"] after:text-white after:absolute after:bottom-0 after:right-0 after:bg-rose-700 after:w-8 after:h-8 after:items-end after:justify-end after:text-[9px] after:pr-1 after:clip-custom border-[1px] ${activeProduct ? 'after:flex border-rose-700' : 'after:hidden border-gray-300'}`}>Iphone 11</div>
-                        </div>
-                    </div>
-                    <div className='flex justify-start items-center w-full gap-8 mb-8'>
-                        <div className='w-[10%] font-medium'>Số lượng</div>
-                        <div className='flex items-center overflow-hidden border-[1px] border-gray-300'>
-                            <button onClick={handleDecrease} className='w-8 h-8 flex items-center justify-center cursor-pointer font-h3 bg-white text-gray-600 font-medium border-r hover:bg-rose-700 hover:text-white active:scale-95 transition'>-</button>
-                            <input type="number" id="quantity"value={quantity} min="1" max="999" className="w-12 h-full text-rose-600 text-center text-sm outline-none border-none no-spinner" />
-                            <button onClick={handleIncrease} className='w-8 h-8 flex items-center justify-center cursor-pointer font-h3 bg-white text-gray-600 font-medium border-l hover:bg-rose-700 hover:text-white active:scale-95 transition'>+</button>
-                        </div>
-                        <div className='PD-quantity-remain'>100 sản phẩm có sẵn</div>
-                    </div>
-                    <div className='flex justify-start items-center relative gap-4 h-12 after:w-full after:h-[1px] after:bg-slate-50 after:absolute after:-bottom-6'>
-                        <button className='btn-addtocart border-[1px] border-rose-600 bg-rose-100 text-rose-600 flex justify-around items-center h-full py-2 px-6 rounded-sm'><i className='bx bxs-cart-add text-h1 mr-2'></i> Thêm vào giỏ hàng</button>
-                        <button className='bg-rose-600 text-white h-full py-2 px-6 rounded-sm'>Mua ngay</button>
-                    </div>
-                    <div className='flex justify-between items-center mt-12'>
-                        <div className='flex justify-around items-center gap-1'>
-                            <i className='bx bxs-analyse text-h3 text-rose-700 -mt-1'></i>
-                            Đổi ý miễn phí 15 ngày
-                        </div>
-                        <div className='flex justify-around items-center gap-1'>
-                            <i className='bx bxs-check-shield text-h3 text-rose-700 -mt-1'></i>
-                            Hàng chính hãng 100%
-                        </div>
-                        <div className='flex justify-around items-center gap-1'>
-                            <i className='bx bxs-timer text-h3 text-rose-700 -mt-1'></i>
-                            Miễn phí vận chuyển
-                        </div>
+    const getJsonLd = () => {
+        if (!product) return null;
+        const price = currentVariant?.discountPrice || currentVariant?.price || product.minPrice || 0;
+        const mainImageUrl = images.length > 0 ? getImgSrc(images[0]?.imagePath) : `${SITE_URL}/logo192.png`;
+
+        return {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            "name": product.name,
+            "description": stripHtml(product.description) || product.name,
+            "image": images.map(img => getImgSrc(img.imagePath)),
+            "brand": {
+                "@type": "Brand",
+                "name": "Lamp Store"
+            },
+            "offers": {
+                "@type": "Offer",
+                "url": `${SITE_URL}/product/${id}`,
+                "priceCurrency": "VND",
+                "price": price,
+                "availability": stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": "Lamp Store"
+                }
+            },
+            ...(product.reviewCount > 0 && {
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": "4.8",
+                    "reviewCount": product.reviewCount
+                }
+            })
+        };
+    };
+
+    // Computed values (safe even if product is null for SEO helpers)
+    const currentVariant = selectedVariant || variants[0];
+    const price = currentVariant?.discountPrice || currentVariant?.price || product?.minPrice || 0;
+    const originalPrice = currentVariant?.price || product?.maxPrice || 0;
+    const hasDiscount = currentVariant?.discountPrice && currentVariant.discountPrice < currentVariant.price;
+    const discountPercent = hasDiscount ? Math.round((1 - currentVariant.discountPrice / currentVariant.price) * 100) : 0;
+    const stock = currentVariant?.stock || 0;
+    const mainImage = images.length > 0 ? getImgSrc(images[selectedImage]?.imagePath) : defaultImg;
+
+    // --- RENDER ---
+    if (loading) {
+        return (
+            <>
+                <Helmet>
+                    <title>Đang tải... | Lamp Store</title>
+                </Helmet>
+                <TopBar />
+                <Header />
+                <div className='w-full h-[60vh] flex justify-center items-center'>
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-500">Đang tải sản phẩm...</p>
                     </div>
                 </div>
-            </div>
-            <div className='w-full max-h-[39rem] py-6 bg-white mb-4'>
-                <div className='mb-10'>
-                    <div className='text-h3 font-medium bg-slate-200 py-1 px-3 uppercase'>Chi tiết sản phẩm</div>
-                    <div className='flex justify-start items-center gap-3 mt-6'>
-                        <div className='w-[10%] font-medium'>
-                            <div className='pb-2'>Tên sản phẩm</div>
-                            <div className='pb-2'>Chất liệu</div>
-                            <div className='pb-2'>Trọng lượng</div>
-                            <div className='pb-2'>Tags</div>
+                <Footer />
+            </>
+        );
+    }
+
+    if (!product) {
+        return (
+            <>
+                <Helmet>
+                    <title>Không tìm thấy sản phẩm | Lamp Store</title>
+                    <meta name="robots" content="noindex, nofollow" />
+                </Helmet>
+                <TopBar />
+                <Header />
+                <div className='w-full h-[60vh] flex justify-center items-center'>
+                    <div className="text-center text-gray-500">
+                        <i className='bx bx-error-circle text-5xl mb-2'></i>
+                        <p className="text-lg">Không tìm thấy sản phẩm</p>
+                        <a href="/" className="text-rose-600 hover:underline mt-2 inline-block">← Về trang chủ</a>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+
+    const jsonLd = getJsonLd();
+
+    return (
+        <>
+            {/* ===== SEO META TAGS ===== */}
+            <Helmet>
+                <title>{getPageTitle()}</title>
+                <meta name="description" content={getMetaDescription()} />
+                <meta name="keywords" content={`${product.name}, ${product.tags || ''}, đèn trang trí, lamp store, mua đèn online`} />
+                <link rel="canonical" href={`${SITE_URL}/product/${id}`} />
+
+                {/* Open Graph (Facebook, Zalo) */}
+                <meta property="og:type" content="product" />
+                <meta property="og:title" content={product.name} />
+                <meta property="og:description" content={getMetaDescription()} />
+                <meta property="og:url" content={`${SITE_URL}/product/${id}`} />
+                <meta property="og:image" content={mainImage} />
+                <meta property="og:site_name" content="Lamp Store" />
+                <meta property="og:locale" content="vi_VN" />
+                <meta property="product:price:amount" content={price} />
+                <meta property="product:price:currency" content="VND" />
+
+                {/* Twitter Card */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={product.name} />
+                <meta name="twitter:description" content={getMetaDescription()} />
+                <meta name="twitter:image" content={mainImage} />
+
+                {/* JSON-LD Structured Data */}
+                {jsonLd && (
+                    <script type="application/ld+json">
+                        {JSON.stringify(jsonLd)}
+                    </script>
+                )}
+            </Helmet>
+
+            <TopBar />
+            <Header />
+            <main className='w-full mb-2 xl:mx-auto xl:max-w-[1440px]' itemScope itemType="https://schema.org/Product">
+                {/* Breadcrumb - Schema.org */}
+                <nav aria-label="Breadcrumb" className='flex items-center py-3 text-sm' itemScope itemType="https://schema.org/BreadcrumbList">
+                    <span itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                        <a itemProp="item" href="/" className='font-medium text-gray-600 hover:text-rose-600 transition'>
+                            <span itemProp="name">Trang chủ</span>
+                        </a>
+                        <meta itemProp="position" content="1" />
+                    </span>
+                    <i className='bx bx-chevron-right text-lg px-1 text-gray-400'></i>
+                    <span itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                        <span itemProp="name" className='text-gray-500'>{product.name}</span>
+                        <meta itemProp="position" content="2" />
+                    </span>
+                </nav>
+
+                {/* Product Info Section */}
+                <section className='w-full py-6 bg-white flex justify-between gap-[3%] mb-4 rounded-lg shadow-sm'>
+                    {/* Images */}
+                    <div className='w-[37%] h-full px-4'>
+                        <div className='w-full h-[400px] border border-gray-200 rounded-lg overflow-hidden flex items-center justify-center bg-gray-50'>
+                            <img
+                                className='max-w-full max-h-full object-contain'
+                                src={mainImage}
+                                alt={product.name}
+                                itemProp="image"
+                                onError={(e) => { e.target.src = defaultImg; }}
+                            />
                         </div>
-                        <div>
-                            <div className='pb-2'>OFFWHITE Ốp Điện Thoại Da Mềm Off White Cho IPhone 6S 7 Plus 8 Plus X XS XR XS Max 11 13 12 14 PRO Max 14 Plus 12 13 Mini</div>
-                            <div className='pb-2'>Gỗ, Nhựa</div>
-                            <div className='pb-2'>500 gram</div>
-                            <div className='pb-2'>Khung gỗ, Tráng gương</div>
+                        <div className='flex gap-2 mt-3 overflow-x-auto'>
+                            {images.map((img, i) => (
+                                <img
+                                    key={img.id || i}
+                                    className={`w-16 h-16 border-2 rounded cursor-pointer object-cover transition ${
+                                        selectedImage === i ? 'border-rose-600' : 'border-gray-200 hover:border-rose-300'
+                                    }`}
+                                    src={getImgSrc(img.imagePath)}
+                                    alt={`${product.name} - Ảnh ${i + 1}`}
+                                    onClick={() => setSelectedImage(i)}
+                                    onError={(e) => { e.target.src = defaultImg; }}
+                                />
+                            ))}
+                        </div>
+                        <div className='flex justify-end items-center text-sm h-8 mt-2 cursor-pointer text-gray-500 hover:text-rose-600 transition'>
+                            <i className='bx bx-heart text-lg mr-1'></i> Yêu thích ({product.favorites || 0})
                         </div>
                     </div>
-                </div>
-                <div>
-                    <div className='text-h3 font-medium bg-slate-200 py-1 px-3 uppercase'>Mô tả sản phẩm</div>
-                    <div className='py-6'>
-                        QUY CÁCH ĐÓNG GÓI
-                        - Gấu Bông được đựng trong hộp hoặc túi đóng gói cẩn thận.
-                        - Nếu sản phẩm cỡ to, sẽ được hút chân không nhỏ gọn để đảm bảo vận chuyển dễ dàng. 
-                        - Sau khi nhận hàng bạn vỗ đều SP để bông gòn được căng phồng như ban đầu. 
-                        - Gấu Bông có thể chênh lệch về màu sắc và size do ánh sáng và cách đo khác nhau. 
-                        GẤU BÔNG MIYU CAM KẾT VỚI KHÁCH HÀNG
-                        - Miễn phí vận chuyển theo chính sách của Shopee
-                        - Miễn phí trả hàng trong 15 ngày theo chính sách của Shopee
-                        - Sản phẩm 100% giống mô tả - có video quay sản phẩm
-                        - Đảm bảo chất lượng, dịch vụ tốt nhất, hàng được giao từ 1-5 ngày kể từ ngày đặt hàng 
-                        - Giao hàng toàn quốc, nhận hàng kiểm tra thanh toán
-                        Bán Sỉ, lẻ và CTV toàn quốc, chiết khấu cực cao. Hàng luôn có sẵn đầy kho, đặt là ship ngay!
-                        ===========================
-                        #capybara #gaubongchuot #lonnhoibong #gaubongmiyu #gaubonghanoi  #gaubong #quatang #phukien #gift #xuonggaubong #gaubonglon #nguamotsung #nguapony #bupbe #quatangbangai #dochoibong #gaubongteddy #choshiba #gauteddy #gauaolen #teddy
+
+                    {/* Details */}
+                    <div className='w-[60%] h-full pr-6'>
+                        <h1 className='text-xl font-medium leading-relaxed mb-2' itemProp="name">{product.name}</h1>
+                        <div className='flex justify-start items-center text-sm gap-3 py-1 text-gray-500'>
+                            <div className='flex items-center gap-1'>
+                                <span className='text-rose-600 font-medium'>4.8</span>
+                                {[...Array(5)].map((_, i) => (
+                                    <i key={i} className='bx bxs-star text-orange-400 text-xs'></i>
+                                ))}
+                            </div>
+                            <span className='text-gray-300'>|</span>
+                            <div>{product.reviewCount || 0} Đánh giá</div>
+                            <span className='text-gray-300'>|</span>
+                            <div>{product.sellCount || 0} Đã bán</div>
+                        </div>
+
+                        {/* Price - with Schema.org Offer */}
+                        <div className='flex items-center bg-gradient-to-r from-rose-50 to-slate-50 gap-3 py-4 px-6 my-4 rounded-lg' itemProp="offers" itemScope itemType="https://schema.org/Offer">
+                            <meta itemProp="priceCurrency" content="VND" />
+                            <meta itemProp="price" content={price} />
+                            <link itemProp="availability" href={stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
+                            <div className='text-2xl font-bold text-rose-600'>₫{formatPrice(price)}</div>
+                            {hasDiscount && (
+                                <>
+                                    <div className='text-sm text-gray-400 line-through'>₫{formatPrice(originalPrice)}</div>
+                                    <div className='bg-rose-600 text-white text-xs px-2 py-0.5 rounded font-medium'>-{discountPercent}%</div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Variants */}
+                        {variants.length > 1 && (
+                            <div className='flex items-start w-full gap-8 mb-6'>
+                                <div className='w-[10%] font-medium text-sm pt-1'>Phân loại</div>
+                                <div className='w-[90%] flex flex-wrap gap-2'>
+                                    {variants.map((v) => (
+                                        <div
+                                            key={v.id}
+                                            onClick={() => setSelectedVariant(v)}
+                                            className={`py-1.5 px-4 cursor-pointer text-sm border rounded transition ${
+                                                selectedVariant?.id === v.id
+                                                    ? 'border-rose-600 text-rose-600 bg-rose-50'
+                                                    : 'border-gray-300 hover:border-rose-300'
+                                            }`}
+                                        >
+                                            {variantLabels[v.id] || v.sku || v.materials || `₫${formatPrice(v.discountPrice || v.price)}`}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Quantity */}
+                        <div className='flex items-center w-full gap-8 mb-6'>
+                            <div className='w-[10%] font-medium text-sm'>Số lượng</div>
+                            <div className='flex items-center border border-gray-300 rounded overflow-hidden'>
+                                <button onClick={handleDecrease} aria-label="Giảm số lượng" className='w-9 h-9 flex items-center justify-center bg-white text-gray-600 hover:bg-rose-600 hover:text-white active:scale-95 transition text-lg font-medium'>-</button>
+                                <input type="number" value={quantity} min="1" max="999" readOnly aria-label="Số lượng sản phẩm" className="w-14 h-9 text-center text-sm outline-none border-x border-gray-300" />
+                                <button onClick={handleIncrease} aria-label="Tăng số lượng" className='w-9 h-9 flex items-center justify-center bg-white text-gray-600 hover:bg-rose-600 hover:text-white active:scale-95 transition text-lg font-medium'>+</button>
+                            </div>
+                            <div className='text-sm text-gray-400'>{stock} sản phẩm có sẵn</div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className='flex gap-4 mb-6'>
+                            <button id="add-to-cart-btn" className='flex items-center gap-2 border border-rose-600 bg-rose-50 text-rose-600 py-2.5 px-6 rounded hover:bg-rose-100 transition'>
+                                <i className='bx bxs-cart-add text-xl'></i> Thêm vào giỏ hàng
+                            </button>
+                            <button id="buy-now-btn" className='bg-rose-600 text-white py-2.5 px-8 rounded hover:bg-rose-700 transition font-medium'>
+                                Mua ngay
+                            </button>
+                        </div>
+
+                        {/* Trust Badges */}
+                        <div className='flex gap-6 pt-4 border-t border-gray-100 text-sm text-gray-600'>
+                            <div className='flex items-center gap-1.5'>
+                                <i className='bx bxs-analyse text-lg text-rose-600'></i>
+                                Đổi ý miễn phí 15 ngày
+                            </div>
+                            <div className='flex items-center gap-1.5'>
+                                <i className='bx bxs-check-shield text-lg text-rose-600'></i>
+                                Hàng chính hãng 100%
+                            </div>
+                            <div className='flex items-center gap-1.5'>
+                                <i className='bx bxs-truck text-lg text-rose-600'></i>
+                                Miễn phí vận chuyển
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <div className='text-h3 font-medium bg-slate-200 py-1 px-3 uppercase'>Đánh giá sản phẩm</div>
-                    <div className='PD-description-feedbackcontent'>
-                        
+                </section>
+
+                {/* Product Details & Description */}
+                <section className='w-full py-6 bg-white mb-4 rounded-lg shadow-sm px-6'>
+                    <div className='mb-8'>
+                        <h2 className='text-lg font-medium bg-slate-100 py-2 px-4 uppercase rounded'>Chi tiết sản phẩm</h2>
+                        <div className='grid grid-cols-[120px_1fr] gap-y-2 gap-x-4 mt-4 text-sm'>
+                            <span className='font-medium text-gray-600'>Tên sản phẩm</span>
+                            <span>{product.name}</span>
+                            {currentVariant?.materials && (
+                                <>
+                                    <span className='font-medium text-gray-600'>Chất liệu</span>
+                                    <span>{currentVariant.materials}</span>
+                                </>
+                            )}
+                            {currentVariant?.weight && (
+                                <>
+                                    <span className='font-medium text-gray-600'>Trọng lượng</span>
+                                    <span>{currentVariant.weight} gram</span>
+                                </>
+                            )}
+                            {product.tags && (
+                                <>
+                                    <span className='font-medium text-gray-600'>Tags</span>
+                                    <span>{product.tags}</span>
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-      <Footer />
-    </>
-  )
+                    <div className='mb-8'>
+                        <h2 className='text-lg font-medium bg-slate-100 py-2 px-4 uppercase rounded'>Mô tả sản phẩm</h2>
+                        <div
+                            className='py-4 text-sm leading-relaxed text-gray-700'
+                            itemProp="description"
+                            dangerouslySetInnerHTML={{ __html: product.description || 'Chưa có mô tả' }}
+                        />
+                    </div>
+                    <div>
+                        <h2 className='text-lg font-medium bg-slate-100 py-2 px-4 uppercase rounded'>Đánh giá sản phẩm</h2>
+                        <div className='py-6 text-center text-gray-400 text-sm'>
+                            Chưa có đánh giá nào
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <Footer />
+        </>
+    )
 }
 
 export default ProductDetail

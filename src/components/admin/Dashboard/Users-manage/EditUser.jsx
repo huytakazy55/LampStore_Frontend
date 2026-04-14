@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Select, message } from 'antd';
+import { Modal, Form, Input, Select, Button, message } from 'antd';
+import { EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import UserManage from '../../../../Services/UserManage';
+import { ModalHeader, ModalFooter } from '../shared/ModalComponents';
 
 const EditUser = ({ open, onCancel, onSuccess, user }) => {
   const { t } = useTranslation();
@@ -10,11 +12,7 @@ const EditUser = ({ open, onCancel, onSuccess, user }) => {
 
   useEffect(() => {
     if (user) {
-      form.setFieldsValue({
-        userName: user.userName,
-        email: user.email,
-        role: user.role
-      });
+      form.setFieldsValue({ userName: user.userName, email: user.email, role: user.role });
     }
   }, [user, form]);
 
@@ -22,14 +20,12 @@ const EditUser = ({ open, onCancel, onSuccess, user }) => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-
       const response = await UserManage.UpdateUser(user.id, values);
       if (response.data.success) {
         message.success(t('UpdateSuccess'));
         onSuccess();
       }
     } catch (error) {
-      console.error('Error updating user:', error);
       message.error(t('UpdateFailed'));
     } finally {
       setLoading(false);
@@ -37,53 +33,32 @@ const EditUser = ({ open, onCancel, onSuccess, user }) => {
   };
 
   return (
-    <Modal
-      title={t('EditUser')}
-      open={open}
-      onCancel={onCancel}
-      onOk={handleSubmit}
-      confirmLoading={loading}
-      width={600}
-    >
-      <Form
-        form={form}
-        layout="vertical"
-      >
-        <Form.Item
-          name="userName"
-          label={t('Username')}
-          rules={[
-            { required: true, message: t('PleaseInputUsername') },
-            { min: 3, message: t('UsernameMinLength') }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="email"
-          label={t('Email')}
-          rules={[
-            { required: true, message: t('PleaseInputEmail') },
-            { type: 'email', message: t('InvalidEmail') }
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          name="role"
-          label={t('Role')}
-          rules={[{ required: true, message: t('PleaseSelectRole') }]}
-        >
-          <Select>
-            <Select.Option value="Admin">{t('Admin')}</Select.Option>
-            <Select.Option value="User">{t('User')}</Select.Option>
-          </Select>
-        </Form.Item>
-      </Form>
+    <Modal open={open} onCancel={onCancel} footer={null} width={600} title={null} styles={{ body: { padding: 0 } }}>
+      <ModalHeader icon="✏️" title={t('EditUser')} subtitle={`Chỉnh sửa tài khoản: ${user?.userName || ''}`} />
+      <div style={{ padding: '24px 24px 16px' }}>
+        <Form form={form} layout="vertical">
+          <Form.Item name="userName" label={t('Username')} rules={[{ required: true, message: t('PleaseInputUsername') }, { min: 3, message: t('UsernameMinLength') }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="email" label={t('Email')} rules={[{ required: true, message: t('PleaseInputEmail') }, { type: 'email', message: t('InvalidEmail') }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="role" label={t('Role')} rules={[{ required: true, message: t('PleaseSelectRole') }]}>
+            <Select>
+              <Select.Option value="Admin">{t('Admin')}</Select.Option>
+              <Select.Option value="User">{t('User')}</Select.Option>
+            </Select>
+          </Form.Item>
+          <ModalFooter>
+            <Button onClick={onCancel}>Hủy</Button>
+            <Button type="primary" loading={loading} onClick={handleSubmit} icon={<SaveOutlined />}>
+              {t('Save')}
+            </Button>
+          </ModalFooter>
+        </Form>
+      </div>
     </Modal>
   );
 };
 
-export default EditUser; 
+export default EditUser;

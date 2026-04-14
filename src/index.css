@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import './styles/admin-table.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,8 +28,18 @@ code {
     @apply font-sans text-base;
   }
 
+  input, textarea, select {
+    @apply outline-none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
   body {
-    @apply bg-slate-50 text-gray-900 text-sm;
+    background-color: #f8f7f4;
+    @apply text-gray-900 text-sm;
   }
 
   h1, h2, h3, h4 {
@@ -89,4 +100,28 @@ code {
     @apply bg-red-500/30
   }
 
+}
+
+/* Custom scrollbar for dropdown */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}
+
+/* Fade in animation for suggestions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
 }

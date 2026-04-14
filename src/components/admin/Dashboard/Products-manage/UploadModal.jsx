@@ -21,16 +21,24 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
     const [previewTitle, setPreviewTitle] = useState('');
     const [productImages, setProductImages] = useState([]);
 
-    useEffect(() => {
+    const fetchProductImages = () => {
         if (updateId) {
-            ProductManage.GetProductById(updateId)
+            ProductManage.GetProductImageById(updateId)
                 .then((res) => {
-                    setProductImages(res.data.images.$values || []);
+                    setProductImages(res.data?.$values || res.data || []);
                 })
                 .catch((err) => {
-                    toast.error("Có lỗi khi lấy thông tin hình ảnh sản phẩm.");
+                    // 404 = no images yet, not an error
+                    if (err.response?.status !== 404) {
+                        toast.error("Có lỗi khi lấy thông tin hình ảnh sản phẩm.");
+                    }
+                    setProductImages([]);
                 });
         }
+    };
+
+    useEffect(() => {
+        fetchProductImages();
     }, [updateId]);
 
     const handlePreview = async (file) => {
@@ -89,11 +97,11 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
             const progress = Math.round((uploadedFiles * 100) / totalFiles);
             setUploadProgress(progress);
 
-            // Sau khi upload thành công, gọi lại fetchProducts để lấy lại toàn bộ danh sách sản phẩm
+            // Refresh cả danh sách sản phẩm và ảnh trong modal
             fetchProducts();
+            fetchProductImages();
             toast.success("Tải lên hình ảnh thành công!");
             setFileList([]);
-            handleUploadClose();
         } catch (error) {
             console.log('Upload error:', error);
             toast.error("Có lỗi xảy ra khi tải lên hình ảnh! " + error.response.data);
@@ -106,8 +114,8 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
     const handleDeleteImage = async (imageId) => {
         try {
             await ProductManage.DeleteProductImage(imageId);
-            // Sau khi xóa ảnh thành công, gọi lại fetchProducts để lấy lại toàn bộ danh sách sản phẩm
             fetchProducts();
+            fetchProductImages();
             toast.success("Xóa hình ảnh thành công!");
         } catch (error) {
             toast.error("Có lỗi xảy ra khi xóa hình ảnh! " + error);
@@ -242,12 +250,12 @@ const UploadModal = ({openUpload, handleUploadClose, setProductData, style, upda
                                         cover={
                                             <img
                                                 alt={image.imagePath}
-                                                src={`${API_ENDPOINT}${image.imagePath}`}
+                                                src={image.imagePath?.startsWith('http') ? image.imagePath : `${API_ENDPOINT}${image.imagePath}`}
                                                 style={{ height: 120, objectFit: 'cover' }}
                                             />
                                         }
                                         actions={[
-                                            <EyeOutlined key="view" onClick={() => handlePreview({ url: `${API_ENDPOINT}${image.imagePath}` })} />,
+                                            <EyeOutlined key="view" onClick={() => handlePreview({ url: image.imagePath?.startsWith('http') ? image.imagePath : `${API_ENDPOINT}${image.imagePath}` })} />,
                                             <DeleteOutlined key="delete" onClick={() => handleDeleteImage(image.id)} />
                                         ]}
                                     />

@@ -126,14 +126,13 @@ axiosInstance.interceptors.response.use(
               handleTokenExpired();
             }
           } else {
-            // Không có refresh token hoặc đã retry → Logout
             handleTokenExpired();
           }
           break;
-        case 403: // Forbidden
+        case 403:
           toast.error('Bạn không có quyền truy cập chức năng này!');
           break;
-        case 500: // Internal Server Error
+        case 500:
           toast.error('Có lỗi xảy ra trên server!');
           break;
         default:
@@ -201,8 +200,6 @@ export const getTokenTimeRemaining = () => {
   }
 };
 
-// Export hàm refresh token để dùng ở nơi khác nếu cần
 export { refreshAccessToken };
 
-// Export axios instance đã được cấu hình
 export default axiosInstance; 

@@ -22,9 +22,11 @@ class ChatService {
             
             this.connection = new signalR.HubConnectionBuilder()
                 .withUrl(`${API_ENDPOINT}/chathub`, {
+                    // Bug fix: đọc token dynamically mỗi lần gọi (tránh dùng token hết hạn khi reconnect)
                     accessTokenFactory: () => {
+                        const currentToken = localStorage.getItem("token");
                         console.log('🔑 Providing access token for SignalR');
-                        return token;
+                        return currentToken;
                     },
                     // Use all available transports with fallback
                     transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.ServerSentEvents | signalR.HttpTransportType.LongPolling,
@@ -128,14 +130,20 @@ class ChatService {
             this.connection.off("MessageRead");
             this.connection.off("UserOnline");
             this.connection.off("UserOffline");
+            this.connection.off("AdminChatNotification"); // event mới cho admin notification
         } catch (error) {
             // Silent ignore if no handlers to remove
         }
 
-        // Nhận tin nhắn real-time
+        // Nhận tin nhắn real-time (chỉ show trong chat window)
         this.connection.on("ReceiveMessage", (message) => {
-            // Luôn phát window event cho NotificationService
             window.dispatchEvent(new CustomEvent("newMessage", { detail: message }));
+        });
+
+        // AdminChatNotification: event riêng cho admin notification popup
+        // Tách biệt hoàn toàn với ReceiveMessage để tránh duplicate
+        this.connection.on("AdminChatNotification", (data) => {
+            window.dispatchEvent(new CustomEvent("adminChatNotification", { detail: data }));
         });
 
         // User typing indicator
@@ -466,7 +474,9 @@ class ChatService {
             }
             
             const payload = JSON.parse(atob(token.split('.')[1]));
-            const role = payload.role || '';
+            const role = payload.role
+                || payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+                || '';
             const userId = payload.nameid || payload.sub || payload.userId || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
             const userName = payload.unique_name || payload.name || 'Unknown';
             

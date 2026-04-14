@@ -1,10 +1,11 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../../../../ThemeContext';
 import { setCurrentBar } from '../../../../redux/slices/leftBarAdminSlice';
 import { jwtDecode } from 'jwt-decode';
+import UserManage from '../../../../Services/UserManage';
 
 const LeftBar = () => {
     const { t } = useTranslation();
@@ -12,6 +13,8 @@ const LeftBar = () => {
     const leftBar = useSelector((state) => state.leftbar.leftbar);
     const currentBar = useSelector((state) => state.leftbar.currentBar); // Sửa lỗi sai tên state
     const { themeColors } = useContext(ThemeContext);
+    const [userMenus, setUserMenus] = useState([]);
+    const [loadingMenus, setLoadingMenus] = useState(true);
 
     const userRoles = useMemo(() => {
         const token = localStorage.getItem('token');
@@ -24,6 +27,21 @@ const LeftBar = () => {
             console.error('Cannot decode token roles:', error);
             return [];
         }
+    }, []);
+
+    useEffect(() => {
+        const fetchUserMenus = async () => {
+            try {
+                const menus = await UserManage.GetUserMenus();
+                setUserMenus(menus.$values || menus || []);
+            } catch (error) {
+                console.error('Cannot load user menus, fallback to role-based menu:', error);
+            } finally {
+                setLoadingMenus(false);
+            }
+        };
+
+        fetchUserMenus();
     }, []);
 
     const menuItems = [
@@ -40,10 +58,16 @@ const LeftBar = () => {
         { name: "Setting", icon: "bxs-cog", path: "/admin/settings", roles: ["Administrator"] },
     ];
 
-    const visibleMenuItems = menuItems.filter(item => {
-        if (!item.roles || item.roles.length === 0) return true;
-        return item.roles.some(r => userRoles.includes(r));
-    });
+    const visibleMenuItems = useMemo(() => {
+        if (!loadingMenus && userMenus && userMenus.length > 0) {
+            return menuItems.filter(item => userMenus.includes(item.name));
+        }
+
+        return menuItems.filter(item => {
+            if (!item.roles || item.roles.length === 0) return true;
+            return item.roles.some(r => userRoles.includes(r));
+        });
+    }, [loadingMenus, userMenus, userRoles]);
 
     return (
         <div

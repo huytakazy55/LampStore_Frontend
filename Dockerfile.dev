@@ -4,10 +4,9 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY yarn.lock ./
 
 # Install dependencies
-RUN yarn install
+RUN npm install --legacy-peer-deps
 
 # Expose port for development server
 EXPOSE 3000
@@ -17,5 +16,5 @@ ENV CHOKIDAR_USEPOLLING=true
 ENV WATCHPACK_POLLING=true
 ENV FAST_REFRESH=true
 
-# Start development server with polling
-CMD ["yarn", "start"] 
+# Start development server
+CMD ["npm", "start"] 

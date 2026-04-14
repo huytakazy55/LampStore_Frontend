@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button, Input, Select, Space, Divider, Tag, Avatar, message } from 'antd';
 import { SendOutlined, UserOutlined } from '@ant-design/icons';
 import ChatService from '../../../../Services/ChatService';
@@ -8,7 +8,8 @@ import { setMessages, addMessage, removeOptimisticMessage } from '../../../../re
 const { TextArea } = Input;
 const { Option } = Select;
 
-const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
+const AdminChatWindow = ({ chat, onClose, onUpdate }) =>
+{
   const [newMessage, setNewMessage] = useState('');
   const [chatStatus, setChatStatus] = useState(chat?.status || 1);
   const [loading, setLoading] = useState(false);
@@ -18,67 +19,70 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.messages[chat?.id] || []);
 
-  useEffect(() => {
-    if (chat?.id) {
+  useEffect(() =>
+  {
+    if (chat?.id)
+    {
       loadMessages();
       initializeSignalR();
     }
 
     // Cleanup function
-    return () => {
-      if (chat?.id) {
+    return () =>
+    {
+      if (chat?.id)
+      {
         ChatService.leaveChat(chat.id);
       }
-      removeEventListeners();
+      // Note: event listeners được quản lý bởi useEffect riêng (useCallback handlers)
     };
   }, [chat?.id]);
 
-  const initializeSignalR = async () => {
-    try {
+  const initializeSignalR = async () =>
+  {
+    try
+    {
       const connected = await ChatService.initializeConnection();
-      if (connected && chat?.id) {
+      if (connected && chat?.id)
+      {
         console.log('🔗 Admin SignalR connected for chat:', chat.id);
         await ChatService.joinChat(chat.id);
-        setupRealTimeListeners();
       }
-    } catch (error) {
+    } catch (error)
+    {
       console.error('❌ Admin SignalR initialization error:', error);
     }
   };
 
-  const setupRealTimeListeners = () => {
-    window.addEventListener('newMessage', handleNewMessage);
-    window.addEventListener('userTyping', handleUserTyping);
-  };
-
-  const removeEventListeners = () => {
-    window.removeEventListener('newMessage', handleNewMessage);
-    window.removeEventListener('userTyping', handleUserTyping);
-  };
-
-  const handleNewMessage = (event) => {
+  // Bug fix: dùng useCallback để handler có reference ổn định
+  // tránh removeEventListener không gỡ được do stale reference
+  const handleNewMessage = useCallback((event) =>
+  {
     const newMsg = event.detail;
-    if (chat && (newMsg.ChatId === chat.id || newMsg.chatId === chat.id)) {
+    if (chat && (newMsg.ChatId === chat.id || newMsg.chatId === chat.id))
+    {
       const messageId = newMsg.MessageId || newMsg.messageId || newMsg.id;
       const content = newMsg.content || newMsg.Content;
       const senderId = newMsg.senderId || newMsg.SenderId;
       const timestamp = newMsg.createdAt || newMsg.Timestamp || newMsg.timestamp || new Date().toISOString();
-      
+
       // Tạo key unique từ content + senderId + timestamp
       const messageKey = `${content}_${senderId}_${Math.floor(new Date(timestamp).getTime() / 1000)}`;
-      
+
       // Kiểm tra cache để tránh xử lý message trùng
-      if (processedMessagesRef.current.has(messageKey)) {
+      if (processedMessagesRef.current.has(messageKey))
+      {
         console.log('🔄 Skipping duplicate message:', messageKey);
         return;
       }
-      
+
       // Thêm vào cache và tự động xóa sau 10 giây
       processedMessagesRef.current.add(messageKey);
-      setTimeout(() => {
+      setTimeout(() =>
+      {
         processedMessagesRef.current.delete(messageKey);
       }, 10000);
-      
+
       const messageToAdd = {
         id: messageId || `signalr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         content,
@@ -87,185 +91,244 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
         isRead: false,
         isFromSignalR: true
       };
-      
+
       // Kiểm tra xem đã có message thật này chưa
-      const existsReal = messages.some(msg => 
+      const existsReal = messagesRef.current.some(msg =>
         msg.id === messageToAdd.id && !msg.isOptimistic
       );
-      
-      if (existsReal) {
+
+      if (existsReal)
+      {
         return; // Đã có message thật, không làm gì
       }
-      
-      // Tìm optimistic message tương ứng
-      const optimisticIndex = messages.findIndex(msg =>
+
+      // Tìm optimistic message tương ứng để thay thế
+      const optimisticIndex = messagesRef.current.findIndex(msg =>
         msg.isOptimistic &&
         msg.content === messageToAdd.content &&
         msg.senderId === messageToAdd.senderId &&
         Math.abs(new Date(msg.createdAt) - new Date(messageToAdd.createdAt)) < 30000
       );
-      
-      if (optimisticIndex !== -1) {
+
+      if (optimisticIndex !== -1)
+      {
         // Thay thế optimistic message bằng real message
-        const updatedMessages = [...messages];
+        const updatedMessages = [...messagesRef.current];
         updatedMessages[optimisticIndex] = messageToAdd;
         dispatch(setMessages({ chatId: chat.id, messages: updatedMessages }));
-      } else {
+      } else
+      {
         // Không có optimistic message, thêm message mới
         dispatch(addMessage({ chatId: chat.id, message: messageToAdd }));
       }
     }
-  };
+  }, [chat, dispatch]);
 
-  const handleUserTyping = (event) => {
+  // eslint-disable-next-line no-unused-vars
+  const handleUserTyping = useCallback((event) =>
+  {
     const typingData = event.detail;
     // You can add typing indicator UI here if needed
-  };
+  }, []);
+
+  // Bug fix: ref để handler luôn có messages mới nhất (tránh stale closure)
+  const messagesRef = useRef([]);
+  useEffect(() =>
+  {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // Setup/remove event listeners khi handlers thay đổi
+  useEffect(() =>
+  {
+    window.addEventListener('newMessage', handleNewMessage);
+    window.addEventListener('userTyping', handleUserTyping);
+    return () =>
+    {
+      window.removeEventListener('newMessage', handleNewMessage);
+      window.removeEventListener('userTyping', handleUserTyping);
+    };
+  }, [handleNewMessage, handleUserTyping]);
 
   // Helper function to get current admin user ID
-  const getCurrentAdminUserId = () => {
-    try {
+  const getCurrentAdminUserId = () =>
+  {
+    try
+    {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token)
+      {
         return null;
       }
-      
+
       // Decode JWT token to get user ID
       const payload = JSON.parse(atob(token.split('.')[1]));
       const userId = payload.nameid || payload.sub || payload.userId || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-      
+
       return userId;
-    } catch (error) {
+    } catch (error)
+    {
       return null;
     }
   };
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     scrollToBottom();
   }, [messages]);
 
   // Auto scroll to bottom when chat window is opened (chat thay đổi)
-  useEffect(() => {
-    if (chat?.id) {
-      setTimeout(() => {
+  useEffect(() =>
+  {
+    if (chat?.id)
+    {
+      setTimeout(() =>
+      {
         scrollToBottom();
       }, 100);
     }
     // eslint-disable-next-line
   }, [chat?.id]);
 
-  const scrollToBottom = () => {
+  const scrollToBottom = () =>
+  {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadMessages = async () => {
-    try {
+  const loadMessages = async () =>
+  {
+    try
+    {
       setLoading(true);
-      
+
       const response = await ChatService.getChatMessages(chat.id);
-      
+
       // Handle .NET serialization format with references
       let chatMessages = [];
-      
-      if (response?.$values && Array.isArray(response.$values)) {
+
+      if (response?.$values && Array.isArray(response.$values))
+      {
         // Create a map to store objects by their $id
         const objectMap = new Map();
-        
+
         // First pass: collect all objects with $id
-        const collectObjects = (obj) => {
-          if (typeof obj === 'object' && obj !== null) {
-            if (obj.$id) {
+        const collectObjects = (obj) =>
+        {
+          if (typeof obj === 'object' && obj !== null)
+          {
+            if (obj.$id)
+            {
               objectMap.set(obj.$id, obj);
             }
             // Recursively collect from nested objects/arrays
-            Object.values(obj).forEach(value => {
-              if (typeof value === 'object' && value !== null) {
-                if (Array.isArray(value)) {
+            Object.values(obj).forEach(value =>
+            {
+              if (typeof value === 'object' && value !== null)
+              {
+                if (Array.isArray(value))
+                {
                   value.forEach(collectObjects);
-                } else {
+                } else
+                {
                   collectObjects(value);
                 }
               }
             });
           }
         };
-        
+
         collectObjects(response);
-        
+
         // Second pass: resolve references in $values array
-        chatMessages = response.$values.map(item => {
-          if (item.$ref) {
+        chatMessages = response.$values.map(item =>
+        {
+          if (item.$ref)
+          {
             const resolvedObject = objectMap.get(item.$ref);
             return resolvedObject || item;
           }
           return item;
         }).filter(Boolean);
-      } else if (Array.isArray(response)) {
+      } else if (Array.isArray(response))
+      {
         chatMessages = response;
-      } else {
+      } else
+      {
         chatMessages = [];
       }
-      
+
       dispatch(setMessages({ chatId: chat.id, messages: chatMessages }));
-    } catch (error) {
+    } catch (error)
+    {
       dispatch(setMessages({ chatId: chat.id, messages: [] }));
       message.error('Không thể tải tin nhắn');
-    } finally {
+    } finally
+    {
       setLoading(false);
     }
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async () =>
+  {
     if (!newMessage.trim()) return;
 
-    try {
+    try
+    {
       setSending(true);
       const currentUserId = getCurrentAdminUserId();
+      const messageContent = newMessage;
+      setNewMessage('');
 
-      // Add message optimistically to UI
+      // Bug fix: dispatch optimistic message vào Redux ngay lập tức để UI cập nhật tức thì
       const optimisticMessage = {
         id: `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        content: newMessage,
+        content: messageContent,
         createdAt: new Date().toISOString(),
         senderId: currentUserId,
         isRead: false,
         isOptimistic: true
       };
-      
-      const messageContent = newMessage;
-      setNewMessage('');
-      
+      dispatch(addMessage({ chatId: chat.id, message: optimisticMessage }));
+
       // Send via API
       await ChatService.sendMessage(chat.id, messageContent, 1);
-      
+
       message.success('Đã gửi tin nhắn');
-    } catch (error) {
+    } catch (error)
+    {
       message.error('Không thể gửi tin nhắn');
-      
+
       // Reload messages to remove optimistic message on error
       await loadMessages();
-    } finally {
+    } finally
+    {
       setSending(false);
     }
   };
 
-  const updateChatStatus = async (newStatus) => {
-    try {
+  const updateChatStatus = async (newStatus) =>
+  {
+    try
+    {
       await ChatService.updateChatStatus(chat.id, newStatus);
       setChatStatus(newStatus);
       message.success('Đã cập nhật trạng thái');
-      
+
       // Update parent component
-      if (onUpdate) {
+      if (onUpdate)
+      {
         onUpdate();
       }
-    } catch (error) {
+    } catch (error)
+    {
       message.error('Không thể cập nhật trạng thái');
     }
   };
 
-  const getStatusText = (status) => {
-    switch (status) {
+  const getStatusText = (status) =>
+  {
+    switch (status)
+    {
       case 1: return 'Mở';
       case 2: return 'Đang xử lý';
       case 3: return 'Đã giải quyết';
@@ -274,8 +337,10 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
+  const getStatusColor = (status) =>
+  {
+    switch (status)
+    {
       case 1: return 'green';
       case 2: return 'orange';
       case 3: return 'blue';
@@ -284,8 +349,10 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
     }
   };
 
-  const getPriorityText = (priority) => {
-    switch (priority) {
+  const getPriorityText = (priority) =>
+  {
+    switch (priority)
+    {
       case 1: return 'Thấp';
       case 2: return 'Bình thường';
       case 3: return 'Cao';
@@ -294,8 +361,10 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
     }
   };
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
+  const getPriorityColor = (priority) =>
+  {
+    switch (priority)
+    {
       case 1: return 'gray';
       case 2: return 'blue';
       case 3: return 'orange';
@@ -304,8 +373,10 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyPress = (e) =>
+  {
+    if (e.key === 'Enter' && !e.shiftKey)
+    {
       e.preventDefault();
       sendMessage();
     }
@@ -331,7 +402,7 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
             </Tag>
           </Space>
         </div>
-        
+
         {/* Status Control */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ fontSize: '14px' }}>Trạng thái:</span>
@@ -350,9 +421,9 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
       </div>
 
       {/* Messages */}
-      <div style={{ 
-        flex: 1, 
-        padding: '16px', 
+      <div style={{
+        flex: 1,
+        padding: '16px',
         overflowY: 'auto',
         backgroundColor: '#fafafa'
       }}>
@@ -363,45 +434,17 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
             Chưa có tin nhắn nào
           </div>
         ) : (
-          messages.map((msg) => {
+          messages.map((msg) =>
+          {
             // Get current admin user ID
             const currentUserId = getCurrentAdminUserId();
-            let isFromAdmin = msg.senderId === currentUserId;
-            
-            // Fallback logic: if current user ID is null or doesn't match, 
-            // check if sender is NOT the chat owner (likely admin)
-            if (!isFromAdmin && chat?.user?.id && msg.senderId !== chat.user.id) {
-              isFromAdmin = true;
-            }
-            
-            // TEMPORARY FIX: Force admin detection based on Sender.Role if available
-            if (!isFromAdmin && msg.sender?.roles && msg.sender.roles.includes('Administrator')) {
-              isFromAdmin = true;
-            }
-            
-            // ENHANCED FIX: Force admin detection by multiple criteria
-            if (!isFromAdmin && !msg.senderId && msg.content) {
-              // Pattern 1: Admin response patterns
-              const adminPatterns = ['Gì đó', 'Test', 'admin', 'hỗ trợ', 'giúp', 'xin chào', 'chào', 'nào'];
-              const hasAdminPattern = adminPatterns.some(pattern => 
-                msg.content.toLowerCase().includes(pattern.toLowerCase())
-              );
-              
-              // Pattern 2: Short messages (< 20 chars) often admin replies
-              const isShortMessage = msg.content.length < 20;
-              
-              // Pattern 3: Recent messages (< 10 minutes) might be admin
-              const messageTime = new Date(msg.createdAt);
-              const now = new Date();
-              const isRecent = (now - messageTime) < 10 * 60 * 1000;
-              
-              if (hasAdminPattern || isShortMessage || isRecent) {
-                isFromAdmin = true;
-              }
-            }
-            
-            const isFromUser = !isFromAdmin;
-            
+
+            // Bug fix: chỉ so sánh senderId với chat.user.id để xác định admin/user
+            // Nếu senderId khớp với user của chat -> là customer
+            // Ngược lại (bao gồm optimistic message của admin) -> là admin
+            const isFromUser = msg.senderId === chat?.user?.id;
+            const isFromAdmin = !isFromUser;
+
             return (
               <div
                 key={String(msg.id).startsWith('temp_') ? `${msg.id}_${msg.createdAt}` : msg.id}
@@ -414,19 +457,19 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
                 <div style={{ display: 'flex', alignItems: 'flex-start', maxWidth: '70%' }}>
                   {/* User Avatar (left side) */}
                   {isFromUser && (
-                    <Avatar 
-                      size="small" 
-                      icon={<UserOutlined />} 
+                    <Avatar
+                      size="small"
+                      icon={<UserOutlined />}
                       style={{ marginRight: '8px', backgroundColor: '#1890ff' }}
                     />
                   )}
-                  
+
                   <div>
                     {/* Sender Label */}
                     {isFromAdmin && (
-                      <div style={{ 
-                        fontSize: '11px', 
-                        color: '#52c41a', 
+                      <div style={{
+                        fontSize: '11px',
+                        color: '#52c41a',
                         marginBottom: '4px',
                         textAlign: 'right',
                         fontWeight: 'bold'
@@ -435,16 +478,16 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
                       </div>
                     )}
                     {isFromUser && (
-                      <div style={{ 
-                        fontSize: '11px', 
-                        color: '#1890ff', 
+                      <div style={{
+                        fontSize: '11px',
+                        color: '#1890ff',
                         marginBottom: '4px',
                         fontWeight: 'bold'
                       }}>
                         👤 Customer
                       </div>
                     )}
-                    
+
                     <div
                       style={{
                         padding: '8px 12px',
@@ -456,9 +499,9 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
                     >
                       <p style={{ margin: 0, fontSize: '14px' }}>{msg.content || msg.Content}</p>
                     </div>
-                    <p style={{ 
-                      margin: '4px 0 0 0', 
-                      fontSize: '11px', 
+                    <p style={{
+                      margin: '4px 0 0 0',
+                      fontSize: '11px',
                       color: '#999',
                       textAlign: isFromAdmin ? 'right' : 'left'
                     }}>
@@ -466,11 +509,11 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
                       {msg.isRead && isFromAdmin && ' ✓✓'}
                     </p>
                   </div>
-                  
+
                   {/* Admin Avatar (right side) */}
                   {isFromAdmin && (
-                    <Avatar 
-                      size="small" 
+                    <Avatar
+                      size="small"
                       style={{ marginLeft: '8px', backgroundColor: '#52c41a' }}
                     >
                       A
@@ -507,7 +550,7 @@ const AdminChatWindow = ({ chat, onClose, onUpdate }) => {
             Gửi
           </Button>
         </div>
-        
+
         <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
           💡 Mẹo: Nhấn Enter để gửi, Shift+Enter để xuống dòng
         </div>

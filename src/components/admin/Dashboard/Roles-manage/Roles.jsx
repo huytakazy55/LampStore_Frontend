@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Table, Tag, Space, Button, Modal, Checkbox, Row, Col, message, Input } from 'antd';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
+import { Card, Table, Tag, Space, Button, Modal, Checkbox, Row, Col, message, Input, Select, Spin, Breadcrumb } from 'antd';
+import { ThemeContext } from '../../../../ThemeContext';
 import UserManage from '../../../../Services/UserManage';
 
 const Roles = () => {
+  const { themeColors } = useContext(ThemeContext);
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [roleData, setRoleData] = useState({});
   const [availableRoles, setAvailableRoles] = useState([]);
+  const [availableMenus, setAvailableMenus] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalUser, setModalUser] = useState(null);
@@ -14,6 +18,17 @@ const Roles = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [newRoleName, setNewRoleName] = useState('');
   const [creating, setCreating] = useState(false);
+  const [menuConfigModalOpen, setMenuConfigModalOpen] = useState(false);
+  const [menuConfigRole, setMenuConfigRole] = useState(null);
+  const [selectedMenus, setSelectedMenus] = useState([]);
+  const [loadingMenus, setLoadingMenus] = useState(false);
+  const [savingMenus, setSavingMenus] = useState(false);
+
+  const filteredUsers = useMemo(() =>
+    users.filter(u =>
+      u.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [users, searchTerm]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -55,9 +70,19 @@ const Roles = () => {
     }
   };
 
+  const fetchAvailableMenus = async () => {
+    try {
+      const menus = await UserManage.GetAvailableMenus();
+      setAvailableMenus(menus.$values || menus || []);
+    } catch (error) {
+      message.error('Không tải được danh sách menu');
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
     fetchAvailableRoles();
+    fetchAvailableMenus();
   }, []);
 
   const openRoleModal = (user) => {
@@ -66,6 +91,52 @@ const Roles = () => {
     setSelectedRoles(normalized);
     setModalUser(user);
     setModalOpen(true);
+  };
+
+  const openMenuConfigModal = async () => {
+    if (!availableRoles || availableRoles.length === 0) {
+      message.warning('Chưa có quyền nào để cấu hình menu');
+      return;
+    }
+    const defaultRole = availableRoles[0];
+    setMenuConfigRole(defaultRole);
+    setMenuConfigModalOpen(true);
+    await loadRoleMenus(defaultRole);
+  };
+
+  const loadRoleMenus = async (roleName) => {
+    if (!roleName) return;
+    setLoadingMenus(true);
+    try {
+      const menus = await UserManage.GetRoleMenus(roleName);
+      setSelectedMenus(menus.$values || menus || []);
+    } catch (error) {
+      message.error('Không tải được menu của quyền này');
+      setSelectedMenus([]);
+    } finally {
+      setLoadingMenus(false);
+    }
+  };
+
+  const handleSaveRoleMenus = async () => {
+    if (!menuConfigRole) {
+      message.error('Vui lòng chọn quyền cần cấu hình');
+      return;
+    }
+    setSavingMenus(true);
+    try {
+      await UserManage.SetRoleMenus(menuConfigRole, selectedMenus);
+      message.success('Cập nhật menu cho quyền thành công');
+      setMenuConfigModalOpen(false);
+    } catch (error) {
+      if (error.response?.data) {
+        message.error(error.response.data);
+      } else {
+        message.error('Có lỗi xảy ra khi cập nhật menu cho quyền');
+      }
+    } finally {
+      setSavingMenus(false);
+    }
   };
 
   const handleAssignRoles = async () => {
@@ -139,24 +210,69 @@ const Roles = () => {
   ];
 
   return (
-    <div className="p-6">
-      <Card 
-        title="Quản lý quyền" 
-        bordered={false}
-        extra={
-          <Button type="primary" onClick={() => setCreateModalOpen(true)}>
-            Thêm quyền
-          </Button>
-        }
-      >
-        <Table
-          rowKey="id"
-          dataSource={users}
-          columns={columns}
-          loading={loading}
-          pagination={false}
-        />
-      </Card>
+    <div style={{ padding: '24px' }}>
+      <div className="admin-table-card">
+        {/* Title Bar */}
+        <div
+          className="admin-title-bar"
+          style={{
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+            padding: '24px 24px 16px 24px',
+            marginBottom: 0
+          }}
+        >
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, color: themeColors.StartColorLinear }}>
+            Quản lý quyền &amp; vai trò
+          </div>
+          <Breadcrumb
+            items={[
+              { title: 'Trang chủ' },
+              { title: 'Quản lý quyền & vai trò' }
+            ]}
+            style={{ marginTop: '8px' }}
+          />
+        </div>
+        {/* Filter Bar */}
+        <div
+          className="admin-filter-bar"
+          style={{
+            padding: '16px 24px',
+            background: '#fff',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '16px'
+          }}
+        >
+          <Input.Search
+            placeholder="Tìm kiếm tên đăng nhập..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ width: 300 }}
+          />
+          <Space>
+            <Button onClick={openMenuConfigModal}>
+              Cấu hình menu theo quyền
+            </Button>
+            <Button type="primary" onClick={() => setCreateModalOpen(true)}>
+              Thêm quyền
+            </Button>
+          </Space>
+        </div>
+        {/* Table */}
+        <div className="admin-table-wrapper" style={{ padding: '0 24px 24px 24px' }}>
+          <Table
+            rowKey="id"
+            dataSource={filteredUsers}
+            columns={columns}
+            loading={loading}
+            pagination={false}
+            className="custom-table"
+            scroll={{ x: 700 }}
+          />
+        </div>
+      </div>
 
       <Modal
         title={`Phân quyền - ${modalUser?.userName || ''}`}
@@ -178,6 +294,54 @@ const Roles = () => {
             ))}
           </Row>
         </Checkbox.Group>
+      </Modal>
+
+      <Modal
+        title="Cấu hình menu theo quyền"
+        open={menuConfigModalOpen}
+        onOk={handleSaveRoleMenus}
+        onCancel={() => setMenuConfigModalOpen(false)}
+        confirmLoading={savingMenus}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <span className="block mb-2 font-medium">Chọn quyền</span>
+          <Select
+            style={{ width: '100%' }}
+            value={menuConfigRole}
+            onChange={(value) => {
+              setMenuConfigRole(value);
+              loadRoleMenus(value);
+            }}
+          >
+            {availableRoles.map(role => (
+              <Select.Option key={role} value={role}>
+                {role}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <span className="block mb-2 font-medium">Chọn menu được phép truy cập</span>
+          {loadingMenus ? (
+            <div className="flex justify-center py-6">
+              <Spin />
+            </div>
+          ) : (
+            <Checkbox.Group
+              style={{ width: '100%' }}
+              value={selectedMenus}
+              onChange={setSelectedMenus}
+            >
+              <Row gutter={[0, 8]}>
+                {availableMenus.map(menu => (
+                  <Col span={24} key={menu}>
+                    <Checkbox value={menu}>{menu}</Checkbox>
+                  </Col>
+                ))}
+              </Row>
+            </Checkbox.Group>
+          )}
+        </div>
       </Modal>
 
       <Modal

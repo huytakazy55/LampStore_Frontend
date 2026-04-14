@@ -2,6 +2,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Routes, useLocation, UNSAFE_future } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './pages/HomePage';
 import AdminDashboard from './components/admin/Dashboard/AdminDashboard/AdminDashboard';
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -69,7 +70,7 @@ function AppContent() {
             </ProtectedRoute>
           } 
         />
-        <Route path='/ProductDetail' element={<ProductDetail />} />
+        <Route path='/product/:id' element={<ProductDetail />} />
       </Routes>
       
       {/* Chat Button - chỉ hiển thị cho user đã login và không ở trang admin */}
@@ -83,9 +84,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <AppContent />
-    </Router>
+    <HelmetProvider>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <AppContent />
+      </Router>
+    </HelmetProvider>
   );
 }
 

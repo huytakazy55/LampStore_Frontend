@@ -5,16 +5,19 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY yarn.lock ./
 
 # Install dependencies
-RUN yarn install
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
 
+# Accept build-time env vars
+ARG REACT_APP_API_ENDPOINT
+ENV REACT_APP_API_ENDPOINT=$REACT_APP_API_ENDPOINT
+
 # Build the app
-RUN yarn build
+RUN npm run build
 
 # Production stage
 FROM nginx:alpine

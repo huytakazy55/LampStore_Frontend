@@ -130,31 +130,33 @@ const UpdateModal = ({openUpdate, handleUpdateClose, fetchProducts, style, categ
       if (product) {
         const fetchData = async () => {
           try {
-            const [productRes, variantRes, typeRes] = await Promise.all([
-              ProductManage.GetProductById(product.id),
-              ProductManage.GetVariantById(product.id),
-              ProductManage.GetProductTypeByProductId(product.id)
-            ]);
+            const productRes = await ProductManage.GetProductById(product.id);
     
+            const productData = productRes?.data;
+            // Extract first variant from the product response
+            const variantsRaw = productData?.variants?.$values || productData?.variants || [];
+            const variants = Array.isArray(variantsRaw) ? variantsRaw : [];
+            const variant = variants[0];
+
             const formData = {
-              id: productRes?.data?.id,
-              name: productRes?.data?.name,
-              description: productRes?.data?.description,
-              categoryId: productRes?.data?.categoryId,
-              tags: productRes?.data?.tags ? productRes?.data?.tags.split(',') : [],
-              rating: productRes?.data?.rating,
-              viewCount: productRes?.data?.viewCount,
-              reviewCount: productRes?.data?.reviewCount,
-              favorites: productRes?.data?.favorites,
-              sellCount: productRes?.data?.sellCount,
-              dateAdded: productRes?.data?.dateAdded,
-              status: productRes?.data?.status,
-              price: variantRes?.data?.price,
-              discountPrice: variantRes?.data?.discountPrice,
-              stock: variantRes?.data?.stock,
-              materials: variantRes?.data?.materials,
-              weight: variantRes?.data?.weight,
-              sku: variantRes?.data?.sku
+              id: productData?.id,
+              name: productData?.name,
+              description: productData?.description,
+              categoryId: productData?.categoryId,
+              tags: productData?.tags ? productData?.tags.split(',') : [],
+              rating: productData?.rating,
+              viewCount: productData?.viewCount,
+              reviewCount: productData?.reviewCount,
+              favorites: productData?.favorites,
+              sellCount: productData?.sellCount,
+              dateAdded: productData?.dateAdded,
+              status: productData?.status,
+              price: variant?.price,
+              discountPrice: variant?.discountPrice,
+              stock: variant?.stock,
+              materials: variant?.materials,
+              weight: variant?.weight,
+              sku: variant?.sku
             };
             
             // Reset form trước khi set giá trị mới
@@ -162,30 +164,32 @@ const UpdateModal = ({openUpdate, handleUpdateClose, fetchProducts, style, categ
             form.setFieldsValue(formData);
             setUpdateData(formData);
             setVariantData({
-              price: variantRes?.data?.price,
-              discountPrice: variantRes?.data?.discountPrice,
-              stock: variantRes?.data?.stock,
-              materials: variantRes?.data?.materials,
-              weight: variantRes?.data?.weight,
-              sku: variantRes?.data?.sku
+              price: variant?.price,
+              discountPrice: variant?.discountPrice,
+              stock: variant?.stock,
+              materials: variant?.materials,
+              weight: variant?.weight,
+              sku: variant?.sku
             });
     
-            if (typeRes?.data?.$values?.length > 0) {
-              const mappedTypes = await Promise.all(
-                typeRes.data.$values.map(async (type) => {
-                  const valueRes = await ProductManage.GetProductValueByTypeId(type.id);
-                  return {
-                    typeName: type.name,
-                    options: valueRes?.data?.$values || ['']
-                  };
-                })
-              );
-              
-              const sortedTypes = typeRes.data.$values.map(type => 
-                mappedTypes.find(mt => mt.typeName === type.name)
-              ).filter(Boolean);
-              
-              setProductTypes(sortedTypes.reverse());
+            // Extract variant types from product response (no extra API calls needed)
+            const variantTypesRaw = productData?.variantTypes?.$values || productData?.variantTypes || [];
+            const variantTypesArr = Array.isArray(variantTypesRaw) ? variantTypesRaw : [];
+            
+            if (variantTypesArr.length > 0) {
+              const mappedTypes = variantTypesArr.map(type => {
+                const valuesRaw = type.values?.$values || type.values || [];
+                const valuesArr = Array.isArray(valuesRaw) ? valuesRaw : [];
+                return {
+                  typeName: type.name,
+                  options: valuesArr.length > 0 
+                    ? [...valuesArr.map(v => v.value || v), ''] 
+                    : ['']
+                };
+              });
+              setProductTypes(mappedTypes);
+            } else {
+              setProductTypes([{ typeName: '', options: [''] }]);
             }
           } catch (error) {
             toast.error("Có lỗi khi lấy dữ liệu.");

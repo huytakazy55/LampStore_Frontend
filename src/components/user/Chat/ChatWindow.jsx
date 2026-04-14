@@ -15,6 +15,9 @@ const ChatWindow = ({ onClose }) => {
   const messagesEndRef = useRef(null);
   const processedMessagesRef = useRef(new Set());
   const hasSetupListenersRef = useRef(false); // Flag để đảm bảo chỉ setup 1 lần
+  // Bug fix: dùng ref để track giá trị hiện tại của currentChat và messages (tránh stale closure)
+  const currentChatRef = useRef(null);
+  const messagesRef = useRef([]);
 
   // New chat form states
   const [subject, setSubject] = useState('');
@@ -33,6 +36,15 @@ const ChatWindow = ({ onClose }) => {
   // Redux hooks đặt ở đầu component
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.messages[currentChat?.id] || []);
+
+  // Bug fix: cập nhật refs mỗi khi state thay đổi để handler luôn có giá trị mới nhất
+  useEffect(() => {
+    currentChatRef.current = currentChat;
+  }, [currentChat]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
 
   // Helper functions
   const getCurrentUserId = () => {
@@ -182,10 +194,14 @@ const ChatWindow = ({ onClose }) => {
       isFromSignalR: true
     };
     
+    // Bug fix: dùng ref thay vì state trực tiếp để tránh stale closure
+    const activeChatId = currentChatRef.current?.id;
+    const currentMessages = messagesRef.current;
+    
     // Nếu user đang trong chat và tin nhắn thuộc chat hiện tại
-    if (currentChat && targetChatId === currentChat.id) {
+    if (activeChatId && targetChatId === activeChatId) {
       // Kiểm tra message đã tồn tại trong messages của chat hiện tại chưa
-      const exists = messages.some(msg => {
+      const exists = currentMessages.some(msg => {
         if (messageId && msg.id === messageId) return true;
         if (msg.content === messageToAdd.content && 
             msg.senderId === messageToAdd.senderId && 
@@ -196,7 +212,7 @@ const ChatWindow = ({ onClose }) => {
       });
       
       if (!exists) {
-        dispatch(addMessage({ chatId: currentChat.id, message: messageToAdd }));
+        dispatch(addMessage({ chatId: activeChatId, message: messageToAdd }));
       }
     } 
     // Nếu user không ở trong chat hiện tại nhưng nhận được tin nhắn
@@ -310,8 +326,7 @@ const ChatWindow = ({ onClose }) => {
       
       dispatch(setMessages({ chatId, messages: chatMessages }));
       
-      // Join chat room for real-time updates
-      await ChatService.joinChat(chatId);
+      // Bug fix: bỏ joinChat ở đây, chỉ gọi 1 lần trong openChat()
     } catch (error) {
       dispatch(setMessages({ chatId, messages: [] }));
     }

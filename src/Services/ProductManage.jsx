@@ -40,6 +40,10 @@ class ProductManage {
         return axiosInstance.get(`/api/Products/VariantValue/${typeId}`);
     }
 
+    GetVariantLabels(productId) {
+        return axiosInstance.get(`/api/Products/VariantLabels/${productId}`);
+    }
+
     UpdateProduct(productData) {
         return axiosInstance.put(`/api/Products/${productData.id}`, productData);
     }

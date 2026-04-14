@@ -1,10 +1,11 @@
 import React from 'react'
 import Slider from "react-slick";
-import Banner1 from '../../../../assets/images/Banner_DenNgu01.jpg'
-import Banner2 from '../../../../assets/images/Banner_Denngu02.jpg'
-import Banner3 from '../../../../assets/images/Banner_DenNgu03.jpg'
+import Banner1 from '../../../../assets/images/banner_nen_01.jpeg'
+import Banner2 from '../../../../assets/images/banner_nen_02.jpeg'
+import Banner3 from '../../../../assets/images/banner_nen_03.jpeg'
 
-export const SiteContent = () => {
+export const SiteContent = () =>
+{
   var settings = {
     dots: false,
     infinite: true,

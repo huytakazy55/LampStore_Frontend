@@ -238,121 +238,9 @@ const Banners = () => {
         columnTitle: '',
     };
 
-    const customStyles = `
-        .custom-table .ant-table-thead > tr > th {
-            background: #fafafa;
-            font-weight: 600;
-            color: #1f1f1f;
-            padding: 16px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .custom-table .ant-table-tbody > tr > td {
-            padding: 16px;
-            border-bottom: 1px solid #f0f0f0;
-            transition: all 0.3s;
-        }
-        
-        .custom-table .ant-table-tbody > tr:hover > td {
-            background: #f6f8fc;
-        }
-        
-        .custom-table .ant-table-cell {
-            font-size: 14px;
-        }
-        
-        .custom-table .ant-table-row-selected td {
-            background: #e6f7ff;
-        }
-        
-        .custom-table .ant-table-pagination {
-            margin: 16px;
-            padding: 16px 0;
-            border-top: 1px solid #f0f0f0;
-        }
-        
-        .custom-table .ant-table-thead > tr:first-child th:first-child {
-            border-top-left-radius: 8px;
-        }
-        
-        .custom-table .ant-table-thead > tr:first-child th:last-child {
-            border-top-right-radius: 8px;
-        }
-        
-        .custom-table .ant-table-tbody > tr:last-child td:first-child {
-            border-bottom-left-radius: 8px;
-        }
-        
-        .custom-table .ant-table-tbody > tr:last-child td:last-child {
-            border-bottom-right-radius: 8px;
-        }
-
-        .custom-table .ant-checkbox-wrapper {
-            transform: scale(0.8);
-        }
-
-        .custom-table .ant-table {
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .custom-table .ant-table-container {
-            border: 1px solid #f0f0f0;
-            border-radius: 8px;
-        }
-
-        .custom-table .ant-table-tbody > tr > td {
-            background: #fff;
-        }
-
-        .custom-table .ant-table-tbody > tr:nth-child(even) > td {
-            background: #fafafa;
-        }
-
-        .custom-table .ant-table-tbody > tr:hover > td {
-            background: #f6f8fc !important;
-        }
-
-        .custom-table .ant-table-row-selected td {
-            background: #e6f7ff !important;
-        }
-
-        .custom-table .ant-table-row-selected:hover td {
-            background: #bae7ff !important;
-        }
-
-        .custom-table .ant-tag {
-            margin: 0;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        .custom-table .ant-space {
-            gap: 8px !important;
-        }
-
-        .custom-table .ant-btn {
-            border-radius: 4px;
-        }
-
-        .custom-table .ant-btn-text {
-            padding: 4px 8px;
-        }
-
-        .custom-table .ant-btn-text:hover {
-            background: #f5f5f5;
-        }
-    `;
-
     return (
         <div style={{padding: '24px'}}>
-            <style>{customStyles}</style>
-            <div style={{
-                background: '#fff',
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
-            }}>
+            <div className="admin-table-card">
                 {/* Title Bar */}
                 <div
                     className="admin-title-bar"
@@ -414,7 +302,6 @@ const Banners = () => {
                         rowKey="id"
                         pagination={false}
                         loading={loading}
-                        bordered
                         size="middle"
                         scroll={{ x: 1200 }}
                         className="custom-table"
