@@ -19,7 +19,6 @@ const NavbarPrimary = () => {
       setLoading(true)
       const response = await CategoryManage.GetCategory()
       const categoriesData = response.data.$values || response.data || []
-      // NavbarPrimary hiển thị tất cả categories
       setCategories(categoriesData)
     } catch (error) {
       console.error('Error fetching categories:', error)
@@ -29,7 +28,6 @@ const NavbarPrimary = () => {
   }
 
   const fetchProductsByCategory = async (categoryId) => {
-    // Nếu đã có dữ liệu sản phẩm cho category này, không fetch lại
     if (categoryProducts[categoryId]) {
       return
     }
@@ -38,12 +36,10 @@ const NavbarPrimary = () => {
       const response = await ProductManage.GetProduct()
       const allProducts = response.data.$values || response.data || []
       
-      // Lọc sản phẩm theo categoryId và fetch images cho mỗi product
       const filteredProducts = allProducts.filter(product => 
         product.categoryId === categoryId
-      ).slice(0, 6) // Lấy tối đa 6 sản phẩm
+      ).slice(0, 6)
 
-      // Fetch images cho từng product
       const productsWithImages = await Promise.all(
         filteredProducts.map(async (product) => {
           try {
@@ -82,7 +78,7 @@ const NavbarPrimary = () => {
   const getImageSrc = (category) => {
     if (category.imageUrl) {
       if (category.imageUrl.startsWith('http')) {
-        return category.imageUrl // URL đầy đủ từ Cloudinary
+        return category.imageUrl
       } else {
         return `${API_ENDPOINT}${category.imageUrl}`
       }
@@ -91,17 +87,14 @@ const NavbarPrimary = () => {
   }
 
   const getProductImageSrc = (product) => {
-    // Check for Images collection (capital I) with ImagePath
     if (product.Images && product.Images.length > 0) {
       const imagePath = product.Images[0].imagePath
-      // Kiểm tra nếu là URL từ Cloudinary
       if (imagePath.startsWith('http')) {
-        return imagePath // URL đầy đủ từ Cloudinary
+        return imagePath
       } else {
         return `${API_ENDPOINT}${imagePath}`
       }
     }
-    // Check for images collection (lowercase i) - fallback
     if (product.images && product.images.length > 0) {
       const imagePath = product.images[0].imagePath
       if (imagePath.startsWith('http')) {
@@ -123,8 +116,8 @@ const NavbarPrimary = () => {
   if (loading) {
     return (
       <div className='bg-yellow-400 w-full h-12'>
-        <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-center items-center h-full'>
-          <div className="text-black font-medium">Đang tải danh mục...</div>
+        <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-center items-center h-full px-4 xl:px-0'>
+          <div className="text-black font-medium text-sm">Đang tải danh mục...</div>
         </nav>
       </div>
     )
@@ -132,31 +125,30 @@ const NavbarPrimary = () => {
 
   return (
     <div className='bg-yellow-400 w-full h-12'>
-      <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full'>
-        <ul className='flex justify-start h-full relative'>
-          
-
+      <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full px-4 xl:px-0'>
+        <ul className='flex justify-start h-full relative overflow-x-auto overflow-y-hidden scrollbar-hide w-full'>
           {/* Dynamic Categories */}
           {categories.map((category, index) => (
             <li 
               key={category.id} 
-              className='flex items-center px-4 h-full border-r border-gray-300 hover:bg-yellow-500 group'
+              className='flex items-center px-3 md:px-4 h-full border-r border-gray-300 hover:bg-yellow-500 group flex-shrink-0'
               onMouseEnter={() => handleCategoryHover(category)}
               onMouseLeave={() => handleCategoryHover(null)}
             >
-              <a className='text-black font-medium' href={`#category-${category.id}`}>
+              <a className='text-black font-medium text-xs md:text-sm whitespace-nowrap' href={`#category-${category.id}`}>
                 {category.name}
               </a>
-              <i className='bx bx-chevron-down text-h3 ml-1'></i>
+              <i className='bx bx-chevron-down text-sm md:text-h3 ml-1 hidden sm:inline'></i>
             </li>
           ))}
 
           {/* Single Dropdown - positioned absolute from start of navbar */}
           {hoveredCategory && (
             <div 
-              className='absolute top-[49px] left-0 shadow-2xl border-t-2 z-[1000] transition-all duration-500 ease-in-out backdrop-blur-lg bg-white/85 rounded-b-sm border border-gray-200/30'
+              className='hidden md:block absolute top-[49px] left-0 shadow-2xl border-t-2 z-[1000] transition-all duration-500 ease-in-out backdrop-blur-lg bg-white/85 rounded-b-sm border border-gray-200/30'
               style={{
-                width: '1450px',
+                width: '100%',
+                maxWidth: '1450px',
                 height: '350px',
                 opacity: hoveredCategory ? 1 : 0,
                 transform: hoveredCategory ? 'translateY(0)' : 'translateY(-10px)',
@@ -170,7 +162,7 @@ const NavbarPrimary = () => {
             >
               <div className="flex h-full">
                 {/* Left side - Category Image Only */}
-                <div className="w-1/3 p-4">
+                <div className="hidden lg:block w-1/3 p-4">
                   <img 
                     src={getImageSrc(hoveredCategory)}
                     alt={hoveredCategory.name}
@@ -182,10 +174,10 @@ const NavbarPrimary = () => {
                 </div>
 
                 {/* Right side - Products Simple List */}
-                <div className="w-2/3 p-4">
+                <div className="w-full lg:w-2/3 p-4">
                   <h4 className="text-lg font-bold text-gray-800 mb-4">{hoveredCategory.name}</h4>
                   {categoryProducts[hoveredCategory.id] && categoryProducts[hoveredCategory.id].length > 0 ? (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {categoryProducts[hoveredCategory.id].map((product, productIndex) => (
                         <div key={product.id || productIndex} className="flex items-center space-x-3 group cursor-pointer">
                           <div className="flex-shrink-0">

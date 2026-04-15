@@ -2,50 +2,52 @@ import React from 'react'
 
 const FeatureList = () => {
   return (
-    <div className='w-full h-20 flex justify-between mb-6 xl:mx-auto xl:max-w-[1440px] items-center gap-[10px] rounded-[5px] shadow-sm ring-1 ring-gray-900/15'>
-      <div className='w-1/5 border-r border-gray-400 flex justify-center items-center gap-4'>
-        <div className='text-h1 leading-[1] align-middle text-yellow-400'>
-          <i className='bx bx-rocket'></i>
+    <div className='w-full mb-4 md:mb-6 px-4 xl:px-0 xl:mx-auto xl:max-w-[1440px]'>
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-0 rounded-[5px] shadow-sm ring-1 ring-gray-900/15'>
+        <div className='flex justify-center items-center gap-2 md:gap-4 p-3 md:p-4 lg:border-r border-gray-400'>
+          <div className='text-xl md:text-h1 leading-[1] align-middle text-yellow-400'>
+            <i className='bx bx-rocket'></i>
+          </div>
+          <div className='feature-text'>
+            <strong className='text-xs md:text-sm'>Free Delivery</strong>
+            <p className='text-xs md:text-sm'>from 50%</p> 
+          </div>
         </div>
-        <div className='feature-text'>
-          <strong>Free Delivery</strong>
-          <p>from 50%</p> 
+        <div className='flex justify-center items-center gap-2 md:gap-4 p-3 md:p-4 lg:border-r border-gray-400'>
+          <div className='text-xl md:text-h1 leading-[1] align-middle text-yellow-400'>
+            <i className='bx bx-like'></i>
+          </div>
+          <div className='feature-text'>
+            <strong className='text-xs md:text-sm'>99% Positive</strong>
+            <p className='text-xs md:text-sm'>Feedbacks</p>
+          </div>
         </div>
-      </div>
-      <div className='w-1/5 border-r border-gray-400 flex justify-center items-center gap-4'>
-        <div className='text-h1 leading-[1] align-middle text-yellow-400'>
-          <i className='bx bx-like'></i>
+        <div className='flex justify-center items-center gap-2 md:gap-4 p-3 md:p-4 lg:border-r border-gray-400'>
+          <div className='text-xl md:text-h1 leading-[1] align-middle text-yellow-400'>
+            <i className='bx bx-revision'></i>
+          </div>
+          <div className='feature-text'>
+            <strong className='text-xs md:text-sm'>1 week</strong>
+            <p className='text-xs md:text-sm'>for free return</p>
+          </div>
         </div>
-        <div className='feature-text'>
-          <strong>99% Positive</strong>
-          <p>Feedbacks</p>
+        <div className='flex justify-center items-center gap-2 md:gap-4 p-3 md:p-4 lg:border-r border-gray-400'>
+          <div className='text-xl md:text-h1 leading-[1] align-middle text-yellow-400'>
+            <i className='bx bxl-visa'></i>
+          </div>
+          <div className='feature-text'>
+            <strong className='text-xs md:text-sm'>Payment</strong>
+            <p className='text-xs md:text-sm'>Secure System</p>
+          </div>
         </div>
-      </div>
-      <div className='w-1/5 border-r border-gray-400 flex justify-center items-center gap-4'>
-        <div className='text-h1 leading-[1] align-middle text-yellow-400'>
-          <i className='bx bx-revision'></i>
-        </div>
-        <div className='feature-text'>
-          <strong>1 week</strong>
-          <p>for free return</p>
-        </div>
-      </div>
-      <div className='w-1/5 border-r border-gray-400 flex justify-center items-center gap-4'>
-        <div className='text-h1 leading-[1] align-middle text-yellow-400'>
-          <i className='bx bxl-visa'></i>
-        </div>
-        <div className='feature-text'>
-          <strong>Payment</strong>
-          <p>Secure System</p>
-        </div>
-      </div>
-      <div className='w-1/5 border-r-0 border-gray-400 flex justify-center items-center gap-4'>
-        <div className='text-h1 leading-[1] align-middle text-yellow-400'>
-          <i className='bx bx-purchase-tag'></i>
-        </div>
-        <div className='feature-text'>
-          <strong>Only Best</strong>
-          <p>Brands</p>
+        <div className='col-span-2 md:col-span-1 flex justify-center items-center gap-2 md:gap-4 p-3 md:p-4'>
+          <div className='text-xl md:text-h1 leading-[1] align-middle text-yellow-400'>
+            <i className='bx bx-purchase-tag'></i>
+          </div>
+          <div className='feature-text'>
+            <strong className='text-xs md:text-sm'>Only Best</strong>
+            <p className='text-xs md:text-sm'>Brands</p>
+          </div>
         </div>
       </div>
     </div>

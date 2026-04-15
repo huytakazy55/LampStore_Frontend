@@ -19,7 +19,8 @@ const CategorySale = () => {
     return displayedCategories.slice(0, 4)
   }, [allCategories])
 
-  console.log(categories);
+
+
 
   const getImageSrc = (category) => {
     if (category.imageUrl) {
@@ -79,20 +80,14 @@ const CategorySale = () => {
     )
   }
 
-  if (isError) {
-    return (
-      <div className='w-full h-36 flex justify-center items-center mb-6 xl:mx-auto xl:max-w-[1440px]'>
-        <div className="text-center">
-          <div className="text-red-500 text-lg mb-2">⚠️</div>
-          <p className="text-red-600">Lỗi tải danh mục: {error?.message || 'Không xác định'}</p>
-        </div>
-      </div>
-    )
+  if (isError || categories.length === 0) {
+    // Ẩn hoàn toàn section khi lỗi hoặc không có dữ liệu
+    return null;
   }
 
   return (
     <div className='w-full mb-8'>
-      <div className='xl:mx-auto xl:max-w-[1440px]'>
+      <div className='xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0'>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
           {categories.map((category, index) => {
             const nameLines = formatCategoryName(category.name)

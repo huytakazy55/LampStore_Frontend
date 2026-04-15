@@ -15,16 +15,16 @@ export const SiteContent = () =>
     cssEase: '2s cubic-bezier(.26,.62,.77,.46)'
   };
   return (
-    <div className="w-full h-[25rem] bg-black mb-6">
+    <div className="w-full h-[12rem] sm:h-[16rem] md:h-[20rem] lg:h-[25rem] bg-black mb-4 md:mb-6">
       <Slider {...settings}>
         <div>
-          <img className='w-full h-[25rem]' src={Banner1} alt="Banner 1" />
+          <img className='w-full h-[12rem] sm:h-[16rem] md:h-[20rem] lg:h-[25rem] object-cover' src={Banner1} alt="Banner 1" />
         </div>
         <div>
-          <img className='w-full h-[25rem]' src={Banner2} alt="Banner 2" />
+          <img className='w-full h-[12rem] sm:h-[16rem] md:h-[20rem] lg:h-[25rem] object-cover' src={Banner2} alt="Banner 2" />
         </div>
         <div>
-          <img className='w-full h-[25rem]' src={Banner3} alt="Banner 3" />
+          <img className='w-full h-[12rem] sm:h-[16rem] md:h-[20rem] lg:h-[25rem] object-cover' src={Banner3} alt="Banner 3" />
         </div>
       </Slider>
     </div>

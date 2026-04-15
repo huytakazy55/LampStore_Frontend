@@ -6,8 +6,11 @@ import RightBody from '../RightBody/RightBody';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import NotificationService from '../../../../Services/NotificationService';
+import { useSelector } from 'react-redux';
 
 const AdminDashboard = () => {
+  const leftBar = useSelector((state) => state.leftbar.leftbar);
+
   useEffect(() => {
     // Khởi tạo thông báo real-time cho admin
     const initializeNotifications = async () => {
@@ -26,9 +29,11 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <div>
+    <div className='min-h-screen'>
       <AppBar />
-      <div className='h-[calc(100vh-4rem)] flex justify-between items-center'>
+      <div className='h-[calc(100vh-4rem)] flex justify-between items-stretch relative'>
+        {/* Mobile overlay when sidebar is open */}
+        <div className={`fixed inset-0 bg-black/40 z-30 md:hidden transition-opacity duration-300 ${!leftBar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
         <LeftBar />
         <RightBody />
         <ToastContainer

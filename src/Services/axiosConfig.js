@@ -108,6 +108,10 @@ axiosInstance.interceptors.response.use(
     const { response } = error;
     
     if (response) {
+      const isUserAction = ['post', 'put', 'delete', 'patch'].includes(
+        originalRequest?.method?.toLowerCase()
+      );
+
       switch (response.status) {
         case 401: // Unauthorized
           // Nếu chưa retry và có refresh token
@@ -132,19 +136,32 @@ axiosInstance.interceptors.response.use(
         case 403:
           toast.error('Bạn không có quyền truy cập chức năng này!');
           break;
+        case 404:
+          // Chỉ hiện toast cho user action (POST/PUT/DELETE), không hiện cho GET tự động
+          if (isUserAction) {
+            toast.error('Không tìm thấy tài nguyên yêu cầu!');
+          }
+          break;
         case 500:
           toast.error('Có lỗi xảy ra trên server!');
           break;
         default:
-          if (response.data && response.data.message) {
-            toast.error(response.data.message);
-          } else {
-            toast.error('Có lỗi xảy ra!');
+          if (isUserAction) {
+            if (response.data && response.data.message) {
+              toast.error(response.data.message);
+            } else {
+              toast.error('Có lỗi xảy ra!');
+            }
           }
       }
     } else {
-      // Network error hoặc timeout
-      toast.error('Không thể kết nối đến server!');
+      // Network error / timeout — chỉ toast khi là user action
+      const isUserAction = ['post', 'put', 'delete', 'patch'].includes(
+        originalRequest?.method?.toLowerCase()
+      );
+      if (isUserAction) {
+        toast.error('Không thể kết nối đến server!');
+      }
     }
     
     return Promise.reject(error);

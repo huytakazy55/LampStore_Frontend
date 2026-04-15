@@ -27,40 +27,32 @@ const BannerImage = () => {
 
   if (loading) {
     return (
-      <div className='w-full h-40 mt-16 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center'>
+      <div className='w-full h-28 md:h-40 mt-8 md:mt-16 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className='w-full h-40 mt-16 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center'>
-        <div className="text-gray-500">Không thể tải banner</div>
-      </div>
-    );
+    return null;
   }
 
-  // Đảm bảo banners là array
   const bannersArray = Array.isArray(banners) ? banners : [];
 
   if (bannersArray.length === 0) {
-    return (
-      <div className='w-full h-40 mt-16 xl:mx-auto xl:max-w-[1440px]'>
-        {/* Không hiển thị gì nếu không có banner */}
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className='w-full h-40 mt-16 xl:mx-auto xl:max-w-[1440px]'>
-        <div className='flex justify-between items-center w-full h-40 gap-4'>
+    <div className='w-full mt-8 md:mt-16 xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0'>
+        <div className='flex flex-col sm:flex-row justify-between items-center w-full gap-3 md:gap-4'>
             {bannersArray.slice(0, 2).map((banner, index) => (
-                <div key={banner.id} className='w-[49%] h-full relative overflow-hidden rounded-lg'>
+                <div key={banner.id} className='w-full sm:w-[49%] h-28 md:h-40 relative overflow-hidden rounded-lg'>
                     <img 
                         className='w-full h-full object-cover' 
                         src={`${API_ENDPOINT}${banner.imageUrl}`} 
-                        alt={banner.title || 'Banner'} 
+                        alt={banner.title || 'Banner'}
+                        loading="lazy"
                     />
                     {banner.linkUrl && (
                         <a 

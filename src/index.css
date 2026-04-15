@@ -125,3 +125,34 @@ code {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out;
 }
+
+/* Hide scrollbar for horizontal scroll navigation */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Responsive table wrapper */
+@media (max-width: 768px) {
+  .admin-table-wrapper {
+    padding: 0 8px 12px 8px !important;
+  }
+  
+  .custom-table .ant-table-container {
+    overflow-x: auto !important;
+  }
+  
+  .custom-table .ant-table-thead > tr > th,
+  .custom-table .ant-table-thead > tr > td {
+    padding: 8px 10px !important;
+    font-size: 10px !important;
+  }
+  
+  .custom-table .ant-table-tbody > tr > td {
+    padding: 10px 10px !important;
+    font-size: 12px;
+  }
+}

@@ -31,46 +31,47 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick }) => {
 
   return (
     <div
-      className={`relative w-1/5 p-6 h-[27.5rem] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group ${
-        !isLast ? "after:w-[1px] after:h-3/4 after:bg-gray-300 after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 hover:after:w-0" : ""
+      className={`relative p-3 sm:p-4 md:p-6 transition-all duration-200 ease-in-out hover:ring-1 hover:ring-gray-300 hover:cursor-pointer group ${
+        !isLast ? "lg:after:w-[1px] lg:after:h-3/4 lg:after:bg-gray-300 lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 hover:after:w-0" : ""
       }`}
       onClick={() => navigate(`/product/${product.id}`)}
     >
-      <p className='mb-[15px] text-smaller text-gray-500 truncate'>
+      <p className='mb-2 md:mb-[15px] text-[10px] md:text-smaller text-gray-500 truncate'>
         {product.category?.name || 'Đèn ngủ'}
       </p>
-      <strong className='text-blue-500 text-normal line-clamp-2 leading-tight block h-10'>
+      <strong className='text-blue-500 text-xs md:text-normal line-clamp-2 leading-tight block h-8 md:h-10'>
         {product.name}
       </strong>
-      <div className='h-48 flex justify-center items-center my-2 bg-gray-50 rounded-lg p-3'>
+      <div className='h-32 sm:h-40 md:h-48 flex justify-center items-center my-2 bg-gray-50 rounded-lg p-2 md:p-3'>
         <img
           className='max-h-full max-w-full object-contain drop-shadow-sm'
           src={getImageSrc(product)}
           alt={product.name}
+          loading="lazy"
           onError={(e) => { e.target.src = defaultImg; }}
         />
       </div>
-      <div className='h-10 flex justify-between items-center'>
-        <div className='text-h3'>
+      <div className='flex justify-between items-center'>
+        <div className='text-sm md:text-h3'>
           <p className='text-yellow-600 font-bold'>{formatPrice(price)} <span>đ</span></p>
           {hasDiscount && (
-            <p className='text-small line-through text-gray-400'>{formatPrice(originalPrice)} <span>đ</span></p>
+            <p className='text-xs md:text-small line-through text-gray-400'>{formatPrice(originalPrice)} <span>đ</span></p>
           )}
         </div>
         <div 
-          className='w-9 h-9 rounded-[50%] bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
+          className='w-8 h-8 md:w-9 md:h-9 rounded-[50%] bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
           onClick={(e) => {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
         >
-          <i className='bx bxs-cart-add text-h2 text-white'></i>
+          <i className='bx bxs-cart-add text-lg md:text-h2 text-white'></i>
         </div>
       </div>
-      <div className='hidden justify-around mt-4 border-t border-gray-300 py-[12px] text-gray-400 group-hover:flex'>
+      <div className='hidden justify-around mt-3 md:mt-4 border-t border-gray-300 py-2 md:py-[12px] text-gray-400 group-hover:flex'>
         <div className='flex leading-[1.2] cursor-pointer transition-all duration-100 ease-in-out hover:text-gray-600'>
-          <i className='bx bx-heart align-middle text-normal mr-1'></i>
-          <p className='wishlist'>Thêm vào ưa thích</p>
+          <i className='bx bx-heart align-middle text-xs md:text-normal mr-1'></i>
+          <p className='wishlist text-xs md:text-sm'>Thêm vào ưa thích</p>
         </div>
       </div>
     </div>
@@ -91,7 +92,6 @@ const ProductCarousel = () => {
         const response = await ProductManage.GetProduct();
         const allProducts = response.data?.$values || response.data || [];
 
-        // Extract variants + images from each product (already in API response)
         const productsWithDetails = allProducts.map((product) => {
           const vData = product.variants?.$values || product.variants;
           const variants = Array.isArray(vData) ? vData : (vData ? [vData] : []);
@@ -116,11 +116,9 @@ const ProductCarousel = () => {
     let filtered = [...products];
     switch (activeTab) {
       case 'featured':
-        // Mới nhất
         filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case 'onsale':
-        // Có giảm giá
         filtered = filtered.filter(p => {
           const v = p.variants?.[0];
           return v && v.discountPrice && v.discountPrice < v.price;
@@ -132,13 +130,12 @@ const ProductCarousel = () => {
         });
         break;
       case 'toprated':
-        // Đánh giá nhiều nhất
         filtered.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
         break;
       default:
         break;
     }
-    return filtered.slice(0, 5);
+    return filtered.slice(0, 10);
   };
 
   const displayProducts = getFilteredProducts();
@@ -149,9 +146,22 @@ const ProductCarousel = () => {
     { key: 'toprated', label: 'Đánh giá cao' },
   ];
 
+  // Timeout để tránh spinner vô hạn
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loading) setLoading(false);
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
+  // Ẩn section nếu không có sản phẩm
+  if (!loading && products.length === 0) {
+    return null;
+  }
+
   if (loading) {
     return (
-      <div className='w-full h-[32rem] mb-4 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center'>
+      <div className='w-full py-8 md:py-16 mb-4 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="text-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400 mx-auto"></div>
           <p className="mt-3 text-gray-500 text-sm">Đang tải sản phẩm...</p>
@@ -161,8 +171,8 @@ const ProductCarousel = () => {
   }
 
   return (
-    <div className='w-full h-[32rem] mb-4 xl:mx-auto xl:max-w-[1440px]'>
-      <ul className='nav flex justify-center items-center gap-8 text-h3 border-b border-gray-300 mb-4 cursor-pointer'>
+    <div className='w-full mb-4 xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0'>
+      <ul className='nav flex justify-center items-center gap-4 md:gap-8 text-sm md:text-h3 border-b border-gray-300 mb-4 cursor-pointer'>
         {tabs.map((tab) => (
           <li
             key={tab.key}
@@ -179,7 +189,7 @@ const ProductCarousel = () => {
         ))}
       </ul>
       <div className='tab-content'>
-        <div className='flex justify-between items-center'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-0'>
           {displayProducts.length > 0 ? (
             displayProducts.map((product, index) => (
               <ProductCard
@@ -190,14 +200,7 @@ const ProductCarousel = () => {
                 onAddToCartClick={setCartModalProduct}
               />
             ))
-          ) : (
-            <div className='w-full flex justify-center items-center h-64 text-gray-400'>
-              <div className='text-center'>
-                <i className='bx bx-package text-5xl mb-2'></i>
-                <p>Không có sản phẩm nào</p>
-              </div>
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
       

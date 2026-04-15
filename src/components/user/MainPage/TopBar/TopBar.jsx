@@ -16,20 +16,24 @@ const TopBar = () => {
         }
     }, [token]);
     return (
-        <div className='h-12 bg-gray-100 border-b border-gray-300'> 
-            <nav className='xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full'> 
-                <div>
-                    <p>Welcome to Worldwide Lamp Store</p>
+        <div className='h-10 md:h-12 bg-gray-100 border-b border-gray-300'> 
+            <nav className='xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full px-4 xl:px-0'> 
+                <div className='hidden sm:block'>
+                    <p className='text-xs md:text-sm'>Welcome to Worldwide Lamp Store</p>
+                </div>
+                {/* Mobile: chỉ hiện Welcome ngắn */}
+                <div className='sm:hidden'>
+                    <p className='text-xs'>Welcome to Lamp Store</p>
                 </div>
                 <div>
-                    <ul className='flex justify-between gap-4'>
-                        <li className='cursor-pointer'><i className='bx bx-map text-h3 relative top-[3px]' ></i> Store Locator</li>
+                    <ul className='flex justify-between gap-2 md:gap-4 text-xs md:text-sm'>
+                        <li className='hidden md:flex cursor-pointer items-center gap-1'><i className='bx bx-map text-base md:text-h3 relative top-[1px]' ></i> Store Locator</li>
+                        <li className='hidden md:block text-slate-300 relative top-[3px]'>|</li>
+                        <li className='hidden lg:flex cursor-pointer items-center gap-1'><i className='bx bx-rocket text-base md:text-h3 relative top-[1px]'></i> Track your order</li>
+                        <li className='hidden lg:block text-slate-300 relative top-[3px]'>|</li>
+                        <li className='cursor-pointer flex items-center gap-1'><i className='bx bx-shopping-bag text-base md:text-h3 relative top-[1px]'></i> <span className='hidden sm:inline'>Shop</span></li>
                         <li className='text-slate-300 relative top-[3px]'>|</li>
-                        <li className='cursor-pointer'><i className='bx bx-rocket text-h3 relative top-[3px]'></i> Track your order</li>
-                        <li className='text-slate-300 relative top-[3px]'>|</li>
-                        <li className='cursor-pointer'  ><i className='bx bx-shopping-bag text-h3 relative top-[3px]'></i> Shop</li>
-                        <li className='text-slate-300 relative top-[3px]'>|</li>
-                        <li className='cursor-pointer'><i className='bx bx-user text-h3 relative top-[3px]'></i> {name ? name : 'My Account'}</li>
+                        <li className='cursor-pointer flex items-center gap-1'><i className='bx bx-user text-base md:text-h3 relative top-[1px]'></i> <span className='truncate max-w-[80px] sm:max-w-none'>{name ? name : 'My Account'}</span></li>
                     </ul>
                 </div>
             </nav>
