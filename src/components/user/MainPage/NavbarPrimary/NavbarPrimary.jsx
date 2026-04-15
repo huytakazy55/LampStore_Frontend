@@ -1,55 +1,67 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import CategoryManage from '../../../../Services/CategoryManage'
 import ProductManage from '../../../../Services/ProductManage'
 import Product1 from '../../../../assets/images/cameras-2.jpg'
 
-const NavbarPrimary = () => {
+const NavbarPrimary = () =>
+{
   const [categories, setCategories] = useState([])
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const [categoryProducts, setCategoryProducts] = useState({})
   const [loading, setLoading] = useState(true)
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     fetchCategories()
   }, [])
 
-  const fetchCategories = async () => {
-    try {
+  const fetchCategories = async () =>
+  {
+    try
+    {
       setLoading(true)
       const response = await CategoryManage.GetCategory()
       const categoriesData = response.data.$values || response.data || []
       setCategories(categoriesData)
-    } catch (error) {
+    } catch (error)
+    {
       console.error('Error fetching categories:', error)
-    } finally {
+    } finally
+    {
       setLoading(false)
     }
   }
 
-  const fetchProductsByCategory = async (categoryId) => {
-    if (categoryProducts[categoryId]) {
+  const fetchProductsByCategory = async (categoryId) =>
+  {
+    if (categoryProducts[categoryId])
+    {
       return
     }
 
-    try {
+    try
+    {
       const response = await ProductManage.GetProduct()
       const allProducts = response.data.$values || response.data || []
-      
-      const filteredProducts = allProducts.filter(product => 
+
+      const filteredProducts = allProducts.filter(product =>
         product.categoryId === categoryId
       ).slice(0, 6)
 
       const productsWithImages = await Promise.all(
-        filteredProducts.map(async (product) => {
-          try {
+        filteredProducts.map(async (product) =>
+        {
+          try
+          {
             const imageResponse = await ProductManage.GetProductImageById(product.id)
             const images = imageResponse.data.$values || imageResponse.data || []
             return {
               ...product,
               Images: images
             }
-          } catch (error) {
+          } catch (error)
+          {
             console.warn(`Failed to fetch images for product ${product.id}:`, error)
             return {
               ...product,
@@ -63,57 +75,86 @@ const NavbarPrimary = () => {
         ...prev,
         [categoryId]: productsWithImages
       }))
-    } catch (error) {
+    } catch (error)
+    {
       console.error('Error fetching products:', error)
     }
   }
 
-  const handleCategoryHover = (category) => {
-    setHoveredCategory(category)
-    if (category) {
+  const hoverTimeoutRef = useRef(null)
+
+  const handleCategoryHover = (category) =>
+  {
+    if (hoverTimeoutRef.current)
+    {
+      clearTimeout(hoverTimeoutRef.current)
+      hoverTimeoutRef.current = null
+    }
+    if (category)
+    {
+      setHoveredCategory(category)
       fetchProductsByCategory(category.id)
+    } else
+    {
+      hoverTimeoutRef.current = setTimeout(() =>
+      {
+        setHoveredCategory(null)
+      }, 150)
     }
   }
 
-  const getImageSrc = (category) => {
-    if (category.imageUrl) {
-      if (category.imageUrl.startsWith('http')) {
+  const getImageSrc = (category) =>
+  {
+    if (category.imageUrl)
+    {
+      if (category.imageUrl.startsWith('http'))
+      {
         return category.imageUrl
-      } else {
+      } else
+      {
         return `${API_ENDPOINT}${category.imageUrl}`
       }
     }
     return Product1
   }
 
-  const getProductImageSrc = (product) => {
-    if (product.Images && product.Images.length > 0) {
+  const getProductImageSrc = (product) =>
+  {
+    if (product.Images && product.Images.length > 0)
+    {
       const imagePath = product.Images[0].imagePath
-      if (imagePath.startsWith('http')) {
+      if (imagePath.startsWith('http'))
+      {
         return imagePath
-      } else {
+      } else
+      {
         return `${API_ENDPOINT}${imagePath}`
       }
     }
-    if (product.images && product.images.length > 0) {
+    if (product.images && product.images.length > 0)
+    {
       const imagePath = product.images[0].imagePath
-      if (imagePath.startsWith('http')) {
+      if (imagePath.startsWith('http'))
+      {
         return imagePath
-      } else {
+      } else
+      {
         return `${API_ENDPOINT}${imagePath}`
       }
     }
     return Product1
   }
 
-  const stripHtmlTags = (html) => {
+  const stripHtmlTags = (html) =>
+  {
     if (!html) return ''
     const tempDiv = document.createElement('div')
     tempDiv.innerHTML = html
     return tempDiv.textContent || tempDiv.innerText || ''
   }
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='bg-yellow-400 w-full h-12'>
         <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-center items-center h-full px-4 xl:px-0'>
@@ -129,8 +170,8 @@ const NavbarPrimary = () => {
         <ul className='flex justify-start h-full relative overflow-x-auto overflow-y-hidden scrollbar-hide w-full'>
           {/* Dynamic Categories */}
           {categories.map((category, index) => (
-            <li 
-              key={category.id} 
+            <li
+              key={category.id}
               className='flex items-center px-3 md:px-4 h-full border-r border-gray-300 hover:bg-yellow-500 group flex-shrink-0'
               onMouseEnter={() => handleCategoryHover(category)}
               onMouseLeave={() => handleCategoryHover(null)}
@@ -141,82 +182,84 @@ const NavbarPrimary = () => {
               <i className='bx bx-chevron-down text-sm md:text-h3 ml-1 hidden sm:inline'></i>
             </li>
           ))}
+        </ul>
 
-          {/* Single Dropdown - positioned absolute from start of navbar */}
-          {hoveredCategory && (
-            <div 
-              className='hidden md:block absolute top-[49px] left-0 shadow-2xl border-t-2 z-[1000] transition-all duration-500 ease-in-out backdrop-blur-lg bg-white/85 rounded-b-sm border border-gray-200/30'
-              style={{
-                width: '100%',
-                maxWidth: '1450px',
-                height: '350px',
-                opacity: hoveredCategory ? 1 : 0,
-                transform: hoveredCategory ? 'translateY(0)' : 'translateY(-10px)',
-                pointerEvents: hoveredCategory ? 'auto' : 'none',
-                backdropFilter: 'blur(12px)',
-                backgroundColor: 'rgba(255, 255, 255, 0.85)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
-              }}
-              onMouseEnter={() => handleCategoryHover(hoveredCategory)}
-              onMouseLeave={() => handleCategoryHover(null)}
-            >
-              <div className="flex h-full">
-                {/* Left side - Category Image Only */}
-                <div className="hidden lg:block w-1/3 p-4">
-                  <img 
-                    src={getImageSrc(hoveredCategory)}
-                    alt={hoveredCategory.name}
-                    className="w-full h-full object-cover rounded-lg shadow-md"
-                    onError={(e) => {
-                      e.target.src = Product1
-                    }}
-                  />
-                </div>
+        {/* Single Dropdown - positioned absolute, OUTSIDE ul to avoid overflow-hidden clipping */}
+        {hoveredCategory && (
+          <div
+            className='hidden md:block absolute top-[48px] left-0 shadow-2xl border-t-2 z-[1000] transition-all duration-500 ease-in-out backdrop-blur-lg bg-white/85 rounded-b-sm border border-gray-200/30'
+            style={{
+              width: '100%',
+              maxWidth: '1450px',
+              height: '350px',
+              opacity: hoveredCategory ? 1 : 0,
+              transform: hoveredCategory ? 'translateY(0)' : 'translateY(-10px)',
+              pointerEvents: hoveredCategory ? 'auto' : 'none',
+              backdropFilter: 'blur(12px)',
+              backgroundColor: 'rgba(255, 255, 255, 0.85)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+            }}
+            onMouseEnter={() => handleCategoryHover(hoveredCategory)}
+            onMouseLeave={() => handleCategoryHover(null)}
+          >
+            <div className="flex h-full">
+              {/* Left side - Category Image Only */}
+              <div className="hidden lg:block w-1/3 p-4">
+                <img
+                  src={getImageSrc(hoveredCategory)}
+                  alt={hoveredCategory.name}
+                  className="w-full h-full object-cover rounded-lg shadow-md"
+                  onError={(e) =>
+                  {
+                    e.target.src = Product1
+                  }}
+                />
+              </div>
 
-                {/* Right side - Products Simple List */}
-                <div className="w-full lg:w-2/3 p-4">
-                  <h4 className="text-lg font-bold text-gray-800 mb-4">{hoveredCategory.name}</h4>
-                  {categoryProducts[hoveredCategory.id] && categoryProducts[hoveredCategory.id].length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {categoryProducts[hoveredCategory.id].map((product, productIndex) => (
-                        <div key={product.id || productIndex} className="flex items-center space-x-3 group cursor-pointer">
-                          <div className="flex-shrink-0">
-                            <img 
-                              src={getProductImageSrc(product)}
-                              alt={product.name}
-                              className="w-12 h-12 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
-                              onError={(e) => {
-                                e.target.src = Product1
-                              }}
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h5 className="text-sm font-medium text-gray-800 truncate">
-                              {product.name}
-                            </h5>
-                            <p className="text-xs text-yellow-600 font-semibold">
-                              {product.price ? `${product.price.toLocaleString()}đ` : 'Liên hệ'}
-                            </p>
-                          </div>
+              {/* Right side - Products Simple List */}
+              <div className="w-full lg:w-2/3 p-4">
+                <h4 className="text-lg font-bold text-gray-800 mb-4">{hoveredCategory.name}</h4>
+                {categoryProducts[hoveredCategory.id] && categoryProducts[hoveredCategory.id].length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {categoryProducts[hoveredCategory.id].map((product, productIndex) => (
+                      <div key={product.id || productIndex} className="flex items-center space-x-3 group cursor-pointer">
+                        <div className="flex-shrink-0">
+                          <img
+                            src={getProductImageSrc(product)}
+                            alt={product.name}
+                            className="w-12 h-12 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
+                            onError={(e) =>
+                            {
+                              e.target.src = Product1
+                            }}
+                          />
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center h-32 text-gray-500">
-                      <div className="text-center">
-                        <i className='bx bx-package text-3xl mb-2'></i>
-                        <p className="text-sm">Chưa có sản phẩm trong danh mục này</p>
+                        <div className="flex-1 min-w-0">
+                          <h5 className="text-sm font-medium text-gray-800 truncate">
+                            {product.name}
+                          </h5>
+                          <p className="text-xs text-yellow-600 font-semibold">
+                            {(product.minPrice || product.price) ? `${(product.minPrice || product.price).toLocaleString()}đ` : 'Liên hệ'}
+                          </p>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-32 text-gray-500">
+                    <div className="text-center">
+                      <i className='bx bx-package text-3xl mb-2'></i>
+                      <p className="text-sm">Chưa có sản phẩm trong danh mục này</p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-        </ul>
+          </div>
+        )}
       </nav>
     </div>
-    )
-  }
+  )
+}
 
 export default NavbarPrimary

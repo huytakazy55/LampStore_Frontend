@@ -11,11 +11,13 @@ import FormProfile from './FormProfile';
 import SearchService from '../../../../Services/SearchService';
 import CategoryManage from '../../../../Services/CategoryManage';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../../../CartContext';
 
 const Header = () =>
 {
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
   const navigate = useNavigate();
+  const { cartCount, cartTotal } = useCart();
   const { token, isAuthenticated } = useSelector((state) => state.auth);
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
@@ -148,8 +150,10 @@ const Header = () =>
   };
 
   // Debounced search suggestions
-  const fetchSuggestions = useCallback(async (keyword) => {
-    if (!keyword.trim()) {
+  const fetchSuggestions = useCallback(async (keyword) =>
+  {
+    if (!keyword.trim())
+    {
       setSuggestions({ categories: [], products: [] });
       setShowSuggestions(false);
       return;
@@ -163,7 +167,8 @@ const Header = () =>
     ).slice(0, 3);
 
     // Fetch product suggestions from API
-    try {
+    try
+    {
       const result = await SearchService.quickSearch(keyword, 1, 5);
       const products = result?.$values || result?.products?.$values || result?.products || [];
       setSuggestions({
@@ -171,25 +176,29 @@ const Header = () =>
         products: Array.isArray(products) ? products.slice(0, 6) : []
       });
       setShowSuggestions(true);
-    } catch (error) {
+    } catch (error)
+    {
       setSuggestions({ categories: matchedCategories, products: [] });
       setShowSuggestions(matchedCategories.length > 0);
     }
   }, [categories]);
 
   // Handle input change with debounce
-  const handleSearchInputChange = (e) => {
+  const handleSearchInputChange = (e) =>
+  {
     const value = e.target.value;
     setSearchKeyword(value);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
+    debounceRef.current = setTimeout(() =>
+    {
       fetchSuggestions(value);
     }, 300);
   };
 
   // Handle suggestion click - category
-  const handleCategorySuggestionClick = (category) => {
+  const handleCategorySuggestionClick = (category) =>
+  {
     setShowSuggestions(false);
     setSearchKeyword('');
     navigate('/search', {
@@ -201,15 +210,18 @@ const Header = () =>
   };
 
   // Handle suggestion click - product
-  const handleProductSuggestionClick = (product) => {
+  const handleProductSuggestionClick = (product) =>
+  {
     setShowSuggestions(false);
     setSearchKeyword(product.name || '');
     navigate(`/product/${product.id}`);
   };
 
   // Xử lý Enter key
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e) =>
+  {
+    if (e.key === 'Enter')
+    {
       setShowSuggestions(false);
       handleQuickSearch();
     }
@@ -226,7 +238,8 @@ const Header = () =>
 
       // Close suggestions when click outside
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&
-        searchRef.current && !searchRef.current.contains(event.target)) {
+        searchRef.current && !searchRef.current.contains(event.target))
+      {
         setShowSuggestions(false);
       }
     };
@@ -239,7 +252,8 @@ const Header = () =>
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => {
+  useEffect(() =>
+  {
     setMobileMenuOpen(false);
   }, [navigate]);
 
@@ -396,11 +410,11 @@ const Header = () =>
               <div className='relative'>
                 <i className='bx bx-shopping-bag text-h2 leading-none align-middle transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
                 <FormCart popupRef={popupRef} toggleCart={toggleCart} setToggleCart={setToggleCart} />
-                <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-yellow-400 rounded-[50%] text-center text-xs leading-5 text-gray-700 font-medium'>10</div>
+                <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-yellow-400 rounded-[50%] text-center text-xs leading-5 text-gray-700 font-medium'>{cartCount}</div>
               </div>
               <div className='hidden lg:block text-small ml-1 p-[2px] relative font-medium'>
                 <div className='absolute w-1 h-1 -top-[2px] -left-[7px] text-small'>₫</div>
-                10.000.000
+                {cartTotal.toLocaleString('vi-VN')}
               </div>
             </li>
             <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />

@@ -6,25 +6,30 @@ import AddToCartModal from '../AddToCartModal';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
   if (!price) return '0';
   return price.toLocaleString('vi-VN');
 };
 
-const getImageSrc = (product) => {
-  if (product.images && product.images.length > 0) {
+const getImageSrc = (product) =>
+{
+  if (product.images && product.images.length > 0)
+  {
     const path = product.images[0].imagePath || product.images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
-  if (product.Images && product.Images.length > 0) {
+  if (product.Images && product.Images.length > 0)
+  {
     const path = product.Images[0].imagePath || product.Images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
   return defaultImg;
 };
 
-const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
-  const variant = product.variants?.[0];
+const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
+{
+  const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
 
   return (
@@ -49,9 +54,10 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
       </div>
       <div className='mt-2 flex justify-around items-center'>
         <div className='text-sm md:text-h3 font-bold text-yellow-600'>{formatPrice(price)}<span>₫</span></div>
-        <div 
+        <div
           className='w-8 h-8 md:w-9 md:h-9 rounded-[50%] bg-gray-300 cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
-          onClick={(e) => {
+          onClick={(e) =>
+          {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
@@ -63,8 +69,9 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
   );
 };
 
-const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
-  const variant = product.variants?.[0];
+const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
+{
+  const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
 
   return (
@@ -88,7 +95,8 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
         />
       </div>
       <div className='flex gap-[10px] mb-3'>
-        {product.images && product.images.slice(0, 3).map((img, i) => {
+        {product.images && product.images.slice(0, 3).map((img, i) =>
+        {
           const path = img.imagePath || img.ImagePath;
           const src = path ? (path.startsWith('http') ? path : `${API_ENDPOINT}${path}`) : defaultImg;
           return (
@@ -105,9 +113,10 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
       </div>
       <div className='mt-auto flex justify-between items-center'>
         <div className='text-sm md:text-h3 font-bold text-yellow-600'>{formatPrice(price)}<span>₫</span></div>
-        <div 
+        <div
           className='w-8 h-8 md:w-9 md:h-9 rounded-[50%] bg-gray-300 cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
-          onClick={(e) => {
+          onClick={(e) =>
+          {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
@@ -119,7 +128,8 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
   );
 };
 
-const BestSeller = () => {
+const BestSeller = () =>
+{
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -127,21 +137,24 @@ const BestSeller = () => {
   const [cartModalProduct, setCartModalProduct] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
+  useEffect(() =>
+  {
+    const fetchProducts = async () =>
+    {
+      try
+      {
         setLoading(true);
         const response = await ProductManage.GetProduct();
         const allProducts = response.data?.$values || response.data || [];
 
         const sorted = [...allProducts].sort((a, b) => (b.sellCount || 0) - (a.sellCount || 0));
 
-        const productsWithDetails = sorted.slice(0, 15).map((product) => {
-          const vData = product.variants?.$values || product.variants;
-          const variants = Array.isArray(vData) ? vData : (vData ? [vData] : []);
+        const productsWithDetails = sorted.slice(0, 15).map((product) =>
+        {
+          const variant = product.variant;
           const imgData = product.images?.$values || product.images;
           const images = Array.isArray(imgData) ? imgData : [];
-          return { ...product, variants, images };
+          return { ...product, variant, images };
         });
 
         setProducts(productsWithDetails);
@@ -152,9 +165,11 @@ const BestSeller = () => {
             .map(p => [p.category?.id || p.categoryId, p.category?.name || 'Khác'])
         ).entries()].map(([id, name]) => ({ id, name })).slice(0, 3);
         setCategories(cats);
-      } catch (error) {
+      } catch (error)
+      {
         console.error('Error fetching bestsellers:', error);
-      } finally {
+      } finally
+      {
         setLoading(false);
       }
     };
@@ -170,19 +185,23 @@ const BestSeller = () => {
   const featuredProduct = filteredProducts[8] || filteredProducts[0];
 
   // Timeout để tránh spinner vô hạn
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  useEffect(() =>
+  {
+    const timer = setTimeout(() =>
+    {
       if (loading) setLoading(false);
     }, 8000);
     return () => clearTimeout(timer);
   }, [loading]);
 
   // Ẩn hoàn toàn nếu không có data
-  if (!loading && products.length === 0) {
+  if (!loading && products.length === 0)
+  {
     return null;
   }
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='w-full py-8 md:py-16 bg-gray-100 flex justify-center items-center'>
         <div className="text-center">
@@ -247,12 +266,12 @@ const BestSeller = () => {
           )}
         </div>
       </div>
-      
+
       {/* Modal */}
-      <AddToCartModal 
-        isOpen={!!cartModalProduct} 
-        onClose={() => setCartModalProduct(null)} 
-        product={cartModalProduct} 
+      <AddToCartModal
+        isOpen={!!cartModalProduct}
+        onClose={() => setCartModalProduct(null)}
+        product={cartModalProduct}
       />
     </div>
   );

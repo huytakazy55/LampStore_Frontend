@@ -6,71 +6,85 @@ import TopBar from '../MainPage/TopBar/TopBar'
 import Footer from '../MainPage/Footer/Footer'
 import ProductManage from '../../../Services/ProductManage'
 import defaultImg from '../../../assets/images/cameras-2.jpg'
+import { useCart } from '../../../CartContext'
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 const SITE_URL = window.location.origin;
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
     if (!price) return '0';
     return price.toLocaleString('vi-VN');
 };
 
-const getImgSrc = (path) => {
+const getImgSrc = (path) =>
+{
     if (!path) return defaultImg;
     return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
 };
 
 // Loại bỏ HTML tags cho meta description
-const stripHtml = (html) => {
+const stripHtml = (html) =>
+{
     if (!html) return '';
     return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 };
 
-const ProductDetail = () => {
+const ProductDetail = () =>
+{
     const { id } = useParams();
+    const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
-    const [variants, setVariants] = useState([]);
+    const [variant, setVariant] = useState(null);
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0);
-    const [selectedVariant, setSelectedVariant] = useState(null);
-    const [variantLabels, setVariantLabels] = useState({});
+    const [variantTypes, setVariantTypes] = useState([]);
     const [quantity, setQuantity] = useState(1);
+    const [selectedOptions, setSelectedOptions] = useState({});
+    const [showError, setShowError] = useState(false);
+    const [addedSuccess, setAddedSuccess] = useState(false);
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         // Scroll lên đầu trang khi vào chi tiết
         window.scrollTo(0, 0);
 
-        const fetchProduct = async () => {
-            try {
+        const fetchProduct = async () =>
+        {
+            try
+            {
                 setLoading(true);
                 const res = await ProductManage.GetProductById(id);
                 const data = res.data;
-                
-                if (data) {
+
+                if (data)
+                {
                     setProduct(data);
-                    
-                    // Extract variants from product data
-                    const vData = data.variants?.$values || data.variants;
-                    const v = Array.isArray(vData) ? vData : (vData ? [vData] : []);
-                    setVariants(v);
-                    if (v.length > 0) setSelectedVariant(v[0]);
-                    
+
+                    // Extract variant from product data (singular)
+                    setVariant(data.variant || null);
+
                     // Extract images from product data
                     const imgData = data.images?.$values || data.images;
                     setImages(Array.isArray(imgData) ? imgData : []);
-                    
-                    // Extract variant labels (filter out $id from JSON serializer)
-                    const rawLabels = data.variantLabels || {};
-                    const cleanLabels = {};
-                    Object.keys(rawLabels).forEach(k => {
-                        if (k !== '$id') cleanLabels[k] = rawLabels[k];
-                    });
-                    setVariantLabels(cleanLabels);
+
+                    // Extract variant types with values
+                    const vtData = data.variantTypes?.$values || data.variantTypes;
+                    const vts = Array.isArray(vtData) ? vtData.map(vt => ({
+                        ...vt,
+                        values: (vt.values?.$values || vt.values || []).map(v => ({
+                            ...v,
+                            additionalPrice: v.additionalPrice || 0
+                        }))
+                    })) : [];
+                    setVariantTypes(vts);
                 }
-            } catch (e) {
+            } catch (e)
+            {
                 console.error('Error fetching product:', e);
-            } finally {
+            } finally
+            {
                 setLoading(false);
             }
         };
@@ -79,15 +93,54 @@ const ProductDetail = () => {
     }, [id]);
 
     const handleDecrease = () => setQuantity((prev) => Math.max(prev - 1, 1));
-    const handleIncrease = () => setQuantity((prev) => Math.min(prev + 1, 999));
+    const handleIncrease = () => setQuantity((prev) => Math.min(prev + 1, variant?.stock || 999));
+
+    const handleSelectOption = (typeName, val) =>
+    {
+        setSelectedOptions(prev => ({
+            ...prev,
+            [typeName]: { value: val.value, additionalPrice: val.additionalPrice || 0 }
+        }));
+        setShowError(false);
+    };
+
+    const allOptionsSelected = variantTypes.length === 0 ||
+        variantTypes.every(vt => selectedOptions[vt.name]);
+
+    const handleAddToCart = () =>
+    {
+        if (!allOptionsSelected)
+        {
+            setShowError(true);
+            return;
+        }
+
+        const mainImg = images.length > 0
+            ? getImgSrc(images[0]?.imagePath)
+            : defaultImg;
+
+        addToCart({
+            productId: product.id,
+            name: product.name,
+            image: mainImg,
+            price: basePrice,
+            quantity,
+            selectedOptions
+        });
+
+        setAddedSuccess(true);
+        setTimeout(() => setAddedSuccess(false), 2000);
+    };
 
     // --- SEO Helpers ---
-    const getPageTitle = () => {
+    const getPageTitle = () =>
+    {
         if (!product) return 'Đang tải... | Lamp Store';
         return `${product.name} | Mua ngay tại Lamp Store`;
     };
 
-    const getMetaDescription = () => {
+    const getMetaDescription = () =>
+    {
         if (!product) return 'Lamp Store - Cửa hàng đèn trang trí cao cấp';
         const desc = stripHtml(product.description);
         const price = currentVariant?.discountPrice || currentVariant?.price || product.minPrice || 0;
@@ -96,7 +149,8 @@ const ProductDetail = () => {
         return `${product.name} - ${priceText} ${truncated || 'Mua ngay tại Lamp Store với ưu đãi hấp dẫn.'}`;
     };
 
-    const getJsonLd = () => {
+    const getJsonLd = () =>
+    {
         if (!product) return null;
         const price = currentVariant?.discountPrice || currentVariant?.price || product.minPrice || 0;
         const mainImageUrl = images.length > 0 ? getImgSrc(images[0]?.imagePath) : `${SITE_URL}/logo192.png`;
@@ -132,17 +186,21 @@ const ProductDetail = () => {
         };
     };
 
-    // Computed values (safe even if product is null for SEO helpers)
-    const currentVariant = selectedVariant || variants[0];
-    const price = currentVariant?.discountPrice || currentVariant?.price || product?.minPrice || 0;
-    const originalPrice = currentVariant?.price || product?.maxPrice || 0;
+    // Computed values
+    const totalAdditional = Object.values(selectedOptions)
+        .reduce((sum, opt) => sum + (opt.additionalPrice || 0), 0);
+    const currentVariant = variant;
+    const basePrice = currentVariant?.discountPrice || currentVariant?.price || product?.minPrice || 0;
+    const price = basePrice + totalAdditional;
+    const originalPrice = (currentVariant?.price || product?.maxPrice || 0) + totalAdditional;
     const hasDiscount = currentVariant?.discountPrice && currentVariant.discountPrice < currentVariant.price;
     const discountPercent = hasDiscount ? Math.round((1 - currentVariant.discountPrice / currentVariant.price) * 100) : 0;
     const stock = currentVariant?.stock || 0;
     const mainImage = images.length > 0 ? getImgSrc(images[selectedImage]?.imagePath) : defaultImg;
 
     // --- RENDER ---
-    if (loading) {
+    if (loading)
+    {
         return (
             <>
                 <Helmet>
@@ -161,7 +219,8 @@ const ProductDetail = () => {
         );
     }
 
-    if (!product) {
+    if (!product)
+    {
         return (
             <>
                 <Helmet>
@@ -253,9 +312,8 @@ const ProductDetail = () => {
                             {images.map((img, i) => (
                                 <img
                                     key={img.id || i}
-                                    className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded cursor-pointer object-cover transition flex-shrink-0 ${
-                                        selectedImage === i ? 'border-rose-600' : 'border-gray-200 hover:border-rose-300'
-                                    }`}
+                                    className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded cursor-pointer object-cover transition flex-shrink-0 ${selectedImage === i ? 'border-rose-600' : 'border-gray-200 hover:border-rose-300'
+                                        }`}
                                     src={getImgSrc(img.imagePath)}
                                     alt={`${product.name} - Ảnh ${i + 1}`}
                                     onClick={() => setSelectedImage(i)}
@@ -298,27 +356,49 @@ const ProductDetail = () => {
                             )}
                         </div>
 
-                        {/* Variants */}
-                        {variants.length > 1 && (
-                            <div className='flex flex-col sm:flex-row items-start w-full gap-2 md:gap-8 mb-4 md:mb-6'>
-                                <div className='w-full sm:w-[10%] font-medium text-sm pt-1'>Phân loại</div>
-                                <div className='w-full sm:w-[90%] flex flex-wrap gap-2'>
-                                    {variants.map((v) => (
-                                        <div
-                                            key={v.id}
-                                            onClick={() => setSelectedVariant(v)}
-                                            className={`py-1.5 px-3 md:px-4 cursor-pointer text-xs md:text-sm border rounded transition ${
-                                                selectedVariant?.id === v.id
-                                                    ? 'border-rose-600 text-rose-600 bg-rose-50'
-                                                    : 'border-gray-300 hover:border-rose-300'
-                                            }`}
-                                        >
-                                            {variantLabels[v.id] || v.sku || v.materials || `₫${formatPrice(v.discountPrice || v.price)}`}
+                        {/* Variant Types — Selectable */}
+                        {variantTypes.length > 0 && (
+                            <div className='mb-4 md:mb-6'>
+                                {variantTypes.map((vt) =>
+                                {
+                                    const values = Array.isArray(vt.values) ? vt.values : [];
+                                    if (values.length === 0) return null;
+                                    const isRequired = !selectedOptions[vt.name] && showError;
+                                    return (
+                                        <div key={vt.id} className='flex flex-col sm:flex-row items-start w-full gap-2 md:gap-8 mb-3'>
+                                            <div className={`w-full sm:w-[10%] font-medium text-sm pt-1 ${isRequired ? 'text-red-500' : ''}`}>
+                                                {vt.name} {isRequired && <span className='text-xs font-normal'>(Chọn)</span>}
+                                            </div>
+                                            <div className='w-full sm:w-[90%] flex flex-wrap gap-2'>
+                                                {values.map((val) =>
+                                                {
+                                                    const isSelected = selectedOptions[vt.name]?.value === val.value;
+                                                    return (
+                                                        <div
+                                                            key={val.id}
+                                                            onClick={() => handleSelectOption(vt.name, val)}
+                                                            className={`py-1.5 px-3 md:px-4 cursor-pointer text-xs md:text-sm border rounded transition ${isSelected
+                                                                    ? 'border-rose-600 text-rose-600 bg-rose-50 font-medium'
+                                                                    : isRequired
+                                                                        ? 'border-red-300 hover:border-rose-300'
+                                                                        : 'border-gray-300 hover:border-rose-300'
+                                                                }`}
+                                                        >
+                                                            {val.value}
+                                                            {val.additionalPrice > 0 && (
+                                                                <span className='ml-1 text-xs text-rose-500'>+₫{formatPrice(val.additionalPrice)}</span>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    );
+                                })}
                             </div>
                         )}
+
+
 
                         {/* Quantity */}
                         <div className='flex flex-col sm:flex-row items-start sm:items-center w-full gap-2 md:gap-8 mb-4 md:mb-6'>
@@ -333,12 +413,20 @@ const ProductDetail = () => {
                             </div>
                         </div>
 
+                        {/* Success Message */}
+                        {addedSuccess && (
+                            <div className='mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm flex items-center gap-2'>
+                                <i className='bx bx-check-circle text-lg'></i>
+                                Đã thêm vào giỏ hàng thành công!
+                            </div>
+                        )}
+
                         {/* Actions */}
                         <div className='flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6'>
-                            <button id="add-to-cart-btn" className='flex items-center justify-center gap-2 border border-rose-600 bg-rose-50 text-rose-600 py-2.5 px-4 md:px-6 rounded hover:bg-rose-100 transition text-sm md:text-base w-full sm:w-auto'>
+                            <button onClick={handleAddToCart} id="add-to-cart-btn" className='flex items-center justify-center gap-2 border border-rose-600 bg-rose-50 text-rose-600 py-2.5 px-4 md:px-6 rounded hover:bg-rose-100 transition text-sm md:text-base w-full sm:w-auto cursor-pointer'>
                                 <i className='bx bxs-cart-add text-lg md:text-xl'></i> Thêm vào giỏ hàng
                             </button>
-                            <button id="buy-now-btn" className='bg-rose-600 text-white py-2.5 px-6 md:px-8 rounded hover:bg-rose-700 transition font-medium text-sm md:text-base w-full sm:w-auto'>
+                            <button onClick={handleAddToCart} id="buy-now-btn" className='bg-rose-600 text-white py-2.5 px-6 md:px-8 rounded hover:bg-rose-700 transition font-medium text-sm md:text-base w-full sm:w-auto cursor-pointer'>
                                 Mua ngay
                             </button>
                         </div>
