@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Slider2 from "react-slick";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useWishlist } from '../../../../WishlistContext';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
@@ -23,7 +24,7 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
-const ProductCardItem = ({ product, onClick }) => {
+const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) => {
   const images = product.images?.$values || product.images || [];
   const firstImage = images.length > 0 ? images[0] : null;
   const imageSrc = firstImage
@@ -87,6 +88,14 @@ const ProductCardItem = ({ product, onClick }) => {
               <i className='bx bxs-cart-add'></i>
             </div>
           </div>
+          {/* Wishlist button */}
+          <div
+            className={`flex items-center gap-1 text-[10px] md:text-xs cursor-pointer transition-colors ${isInWishlist ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}
+            onClick={(e) => { e.stopPropagation(); onToggleWishlist(product.id); }}
+          >
+            <i className={`bx ${isInWishlist ? 'bxs-heart' : 'bx-heart'} text-sm`}></i>
+            <span>{isInWishlist ? 'Đã yêu thích' : 'Yêu thích'}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -97,6 +106,7 @@ const SectionProductCardCarousel = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchBestSelling = async () => {
@@ -174,6 +184,8 @@ const SectionProductCardCarousel = () => {
                 key={product.id}
                 product={product}
                 onClick={() => navigate(`/product/${product.id}`)}
+                isInWishlist={isInWishlist(product.id)}
+                onToggleWishlist={toggleWishlist}
               />
             ))}
           </Slider2>

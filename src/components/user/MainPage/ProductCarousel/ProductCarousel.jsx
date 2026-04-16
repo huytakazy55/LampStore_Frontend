@@ -3,32 +3,28 @@ import ProductManage from '../../../../Services/ProductManage';
 import { useNavigate } from 'react-router-dom';
 import defaultImg from '../../../../assets/images/cameras-2.jpg';
 import AddToCartModal from '../AddToCartModal';
+import { useWishlist } from '../../../../WishlistContext';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) =>
-{
+const formatPrice = (price) => {
   if (!price) return '0';
   return price.toLocaleString('vi-VN');
 };
 
-const getImageSrc = (product) =>
-{
-  if (product.images && product.images.length > 0)
-  {
+const getImageSrc = (product) => {
+  if (product.images && product.images.length > 0) {
     const path = product.images[0].imagePath || product.images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
-  if (product.Images && product.Images.length > 0)
-  {
+  if (product.Images && product.Images.length > 0) {
     const path = product.Images[0].imagePath || product.Images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
   return defaultImg;
 };
 
-const ProductCard = ({ product, isLast, navigate, onAddToCartClick }) =>
-{
+const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist, onToggleWishlist }) => {
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
   const originalPrice = variant?.price || 0;
@@ -64,8 +60,7 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick }) =>
         </div>
         <div
           className='w-8 h-8 md:w-9 md:h-9 rounded-[50%] bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
-          onClick={(e) =>
-          {
+          onClick={(e) => {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
@@ -74,35 +69,34 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick }) =>
         </div>
       </div>
       <div className='flex justify-around mt-3 md:mt-4 border-t border-gray-300 py-2 md:py-[12px] text-gray-400 invisible opacity-0 transition-all duration-200 ease-in-out group-hover:visible group-hover:opacity-100'>
-        <div className='flex leading-[1.2] cursor-pointer transition-all duration-100 ease-in-out hover:text-gray-600'>
-          <i className='bx bx-heart align-middle text-xs md:text-normal mr-1'></i>
-          <p className='wishlist text-xs md:text-sm'>Thêm vào ưa thích</p>
+        <div
+          className={`flex leading-[1.2] cursor-pointer transition-all duration-100 ease-in-out ${isInWishlist ? 'text-rose-500' : 'hover:text-gray-600'}`}
+          onClick={(e) => { e.stopPropagation(); onToggleWishlist(product.id); }}
+        >
+          <i className={`bx ${isInWishlist ? 'bxs-heart' : 'bx-heart'} align-middle text-xs md:text-normal mr-1`}></i>
+          <p className='wishlist text-xs md:text-sm'>{isInWishlist ? 'Đã yêu thích' : 'Thêm vào ưa thích'}</p>
         </div>
       </div>
     </div>
   );
 };
 
-const ProductCarousel = () =>
-{
+const ProductCarousel = () => {
   const [activeTab, setActiveTab] = useState('featured');
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cartModalProduct, setCartModalProduct] = useState(null);
   const navigate = useNavigate();
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
-  useEffect(() =>
-  {
-    const fetchProducts = async () =>
-    {
-      try
-      {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
         setLoading(true);
         const response = await ProductManage.GetProduct();
         const allProducts = response.data?.$values || response.data || [];
 
-        const productsWithDetails = allProducts.map((product) =>
-        {
+        const productsWithDetails = allProducts.map((product) => {
           const variant = product.variant;
           const imgData = product.images?.$values || product.images;
           const images = Array.isArray(imgData) ? imgData : [];
@@ -110,11 +104,9 @@ const ProductCarousel = () =>
         });
 
         setProducts(productsWithDetails);
-      } catch (error)
-      {
+      } catch (error) {
         console.error('Error fetching products:', error);
-      } finally
-      {
+      } finally {
         setLoading(false);
       }
     };
@@ -123,22 +115,18 @@ const ProductCarousel = () =>
   }, []);
 
   // Filter products theo tab
-  const getFilteredProducts = () =>
-  {
+  const getFilteredProducts = () => {
     let filtered = [...products];
-    switch (activeTab)
-    {
+    switch (activeTab) {
       case 'featured':
         filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case 'onsale':
-        filtered = filtered.filter(p =>
-        {
+        filtered = filtered.filter(p => {
           const v = p.variant;
           return v && v.discountPrice && v.discountPrice < v.price;
         });
-        filtered.sort((a, b) =>
-        {
+        filtered.sort((a, b) => {
           const discountA = a.variant ? (a.variant.price - a.variant.discountPrice) / a.variant.price : 0;
           const discountB = b.variant ? (b.variant.price - b.variant.discountPrice) / b.variant.price : 0;
           return discountB - discountA;
@@ -162,23 +150,19 @@ const ProductCarousel = () =>
   ];
 
   // Timeout để tránh spinner vô hạn
-  useEffect(() =>
-  {
-    const timer = setTimeout(() =>
-    {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       if (loading) setLoading(false);
     }, 8000);
     return () => clearTimeout(timer);
   }, [loading]);
 
   // Ẩn section nếu không có sản phẩm
-  if (!loading && products.length === 0)
-  {
+  if (!loading && products.length === 0) {
     return null;
   }
 
-  if (loading)
-  {
+  if (loading) {
     return (
       <div className='w-full py-8 md:py-16 mb-4 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="text-center">
@@ -215,6 +199,8 @@ const ProductCarousel = () =>
                 isLast={index === displayProducts.length - 1}
                 navigate={navigate}
                 onAddToCartClick={setCartModalProduct}
+                isInWishlist={isInWishlist(product.id)}
+                onToggleWishlist={toggleWishlist}
               />
             ))
           ) : null}

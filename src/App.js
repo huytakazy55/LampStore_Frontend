@@ -1,4 +1,5 @@
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 import { BrowserRouter as Router, Route, Routes, useLocation, UNSAFE_future } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
@@ -14,32 +15,30 @@ import './App.css';
 import './Services/axiosConfig';
 import NotificationService from './Services/NotificationService';
 import { CartProvider } from './CartContext';
+import { WishlistProvider } from './WishlistContext';
+import FloatingCart from './components/user/FloatingCart/FloatingCart';
+import WishlistPage from './components/user/WishlistPage/WishlistPage';
 
 // Expose toast to global scope for NotificationService
-if (typeof window !== 'undefined')
-{
+if (typeof window !== 'undefined') {
   window.toast = toast;
 }
 
-function AppContent()
-{
+function AppContent() {
   const location = useLocation();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const isAdminPage = location.pathname.startsWith('/admin');
 
   // Check login status và listen cho changes
-  useEffect(() =>
-  {
-    const checkLoginStatus = () =>
-    {
+  useEffect(() => {
+    const checkLoginStatus = () => {
       const token = localStorage.getItem('token');
       const loggedIn = token !== null && token !== '';
 
       setIsUserLoggedIn(loggedIn);
 
       // Khởi tạo SignalR notifications sớm sau khi đăng nhập
-      if (loggedIn)
-      {
+      if (loggedIn) {
         NotificationService.setupSignalRNotifications();
       }
     };
@@ -53,8 +52,7 @@ function AppContent()
     // Custom event cho login/logout actions
     window.addEventListener('userLoginStatusChanged', checkLoginStatus);
 
-    return () =>
-    {
+    return () => {
       window.removeEventListener('storage', checkLoginStatus);
       window.removeEventListener('userLoginStatusChanged', checkLoginStatus);
     };
@@ -80,25 +78,42 @@ function AppContent()
         />
         <Route path='/product/:id' element={<ProductDetail />} />
         <Route path='/checkout' element={<CheckoutPage />} />
+        <Route path='/wishlist' element={<WishlistPage />} />
       </Routes>
 
       {/* Chat Button - chỉ hiển thị cho user đã login và không ở trang admin */}
       {!isAdminPage && isUserLoggedIn && <ChatButton />}
 
+      {/* Floating Cart - hiển thị trên trang user (không phải admin) */}
+      {!isAdminPage && <FloatingCart />}
+
       {/* Token Expiry Warning */}
       <TokenExpiryWarning />
+
+      {/* Toast Container - global */}
+      <ToastContainer
+        position='bottom-right'
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme='colored'
+      />
     </>
   );
 }
 
-function App()
-{
+function App() {
   return (
     <HelmetProvider>
       <CartProvider>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <AppContent />
-        </Router>
+        <WishlistProvider>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AppContent />
+          </Router>
+        </WishlistProvider>
       </CartProvider>
     </HelmetProvider>
   );

@@ -12,11 +12,13 @@ import SearchService from '../../../../Services/SearchService';
 import CategoryManage from '../../../../Services/CategoryManage';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../../CartContext';
+import { useWishlist } from '../../../../WishlistContext';
 
 const Header = () => {
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
   const navigate = useNavigate();
   const { cartCount, cartTotal } = useCart();
+  const { wishlistCount } = useWishlist();
   const { token, isAuthenticated } = useSelector((state) => state.auth);
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
@@ -368,10 +370,15 @@ const Header = () => {
         {/* Action icons - desktop */}
         <div className='hidden md:block w-auto lg:w-1/5 text-black'>
           <ul className='flex justify-end lg:justify-between items-center gap-3 lg:gap-0'>
-            <li className='group'><i className='bx bx-heart text-h2 leading-none align-middle text-red-600 cursor-pointer transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i></li>
+            <li className='group relative cursor-pointer' onClick={() => navigate('/wishlist')}>
+              <i className='bx bx-heart text-h2 leading-none align-middle text-red-600 cursor-pointer transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
+              {wishlistCount > 0 && (
+                <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-rose-500 rounded-[50%] text-center text-xs leading-5 text-white font-medium'>{wishlistCount}</div>
+              )}
+            </li>
             <li className='flex justify-center items-center gap-1 cursor-pointer group' onClick={toggleFormcart} ref={buttonRef} >
               <div className='relative'>
-                <i className='bx bx-shopping-bag text-h2 leading-none align-middle transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
+                <i id='header-cart-icon' className='bx bx-shopping-bag text-h2 leading-none align-middle transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
                 <FormCart popupRef={popupRef} toggleCart={toggleCart} setToggleCart={setToggleCart} />
                 <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-yellow-400 rounded-[50%] text-center text-xs leading-5 text-gray-700 font-medium'>{cartCount}</div>
               </div>
@@ -492,9 +499,12 @@ const Header = () => {
                   <i className='bx bx-shopping-bag text-xl text-gray-600'></i>
                   <span className='text-sm'>Giỏ hàng</span>
                 </div>
-                <div className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer'>
+                <div onClick={() => { navigate('/wishlist'); setMobileMenuOpen(false); }} className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer'>
                   <i className='bx bx-heart text-xl text-red-500'></i>
                   <span className='text-sm'>Yêu thích</span>
+                  {wishlistCount > 0 && (
+                    <span className='ml-auto bg-rose-100 text-rose-600 text-xs px-2 py-0.5 rounded-full font-medium'>{wishlistCount}</span>
+                  )}
                 </div>
               </div>
               {/* Categories */}

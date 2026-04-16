@@ -119,7 +119,7 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
     const allOptionsSelected = variantTypes.length === 0 ||
         variantTypes.every(vt => selectedOptions[vt.name]);
 
-    const handleAddToCart = () =>
+    const handleAddToCart = (e) =>
     {
         if (!allOptionsSelected)
         {
@@ -135,6 +135,16 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
             quantity,
             selectedOptions
         });
+
+        // Dispatch fly-to-cart animation event
+        const rect = e.currentTarget.getBoundingClientRect();
+        window.dispatchEvent(new CustomEvent('flyToCart', {
+            detail: {
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+                image: mainImage
+            }
+        }));
 
         setAddedSuccess(true);
         setTimeout(() =>

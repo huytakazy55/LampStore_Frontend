@@ -7,33 +7,31 @@ import Footer from '../MainPage/Footer/Footer'
 import ProductManage from '../../../Services/ProductManage'
 import defaultImg from '../../../assets/images/cameras-2.jpg'
 import { useCart } from '../../../CartContext'
+import { useWishlist } from '../../../WishlistContext'
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 const SITE_URL = window.location.origin;
 
-const formatPrice = (price) =>
-{
+const formatPrice = (price) => {
     if (!price) return '0';
     return price.toLocaleString('vi-VN');
 };
 
-const getImgSrc = (path) =>
-{
+const getImgSrc = (path) => {
     if (!path) return defaultImg;
     return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
 };
 
 // Loại bỏ HTML tags cho meta description
-const stripHtml = (html) =>
-{
+const stripHtml = (html) => {
     if (!html) return '';
     return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 };
 
-const ProductDetail = () =>
-{
+const ProductDetail = () => {
     const { id } = useParams();
     const { addToCart } = useCart();
+    const { isInWishlist, toggleWishlist } = useWishlist();
     const [product, setProduct] = useState(null);
     const [variant, setVariant] = useState(null);
     const [images, setImages] = useState([]);
@@ -45,21 +43,17 @@ const ProductDetail = () =>
     const [showError, setShowError] = useState(false);
     const [addedSuccess, setAddedSuccess] = useState(false);
 
-    useEffect(() =>
-    {
+    useEffect(() => {
         // Scroll lên đầu trang khi vào chi tiết
         window.scrollTo(0, 0);
 
-        const fetchProduct = async () =>
-        {
-            try
-            {
+        const fetchProduct = async () => {
+            try {
                 setLoading(true);
                 const res = await ProductManage.GetProductById(id);
                 const data = res.data;
 
-                if (data)
-                {
+                if (data) {
                     setProduct(data);
 
                     // Extract variant from product data (singular)
@@ -80,11 +74,9 @@ const ProductDetail = () =>
                     })) : [];
                     setVariantTypes(vts);
                 }
-            } catch (e)
-            {
+            } catch (e) {
                 console.error('Error fetching product:', e);
-            } finally
-            {
+            } finally {
                 setLoading(false);
             }
         };
@@ -95,8 +87,7 @@ const ProductDetail = () =>
     const handleDecrease = () => setQuantity((prev) => Math.max(prev - 1, 1));
     const handleIncrease = () => setQuantity((prev) => Math.min(prev + 1, variant?.stock || 999));
 
-    const handleSelectOption = (typeName, val) =>
-    {
+    const handleSelectOption = (typeName, val) => {
         setSelectedOptions(prev => ({
             ...prev,
             [typeName]: { value: val.value, additionalPrice: val.additionalPrice || 0 }
@@ -107,10 +98,8 @@ const ProductDetail = () =>
     const allOptionsSelected = variantTypes.length === 0 ||
         variantTypes.every(vt => selectedOptions[vt.name]);
 
-    const handleAddToCart = () =>
-    {
-        if (!allOptionsSelected)
-        {
+    const handleAddToCart = (e) => {
+        if (!allOptionsSelected) {
             setShowError(true);
             return;
         }
@@ -128,19 +117,27 @@ const ProductDetail = () =>
             selectedOptions
         });
 
+        // Dispatch fly-to-cart animation event
+        const rect = e.currentTarget.getBoundingClientRect();
+        window.dispatchEvent(new CustomEvent('flyToCart', {
+            detail: {
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+                image: mainImg
+            }
+        }));
+
         setAddedSuccess(true);
         setTimeout(() => setAddedSuccess(false), 2000);
     };
 
     // --- SEO Helpers ---
-    const getPageTitle = () =>
-    {
+    const getPageTitle = () => {
         if (!product) return 'Đang tải... | Lamp Store';
         return `${product.name} | Mua ngay tại Lamp Store`;
     };
 
-    const getMetaDescription = () =>
-    {
+    const getMetaDescription = () => {
         if (!product) return 'Lamp Store - Cửa hàng đèn trang trí cao cấp';
         const desc = stripHtml(product.description);
         const price = currentVariant?.discountPrice || currentVariant?.price || product.minPrice || 0;
@@ -149,8 +146,7 @@ const ProductDetail = () =>
         return `${product.name} - ${priceText} ${truncated || 'Mua ngay tại Lamp Store với ưu đãi hấp dẫn.'}`;
     };
 
-    const getJsonLd = () =>
-    {
+    const getJsonLd = () => {
         if (!product) return null;
         const price = currentVariant?.discountPrice || currentVariant?.price || product.minPrice || 0;
         const mainImageUrl = images.length > 0 ? getImgSrc(images[0]?.imagePath) : `${SITE_URL}/logo192.png`;
@@ -199,8 +195,7 @@ const ProductDetail = () =>
     const mainImage = images.length > 0 ? getImgSrc(images[selectedImage]?.imagePath) : defaultImg;
 
     // --- RENDER ---
-    if (loading)
-    {
+    if (loading) {
         return (
             <>
                 <Helmet>
@@ -219,8 +214,7 @@ const ProductDetail = () =>
         );
     }
 
-    if (!product)
-    {
+    if (!product) {
         return (
             <>
                 <Helmet>
@@ -321,8 +315,13 @@ const ProductDetail = () =>
                                 />
                             ))}
                         </div>
-                        <div className='flex justify-end items-center text-xs md:text-sm h-8 mt-2 cursor-pointer text-gray-500 hover:text-rose-600 transition'>
-                            <i className='bx bx-heart text-base md:text-lg mr-1'></i> Yêu thích ({product.favorites || 0})
+                        <div
+                            className={`flex justify-end items-center text-xs md:text-sm h-8 mt-2 cursor-pointer transition-colors ${isInWishlist(product.id) ? 'text-rose-500' : 'text-gray-500 hover:text-rose-600'
+                                }`}
+                            onClick={() => toggleWishlist(product.id)}
+                        >
+                            <i className={`bx ${isInWishlist(product.id) ? 'bxs-heart' : 'bx-heart'} text-base md:text-lg mr-1`}></i>
+                            {isInWishlist(product.id) ? 'Đã yêu thích' : 'Yêu thích'} ({product.favorites || 0})
                         </div>
                     </div>
 
@@ -359,8 +358,7 @@ const ProductDetail = () =>
                         {/* Variant Types — Selectable */}
                         {variantTypes.length > 0 && (
                             <div className='mb-4 md:mb-6'>
-                                {variantTypes.map((vt) =>
-                                {
+                                {variantTypes.map((vt) => {
                                     const values = Array.isArray(vt.values) ? vt.values : [];
                                     if (values.length === 0) return null;
                                     const isRequired = !selectedOptions[vt.name] && showError;
@@ -370,18 +368,17 @@ const ProductDetail = () =>
                                                 {vt.name} {isRequired && <span className='text-xs font-normal'>(Chọn)</span>}
                                             </div>
                                             <div className='w-full sm:w-[90%] flex flex-wrap gap-2'>
-                                                {values.map((val) =>
-                                                {
+                                                {values.map((val) => {
                                                     const isSelected = selectedOptions[vt.name]?.value === val.value;
                                                     return (
                                                         <div
                                                             key={val.id}
                                                             onClick={() => handleSelectOption(vt.name, val)}
                                                             className={`py-1.5 px-3 md:px-4 cursor-pointer text-xs md:text-sm border rounded transition ${isSelected
-                                                                    ? 'border-rose-600 text-rose-600 bg-rose-50 font-medium'
-                                                                    : isRequired
-                                                                        ? 'border-red-300 hover:border-rose-300'
-                                                                        : 'border-gray-300 hover:border-rose-300'
+                                                                ? 'border-rose-600 text-rose-600 bg-rose-50 font-medium'
+                                                                : isRequired
+                                                                    ? 'border-red-300 hover:border-rose-300'
+                                                                    : 'border-gray-300 hover:border-rose-300'
                                                                 }`}
                                                         >
                                                             {val.value}
