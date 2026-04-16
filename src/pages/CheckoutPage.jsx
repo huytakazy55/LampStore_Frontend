@@ -3,21 +3,25 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../CartContext';
 import Header from '../components/user/MainPage/Header/Header';
 import Footer from '../components/user/MainPage/Footer/Footer';
+import OrderService from '../Services/OrderService';
 import defaultImg from '../assets/images/cameras-2.jpg';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
     if (!price) return '0';
     return price.toLocaleString('vi-VN');
 };
 
-const CheckoutPage = () => {
+const PROVINCE_API = 'https://provinces.open-api.vn/api';
+
+const CheckoutPage = () =>
+{
     const navigate = useNavigate();
     const location = useLocation();
     const { cartItems, clearCart } = useCart();
 
-    // Nhận items từ state (mua ngay) hoặc từ cart
     const buyNowItems = location.state?.buyNowItems;
     const checkoutItems = buyNowItems || cartItems;
 
@@ -27,8 +31,11 @@ const CheckoutPage = () => {
         email: '',
         address: '',
         city: '',
+        cityName: '',
         district: '',
+        districtName: '',
         ward: '',
+        wardName: '',
         note: '',
         paymentMethod: 'cod',
     });
@@ -38,8 +45,92 @@ const CheckoutPage = () => {
     const [orderSuccess, setOrderSuccess] = useState(false);
     const [orderId, setOrderId] = useState(null);
 
+    // Province data states
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [loadingProvinces, setLoadingProvinces] = useState(true);
+    const [loadingDistricts, setLoadingDistricts] = useState(false);
+    const [loadingWards, setLoadingWards] = useState(false);
+
+    // Fetch provinces on mount
+    useEffect(() =>
+    {
+        const fetchProvinces = async () =>
+        {
+            try
+            {
+                const res = await fetch(`${PROVINCE_API}/p/`);
+                const data = await res.json();
+                setProvinces(data);
+            } catch (error)
+            {
+                console.error('Error fetching provinces:', error);
+            } finally
+            {
+                setLoadingProvinces(false);
+            }
+        };
+        fetchProvinces();
+    }, []);
+
+    // Fetch districts when province changes
+    useEffect(() =>
+    {
+        if (!formData.city)
+        {
+            setDistricts([]);
+            return;
+        }
+        const fetchDistricts = async () =>
+        {
+            setLoadingDistricts(true);
+            try
+            {
+                const res = await fetch(`${PROVINCE_API}/p/${formData.city}?depth=2`);
+                const data = await res.json();
+                setDistricts(data.districts || []);
+            } catch (error)
+            {
+                console.error('Error fetching districts:', error);
+            } finally
+            {
+                setLoadingDistricts(false);
+            }
+        };
+        fetchDistricts();
+    }, [formData.city]);
+
+    // Fetch wards when district changes
+    useEffect(() =>
+    {
+        if (!formData.district)
+        {
+            setWards([]);
+            return;
+        }
+        const fetchWards = async () =>
+        {
+            setLoadingWards(true);
+            try
+            {
+                const res = await fetch(`${PROVINCE_API}/d/${formData.district}?depth=2`);
+                const data = await res.json();
+                setWards(data.wards || []);
+            } catch (error)
+            {
+                console.error('Error fetching wards:', error);
+            } finally
+            {
+                setLoadingWards(false);
+            }
+        };
+        fetchWards();
+    }, [formData.district]);
+
     // Pre-fill user info if logged in
-    useEffect(() => {
+    useEffect(() =>
+    {
         const savedName = localStorage.getItem('userName');
         const savedEmail = localStorage.getItem('userEmail');
         if (savedName) setFormData(prev => ({ ...prev, fullName: savedName }));
@@ -47,8 +138,10 @@ const CheckoutPage = () => {
     }, []);
 
     // Redirect if no items
-    useEffect(() => {
-        if (checkoutItems.length === 0 && !orderSuccess) {
+    useEffect(() =>
+    {
+        if (checkoutItems.length === 0 && !orderSuccess)
+        {
             navigate('/');
         }
     }, [checkoutItems, navigate, orderSuccess]);
@@ -57,52 +150,124 @@ const CheckoutPage = () => {
     const shippingFee = subtotal >= 500000 ? 0 : 30000;
     const total = subtotal + shippingFee;
 
-    const handleChange = (e) => {
+    const handleChange = (e) =>
+    {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
+        if (errors[name])
+        {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
     };
 
-    const validate = () => {
+    const handleProvinceChange = (e) =>
+    {
+        const code = e.target.value;
+        const name = e.target.options[e.target.selectedIndex]?.text || '';
+        setFormData(prev => ({
+            ...prev,
+            city: code,
+            cityName: code ? name : '',
+            district: '',
+            districtName: '',
+            ward: '',
+            wardName: ''
+        }));
+        setWards([]);
+        if (errors.city) setErrors(prev => ({ ...prev, city: '' }));
+    };
+
+    const handleDistrictChange = (e) =>
+    {
+        const code = e.target.value;
+        const name = e.target.options[e.target.selectedIndex]?.text || '';
+        setFormData(prev => ({
+            ...prev,
+            district: code,
+            districtName: code ? name : '',
+            ward: '',
+            wardName: ''
+        }));
+        if (errors.district) setErrors(prev => ({ ...prev, district: '' }));
+    };
+
+    const handleWardChange = (e) =>
+    {
+        const code = e.target.value;
+        const name = e.target.options[e.target.selectedIndex]?.text || '';
+        setFormData(prev => ({
+            ...prev,
+            ward: code,
+            wardName: code ? name : ''
+        }));
+    };
+
+    const validate = () =>
+    {
         const newErrors = {};
         if (!formData.fullName.trim()) newErrors.fullName = 'Vui lòng nhập họ tên';
         if (!formData.phone.trim()) newErrors.phone = 'Vui lòng nhập số điện thoại';
         else if (!/^(0[3|5|7|8|9])+([0-9]{8})$/.test(formData.phone.trim())) newErrors.phone = 'Số điện thoại không hợp lệ';
         if (!formData.address.trim()) newErrors.address = 'Vui lòng nhập địa chỉ';
-        if (!formData.city.trim()) newErrors.city = 'Vui lòng nhập tỉnh/thành phố';
-        if (!formData.district.trim()) newErrors.district = 'Vui lòng nhập quận/huyện';
+        if (!formData.city) newErrors.city = 'Vui lòng chọn tỉnh/thành phố';
+        if (!formData.district) newErrors.district = 'Vui lòng chọn quận/huyện';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e) =>
+    {
         e.preventDefault();
         if (!validate()) return;
 
         setIsSubmitting(true);
-        try {
-            // Simulate order creation (replace with actual API call)
-            await new Promise(resolve => setTimeout(resolve, 1500));
+        try
+        {
+            const orderData = {
+                userId: localStorage.getItem('userId') || null,
+                fullName: formData.fullName,
+                phone: formData.phone,
+                email: formData.email,
+                address: formData.address,
+                city: formData.cityName,
+                district: formData.districtName,
+                ward: formData.wardName,
+                note: formData.note,
+                paymentMethod: formData.paymentMethod,
+                totalAmount: total,
+                shippingFee: shippingFee,
+                orderItems: checkoutItems.map(item => ({
+                    productId: item.id || item.productId,
+                    productName: item.name,
+                    productImage: item.image || '',
+                    quantity: item.quantity,
+                    price: item.finalPrice,
+                    selectedOptions: item.selectedOptions ? JSON.stringify(item.selectedOptions) : null,
+                })),
+            };
 
-            const newOrderId = 'LS-' + Date.now().toString(36).toUpperCase();
-            setOrderId(newOrderId);
+            const created = await OrderService.createOrder(orderData);
+            setOrderId(created.id ? created.id.substring(0, 8).toUpperCase() : 'LS-' + Date.now().toString(36).toUpperCase());
             setOrderSuccess(true);
 
             // Clear cart if checkout from cart (not buy now)
-            if (!buyNowItems) {
+            if (!buyNowItems)
+            {
                 clearCart();
             }
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Order error:', error);
-        } finally {
+            alert('Đặt hàng thất bại. Vui lòng thử lại!');
+        } finally
+        {
             setIsSubmitting(false);
         }
     };
 
     // Order Success View
-    if (orderSuccess) {
+    if (orderSuccess)
+    {
         return (
             <>
                 <Header />
@@ -153,6 +318,10 @@ const CheckoutPage = () => {
             </>
         );
     }
+
+    const selectClassName = (hasError) =>
+        `w-full px-4 py-2.5 border rounded-lg text-sm outline-none transition-colors appearance-none bg-white cursor-pointer ${hasError ? 'border-red-400 bg-red-50' : 'border-gray-300 focus:border-rose-400'
+        }`;
 
     return (
         <>
@@ -235,47 +404,78 @@ const CheckoutPage = () => {
                                         Địa chỉ giao hàng
                                     </h2>
                                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                        {/* Tỉnh / Thành phố */}
                                         <div>
                                             <label className='block text-sm font-medium text-gray-700 mb-1.5'>
                                                 Tỉnh / Thành phố <span className='text-red-500'>*</span>
                                             </label>
-                                            <input
-                                                type='text'
-                                                name='city'
-                                                value={formData.city}
-                                                onChange={handleChange}
-                                                placeholder='TP. Hồ Chí Minh'
-                                                className={`w-full px-4 py-2.5 border rounded-lg text-sm outline-none transition-colors ${errors.city ? 'border-red-400 bg-red-50' : 'border-gray-300 focus:border-rose-400'}`}
-                                            />
+                                            <div className='relative'>
+                                                <select
+                                                    value={formData.city}
+                                                    onChange={handleProvinceChange}
+                                                    className={selectClassName(errors.city)}
+                                                    disabled={loadingProvinces}
+                                                >
+                                                    <option value="">
+                                                        {loadingProvinces ? 'Đang tải...' : '-- Chọn Tỉnh/Thành phố --'}
+                                                    </option>
+                                                    {provinces.map(p => (
+                                                        <option key={p.code} value={p.code}>{p.name}</option>
+                                                    ))}
+                                                </select>
+                                                <i className='bx bx-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none'></i>
+                                            </div>
                                             {errors.city && <p className='text-xs text-red-500 mt-1'>{errors.city}</p>}
                                         </div>
+
+                                        {/* Quận / Huyện */}
                                         <div>
                                             <label className='block text-sm font-medium text-gray-700 mb-1.5'>
                                                 Quận / Huyện <span className='text-red-500'>*</span>
                                             </label>
-                                            <input
-                                                type='text'
-                                                name='district'
-                                                value={formData.district}
-                                                onChange={handleChange}
-                                                placeholder='Quận 1'
-                                                className={`w-full px-4 py-2.5 border rounded-lg text-sm outline-none transition-colors ${errors.district ? 'border-red-400 bg-red-50' : 'border-gray-300 focus:border-rose-400'}`}
-                                            />
+                                            <div className='relative'>
+                                                <select
+                                                    value={formData.district}
+                                                    onChange={handleDistrictChange}
+                                                    className={selectClassName(errors.district)}
+                                                    disabled={!formData.city || loadingDistricts}
+                                                >
+                                                    <option value="">
+                                                        {loadingDistricts ? 'Đang tải...' : !formData.city ? 'Chọn tỉnh trước' : '-- Chọn Quận/Huyện --'}
+                                                    </option>
+                                                    {districts.map(d => (
+                                                        <option key={d.code} value={d.code}>{d.name}</option>
+                                                    ))}
+                                                </select>
+                                                <i className='bx bx-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none'></i>
+                                            </div>
                                             {errors.district && <p className='text-xs text-red-500 mt-1'>{errors.district}</p>}
                                         </div>
+
+                                        {/* Phường / Xã */}
                                         <div>
                                             <label className='block text-sm font-medium text-gray-700 mb-1.5'>
                                                 Phường / Xã
                                             </label>
-                                            <input
-                                                type='text'
-                                                name='ward'
-                                                value={formData.ward}
-                                                onChange={handleChange}
-                                                placeholder='Phường Bến Nghé'
-                                                className='w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm outline-none focus:border-rose-400 transition-colors'
-                                            />
+                                            <div className='relative'>
+                                                <select
+                                                    value={formData.ward}
+                                                    onChange={handleWardChange}
+                                                    className={selectClassName(false)}
+                                                    disabled={!formData.district || loadingWards}
+                                                >
+                                                    <option value="">
+                                                        {loadingWards ? 'Đang tải...' : !formData.district ? 'Chọn quận/huyện trước' : '-- Chọn Phường/Xã --'}
+                                                    </option>
+                                                    {wards.map(w => (
+                                                        <option key={w.code} value={w.code}>{w.name}</option>
+                                                    ))}
+                                                </select>
+                                                <i className='bx bx-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none'></i>
+                                            </div>
                                         </div>
+
+                                        {/* Địa chỉ cụ thể */}
                                         <div className='md:col-span-2'>
                                             <label className='block text-sm font-medium text-gray-700 mb-1.5'>
                                                 Địa chỉ cụ thể <span className='text-red-500'>*</span>
@@ -360,7 +560,8 @@ const CheckoutPage = () => {
 
                                     {/* Product list */}
                                     <div className='space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar mb-4 pr-1'>
-                                        {checkoutItems.map((item) => {
+                                        {checkoutItems.map((item) =>
+                                        {
                                             const optionText = Object.entries(item.selectedOptions || {})
                                                 .map(([, opt]) => opt.value)
                                                 .join(', ');

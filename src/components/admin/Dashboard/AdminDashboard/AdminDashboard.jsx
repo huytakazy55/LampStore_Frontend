@@ -8,19 +8,24 @@ import 'react-toastify/dist/ReactToastify.css';
 import NotificationService from '../../../../Services/NotificationService';
 import { useSelector } from 'react-redux';
 
-const AdminDashboard = () => {
+const AdminDashboard = () =>
+{
   const leftBar = useSelector((state) => state.leftbar.leftbar);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     // Khởi tạo thông báo real-time cho admin
-    const initializeNotifications = async () => {
-      try {
+    const initializeNotifications = async () =>
+    {
+      try
+      {
         await NotificationService.setupSignalRNotifications();
         NotificationService.requestNotificationPermission();
         NotificationService.cleanOldNotifications();
-        
+
         console.log('📢 Admin Dashboard: Notification system initialized');
-      } catch (error) {
+      } catch (error)
+      {
         console.error('❌ Admin Dashboard: Failed to initialize notifications:', error);
       }
     };
@@ -36,18 +41,6 @@ const AdminDashboard = () => {
         <div className={`fixed inset-0 bg-black/40 z-30 md:hidden transition-opacity duration-300 ${!leftBar ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} />
         <LeftBar />
         <RightBody />
-        <ToastContainer
-            position="bottom-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-        />
       </div>
     </div>
   );

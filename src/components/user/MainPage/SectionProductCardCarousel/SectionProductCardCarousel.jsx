@@ -24,7 +24,8 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
-const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) => {
+const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =>
+{
   const images = product.images?.$values || product.images || [];
   const firstImage = images.length > 0 ? images[0] : null;
   const imageSrc = firstImage
@@ -36,22 +37,30 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
   const discountPrice = variant?.discountPrice || product.minPrice || 0;
   const displayPrice = discountPrice > 0 && discountPrice < price ? discountPrice : price;
   const hasDiscount = discountPrice > 0 && discountPrice < price;
+  const discountPercent = hasDiscount ? Math.round((1 - discountPrice / price) * 100) : 0;
 
-  const formatPrice = (p) => {
+  const formatPrice = (p) =>
+  {
     if (!p) return '0';
     return new Intl.NumberFormat('vi-VN').format(p);
   };
 
   return (
     <div
-      className='!w-[98%] h-[11rem] md:h-[13rem] p-2 cursor-pointer relative m-1 border border-gray-200 hover:border-yellow-400 group bg-white rounded-sm transition-all duration-200'
+      className='!w-[98%] h-[12rem] md:h-[14rem] cursor-pointer relative m-1 group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300'
       onClick={onClick}
     >
       <div className='flex gap-3 h-full'>
-        {/* Ảnh sản phẩm */}
-        <div className='h-full aspect-square flex-shrink-0 bg-gray-50 flex items-center justify-center'>
+        {/* Image */}
+        <div className='h-full aspect-square flex-shrink-0 bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-3 relative overflow-hidden'>
+          {/* Discount Badge */}
+          {hasDiscount && (
+            <div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md">
+              -{discountPercent}%
+            </div>
+          )}
           {imageSrc ? (
-            <img src={imageSrc} alt={product.name} className='w-full h-full object-contain' />
+            <img src={imageSrc} alt={product.name} className='w-full h-full object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-110' />
           ) : (
             <div className='w-full h-full flex items-center justify-center'>
               <i className='bx bx-image text-3xl text-gray-300'></i>
@@ -59,24 +68,24 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
           )}
         </div>
 
-        {/* Thông tin sản phẩm */}
-        <div className='flex flex-col flex-1 py-1 min-w-0'>
-          {/* Lượt bán */}
-          <div className='text-[10px] md:text-xs text-gray-400 flex items-center gap-1 mb-1'>
-            <i className='bx bx-purchase-tag text-yellow-500 text-xs'></i>
+        {/* Info */}
+        <div className='flex flex-col flex-1 py-3 pr-3 min-w-0'>
+          {/* Sell Count */}
+          <div className='text-[10px] md:text-xs text-gray-400 flex items-center gap-1 mb-1.5'>
+            <i className='bx bx-purchase-tag text-amber-500 text-xs'></i>
             Đã bán {product.sellCount || 0}
           </div>
 
-          {/* Tên sản phẩm */}
-          <div className='text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors'>
+          {/* Title */}
+          <h3 className='text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug group-hover:text-amber-700 transition-colors duration-200'>
             {product.name}
-          </div>
+          </h3>
 
-          {/* Giá */}
+          {/* Price */}
           <div className='mt-auto flex items-end justify-between'>
             <div>
-              <div className='text-sm md:text-base font-bold text-red-500'>
-                {formatPrice(displayPrice)}<span className='text-[10px] md:text-xs font-normal'>₫</span>
+              <div className='text-sm md:text-base font-bold text-amber-600'>
+                {formatPrice(displayPrice)}<span className='text-[10px] md:text-xs font-normal ml-0.5'>₫</span>
               </div>
               {hasDiscount && (
                 <div className='text-[10px] md:text-xs text-gray-400 line-through'>
@@ -84,17 +93,18 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
                 </div>
               )}
             </div>
-            <div className='w-7 h-7 md:w-8 md:h-8 text-sm md:text-base bg-gray-200 rounded-full text-gray-500 group-hover:bg-yellow-400 group-hover:text-white flex items-center justify-center transition-colors duration-200'>
-              <i className='bx bxs-cart-add'></i>
-            </div>
+            <button className='w-7 h-7 md:w-8 md:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'>
+              <i className='bx bxs-cart-add text-sm md:text-base'></i>
+            </button>
           </div>
-          {/* Wishlist button */}
+
+          {/* Wishlist */}
           <div
-            className={`flex items-center gap-1 text-[10px] md:text-xs cursor-pointer transition-colors ${isInWishlist ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}
+            className={`flex items-center gap-1 text-[10px] md:text-xs cursor-pointer transition-all mt-1.5 ${isInWishlist ? 'text-rose-500' : 'text-gray-400 hover:text-rose-400'}`}
             onClick={(e) => { e.stopPropagation(); onToggleWishlist(product.id); }}
           >
             <i className={`bx ${isInWishlist ? 'bxs-heart' : 'bx-heart'} text-sm`}></i>
-            <span>{isInWishlist ? 'Đã yêu thích' : 'Yêu thích'}</span>
+            <span>{isInWishlist ? 'Đã thích' : 'Yêu thích'}</span>
           </div>
         </div>
       </div>
@@ -102,15 +112,19 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
   );
 };
 
-const SectionProductCardCarousel = () => {
+const SectionProductCardCarousel = () =>
+{
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  useEffect(() => {
-    const fetchBestSelling = async () => {
-      try {
+  useEffect(() =>
+  {
+    const fetchBestSelling = async () =>
+    {
+      try
+      {
         const response = await axios.get(`${API_ENDPOINT}/api/Products`);
         const allProducts = response.data?.$values || response.data || [];
 
@@ -121,9 +135,11 @@ const SectionProductCardCarousel = () => {
           .slice(0, 12);
 
         setProducts(sorted);
-      } catch (error) {
+      } catch (error)
+      {
         console.error('Error fetching best selling products:', error);
-      } finally {
+      } finally
+      {
         setLoading(false);
       }
     };

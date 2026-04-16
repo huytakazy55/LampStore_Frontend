@@ -16,9 +16,8 @@ import BackToTop from '../components/common/BackToTop';
 const CategorySale = lazy(() => import('../components/user/MainPage/CategorySale/CategorySale'));
 const FeatureList = lazy(() => import('../components/user/MainPage/FeatureList/FeatureList'));
 const ProductCarousel = lazy(() => import('../components/user/MainPage/ProductCarousel/ProductCarousel'));
-const BannerProductCarousel = lazy(() => import('../components/user/MainPage/BannerProductCarousel/BannerProductCarousel'));
 const SectionProductCardCarousel = lazy(() => import('../components/user/MainPage/SectionProductCardCarousel/SectionProductCardCarousel'));
-const TrendingProduct = lazy(() => import('../components/user/MainPage/TrendingProduct/TrendingProduct'));
+const NewsSection = lazy(() => import('../components/user/MainPage/NewsSection/NewsSection'));
 const BestSeller = lazy(() => import('../components/user/MainPage/BestSeller/BestSeller'));
 const BannerImage = lazy(() => import('../components/user/MainPage/BannerImage/BannerImage'));
 const BrandCarousel = lazy(() => import('../components/user/MainPage/BrandCarousel/BrandCarousel'));
@@ -31,16 +30,21 @@ const SectionSpinner = ({ height = '200px' }) => (
   </div>
 );
 
-const HomePage = () => {
-  useEffect(() => {
-    const initializeNotifications = async () => {
-      try {
+const HomePage = () =>
+{
+  useEffect(() =>
+  {
+    const initializeNotifications = async () =>
+    {
+      try
+      {
         await NotificationService.setupSignalRNotifications();
         NotificationService.requestNotificationPermission();
         NotificationService.cleanOldNotifications();
-        
+
         console.log('📢 HomePage: Notification system initialized for user');
-      } catch (error) {
+      } catch (error)
+      {
         console.error('❌ HomePage: Failed to initialize notifications:', error);
       }
     };
@@ -50,100 +54,82 @@ const HomePage = () => {
 
   return (
     <>
-    <CustomScrollbar>
-      {/* === ABOVE THE FOLD: Load ngay lập tức === */}
-      <TopBar />
-      <Header />
-      <NavbarPrimary />
-      <SiteContent />
-      <BackToTop />
+      <CustomScrollbar>
+        {/* === ABOVE THE FOLD: Load ngay lập tức === */}
+        <TopBar />
+        <Header />
+        <NavbarPrimary />
+        <SiteContent />
+        <BackToTop />
 
-      {/* === BELOW THE FOLD: Lazy load khi scroll đến === */}
-      
-      {/* CategorySale - grid danh mục */}
-      <LazySection height="280px">
-        <Suspense fallback={<SectionSpinner height="280px" />}>
-          <CategorySale />
-        </Suspense>
-      </LazySection>
+        {/* === BELOW THE FOLD: Lazy load khi scroll đến === */}
 
-      {/* FeatureList - nhẹ, load sớm */}
-      <LazySection height="80px">
-        <Suspense fallback={<SectionSpinner height="80px" />}>
-          <FeatureList />
-        </Suspense>
-      </LazySection>
+        {/* CategorySale - grid danh mục */}
+        <LazySection height="280px">
+          <Suspense fallback={<SectionSpinner height="280px" />}>
+            <CategorySale />
+          </Suspense>
+        </LazySection>
 
-      {/* ProductCarousel - nặng, fetch products */}
-      <LazySection height="500px">
-        <Suspense fallback={<SectionSpinner height="500px" />}>
-          <ProductCarousel />
-        </Suspense>
-      </LazySection>
+        {/* FeatureList - nhẹ, load sớm */}
+        <LazySection height="80px">
+          <Suspense fallback={<SectionSpinner height="80px" />}>
+            <FeatureList />
+          </Suspense>
+        </LazySection>
 
-      {/* BannerProductCarousel */}
-      <LazySection height="400px">
-        <Suspense fallback={<SectionSpinner height="400px" />}>
-          <BannerProductCarousel />
-        </Suspense>
-      </LazySection>
+        {/* ProductCarousel - nặng, fetch products */}
+        <LazySection height="500px">
+          <Suspense fallback={<SectionSpinner height="500px" />}>
+            <ProductCarousel />
+          </Suspense>
+        </LazySection>
 
-      {/* SectionProductCardCarousel */}
-      <LazySection height="400px">
-        <Suspense fallback={<SectionSpinner height="400px" />}>
-          <SectionProductCardCarousel />
-        </Suspense>
-      </LazySection>
 
-      {/* TrendingProduct - fetch products */}
-      <LazySection height="350px">
-        <Suspense fallback={<SectionSpinner height="350px" />}>
-          <TrendingProduct />
-        </Suspense>
-      </LazySection>
+        {/* SectionProductCardCarousel */}
+        <LazySection height="400px">
+          <Suspense fallback={<SectionSpinner height="400px" />}>
+            <SectionProductCardCarousel />
+          </Suspense>
+        </LazySection>
 
-      {/* BestSeller - nặng nhất, fetch nhiều data */}
-      <LazySection height="600px">
-        <Suspense fallback={<SectionSpinner height="600px" />}>
-          <BestSeller />
-        </Suspense>
-      </LazySection>
+        {/* BestSeller - nặng nhất, fetch nhiều data */}
+        <LazySection height="600px">
+          <Suspense fallback={<SectionSpinner height="600px" />}>
+            <BestSeller />
+          </Suspense>
+        </LazySection>
 
-      {/* BannerImage - fetch banners */}
-      <LazySection height="160px">
-        <Suspense fallback={<SectionSpinner height="160px" />}>
-          <BannerImage />
-        </Suspense>
-      </LazySection>
+        {/* BannerImage - fetch banners */}
+        <LazySection height="160px">
+          <Suspense fallback={<SectionSpinner height="160px" />}>
+            <BannerImage />
+          </Suspense>
+        </LazySection>
 
-      {/* BrandCarousel - nhẹ */}
-      <LazySection height="112px">
-        <Suspense fallback={<SectionSpinner height="112px" />}>
-          <BrandCarousel />
-        </Suspense>
-      </LazySection>
+        {/* NewsSection - Blog & Tips */}
+        <LazySection height="450px">
+          <Suspense fallback={<SectionSpinner height="450px" />}>
+            <NewsSection />
+          </Suspense>
+        </LazySection>
 
-      {/* Newsletter - nhẹ */}
-      <LazySection height="80px">
-        <Suspense fallback={<SectionSpinner height="80px" />}>
-          <Newsletter />
-        </Suspense>
-      </LazySection>
+        {/* BrandCarousel - nhẹ */}
+        <LazySection height="112px">
+          <Suspense fallback={<SectionSpinner height="112px" />}>
+            <BrandCarousel />
+          </Suspense>
+        </LazySection>
 
-      <Footer />
-      <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-      />
-    </CustomScrollbar>
+        {/* Newsletter - nhẹ */}
+        <LazySection height="80px">
+          <Suspense fallback={<SectionSpinner height="80px" />}>
+            <Newsletter />
+          </Suspense>
+        </LazySection>
+
+        <Footer />
+      </CustomScrollbar>
     </>
   );
 };

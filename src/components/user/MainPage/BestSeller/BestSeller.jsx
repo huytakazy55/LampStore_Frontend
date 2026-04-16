@@ -31,38 +31,67 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
 {
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
+  const originalPrice = variant?.price || 0;
+  const hasDiscount = variant?.discountPrice && variant.discountPrice < variant.price;
+  const discountPercent = hasDiscount ? Math.round((1 - variant.discountPrice / variant.price) * 100) : 0;
 
   return (
     <div
-      className='p-3 md:p-4 bg-white hover:cursor-pointer hover:ring-1 hover:ring-gray-300 group'
+      className='relative group cursor-pointer bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 border border-gray-100'
       onClick={() => navigate(`/product/${product.id}`)}
     >
-      <div className='text-[10px] md:text-smaller text-gray-500 truncate'>
-        {product.category?.name || 'Đèn ngủ'}
-      </div>
-      <div className='text-xs md:text-small text-blue-400 font-bold line-clamp-2 h-7 md:h-9'>
-        {product.name}
-      </div>
-      <div className='h-36 sm:h-44 md:h-52 flex justify-center items-center bg-gray-50 rounded-lg p-2'>
+      {/* Discount Badge */}
+      {hasDiscount && (
+        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg">
+          -{discountPercent}%
+        </div>
+      )}
+
+      {/* Image Container */}
+      <div className='relative h-36 sm:h-44 md:h-52 bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4 overflow-hidden'>
         <img
-          className='max-h-full max-w-full object-contain drop-shadow-sm'
+          className='max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-110'
           src={getImageSrc(product)}
           alt={product.name}
           loading="lazy"
           onError={(e) => { e.target.src = defaultImg; }}
         />
       </div>
-      <div className='mt-2 flex justify-around items-center'>
-        <div className='text-sm md:text-h3 font-bold text-yellow-600'>{formatPrice(price)}<span>₫</span></div>
-        <div
-          className='w-8 h-8 md:w-9 md:h-9 rounded-[50%] bg-gray-300 cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
-          onClick={(e) =>
-          {
-            e.stopPropagation();
-            onAddToCartClick(product);
-          }}
-        >
-          <i className='bx bxs-cart-add text-lg md:text-h2 text-white'></i>
+
+      {/* Content */}
+      <div className='p-3 md:p-4'>
+        {/* Category */}
+        <p className='text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wider mb-1'>
+          {product.category?.name || 'Đèn ngủ'}
+        </p>
+
+        {/* Title */}
+        <h3 className='text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-amber-700 transition-colors duration-200'>
+          {product.name}
+        </h3>
+
+        {/* Price + Cart */}
+        <div className='flex items-end justify-between mt-2.5 pt-2.5 border-t border-gray-100'>
+          <div>
+            <div className='text-sm md:text-base font-bold text-amber-600'>
+              {formatPrice(price)}<span className='text-[10px] font-normal ml-0.5'>₫</span>
+            </div>
+            {hasDiscount && (
+              <div className='text-[10px] text-gray-400 line-through -mt-0.5'>
+                {formatPrice(originalPrice)}₫
+              </div>
+            )}
+          </div>
+          <button
+            className='w-8 h-8 md:w-9 md:h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
+            onClick={(e) =>
+            {
+              e.stopPropagation();
+              onAddToCartClick(product);
+            }}
+          >
+            <i className='bx bxs-cart-add text-base md:text-lg'></i>
+          </button>
         </div>
       </div>
     </div>
@@ -73,28 +102,45 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
 {
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
+  const originalPrice = variant?.price || 0;
+  const hasDiscount = variant?.discountPrice && variant.discountPrice < variant.price;
+  const discountPercent = hasDiscount ? Math.round((1 - variant.discountPrice / variant.price) * 100) : 0;
 
   return (
     <div
-      className='w-full lg:w-[33%] bg-white p-4 md:p-6 flex flex-col hover:cursor-pointer hover:ring-1 hover:ring-gray-300 group'
+      className='w-full lg:w-[33%] bg-white rounded-2xl overflow-hidden p-4 md:p-6 flex flex-col cursor-pointer group transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100'
       onClick={() => navigate(`/product/${product.id}`)}
     >
-      <div className='text-[10px] md:text-smaller text-gray-500'>
+      {/* Discount Badge */}
+      {hasDiscount && (
+        <div className="inline-flex self-start bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg mb-2">
+          -{discountPercent}%
+        </div>
+      )}
+
+      {/* Category */}
+      <p className='text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wider mb-1'>
         {product.category?.name || 'Đèn ngủ'}
-      </div>
-      <div className='text-sm md:text-normal text-blue-400 font-bold line-clamp-2'>
+      </p>
+
+      {/* Title */}
+      <h3 className='text-sm md:text-base font-semibold text-gray-800 line-clamp-2 group-hover:text-amber-700 transition-colors duration-200'>
         {product.name}
-      </div>
-      <div className='w-full h-48 md:h-[65%] flex justify-center items-center bg-gray-50 rounded-lg p-3'>
+      </h3>
+
+      {/* Image */}
+      <div className='w-full h-48 md:h-[60%] flex justify-center items-center bg-gradient-to-b from-gray-50 to-white rounded-xl p-3 my-3 overflow-hidden'>
         <img
-          className='w-[90%] h-[90%] object-contain drop-shadow-sm'
+          className='w-[85%] h-[85%] object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-110'
           src={getImageSrc(product)}
           alt={product.name}
           loading="lazy"
           onError={(e) => { e.target.src = defaultImg; }}
         />
       </div>
-      <div className='flex gap-[10px] mb-3'>
+
+      {/* Thumbnails */}
+      <div className='flex gap-2 mb-3'>
         {product.images && product.images.slice(0, 3).map((img, i) =>
         {
           const path = img.imagePath || img.ImagePath;
@@ -102,7 +148,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
           return (
             <img
               key={i}
-              className='w-14 h-14 md:w-20 md:h-20 border-[1px] border-gray-300 object-contain'
+              className='w-12 h-12 md:w-16 md:h-16 border border-gray-200 rounded-lg object-contain hover:border-amber-400 transition-colors'
               src={src}
               alt=""
               loading="lazy"
@@ -111,18 +157,29 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
           );
         })}
       </div>
-      <div className='mt-auto flex justify-between items-center'>
-        <div className='text-sm md:text-h3 font-bold text-yellow-600'>{formatPrice(price)}<span>₫</span></div>
-        <div
-          className='w-8 h-8 md:w-9 md:h-9 rounded-[50%] bg-gray-300 cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
+
+      {/* Price + Cart */}
+      <div className='mt-auto flex justify-between items-end pt-3 border-t border-gray-100'>
+        <div>
+          <div className='text-base md:text-lg font-bold text-amber-600'>
+            {formatPrice(price)}<span className='text-xs font-normal ml-0.5'>₫</span>
+          </div>
+          {hasDiscount && (
+            <div className='text-[10px] md:text-xs text-gray-400 line-through -mt-0.5'>
+              {formatPrice(originalPrice)}₫
+            </div>
+          )}
+        </div>
+        <button
+          className='w-9 h-9 md:w-10 md:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
           onClick={(e) =>
           {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
         >
-          <i className='bx bxs-cart-add text-lg md:text-h2 text-white'></i>
-        </div>
+          <i className='bx bxs-cart-add text-lg md:text-xl'></i>
+        </button>
       </div>
     </div>
   );
@@ -238,7 +295,7 @@ const BestSeller = () =>
         <div className='w-full flex flex-col lg:flex-row justify-between gap-2 md:gap-[0.5%]'>
           <div className='w-full lg:w-[70%]'>
             {/* Row 1 */}
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-0 mb-1 md:mb-2'>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-3 md:mb-4'>
               {gridProducts.slice(0, 4).map((product) => (
                 <SmallProductCard key={product.id} product={product} navigate={navigate} onAddToCartClick={setCartModalProduct} />
               ))}
@@ -249,7 +306,7 @@ const BestSeller = () =>
               ))}
             </div>
             {/* Row 2 */}
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-0'>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4'>
               {gridProducts.slice(4, 8).map((product) => (
                 <SmallProductCard key={product.id} product={product} navigate={navigate} onAddToCartClick={setCartModalProduct} />
               ))}

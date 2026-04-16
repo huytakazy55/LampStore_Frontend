@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import CartService from './Services/CartService';
 
 const CartContext = createContext();
 const CART_KEY = 'lamp_store_cart';
@@ -28,6 +29,30 @@ const getCartItemKey = (productId, selectedOptions) =>
         .map(([k, v]) => `${k}:${v.value}`)
         .join('|');
     return `${productId}__${optionStr}`;
+};
+
+// Chuyển backend cart item → frontend format
+const backendToFrontendItem = (backendItem) =>
+{
+    const selectedOptions = backendItem.selectedOptions
+        ? JSON.parse(backendItem.selectedOptions)
+        : {};
+
+    const totalAdditional = Object.values(selectedOptions)
+        .reduce((sum, opt) => sum + (opt.additionalPrice || 0), 0);
+
+    const basePrice = backendItem.basePrice || 0;
+
+    return {
+        key: getCartItemKey(backendItem.productId, selectedOptions),
+        productId: backendItem.productId,
+        name: backendItem.productName || '',
+        image: backendItem.productImage || '',
+        basePrice: basePrice,
+        finalPrice: basePrice + totalAdditional,
+        quantity: backendItem.quantity,
+        selectedOptions: selectedOptions
+    };
 };
 
 export function CartProvider({ children })
@@ -95,6 +120,43 @@ export function CartProvider({ children })
         setCartItems([]);
     }, []);
 
+    /**
+     * Gọi khi đăng nhập thành công:
+     * 1. Lấy items hiện tại trong localStorage
+     * 2. Gửi lên backend để merge
+     * 3. Nhận lại danh sách đầy đủ từ backend
+     * 4. Cập nhật state + localStorage
+     */
+    const syncCartOnLogin = useCallback(async () =>
+    {
+        try
+        {
+            const localItems = loadCart();
+
+            // Gửi localStorage items lên backend (merge)
+            const backendData = await CartService.syncCart(localItems);
+
+            // Chuyển backend data → frontend format
+            const items = (backendData?.$values || backendData || [])
+                .map(backendToFrontendItem);
+
+            setCartItems(items);
+        } catch (error)
+        {
+            console.error('Cart sync failed:', error);
+            // Nếu sync thất bại, giữ nguyên giỏ hàng localStorage
+        }
+    }, []);
+
+    /**
+     * Gọi khi đăng xuất: xóa state + localStorage
+     */
+    const clearCartOnLogout = useCallback(() =>
+    {
+        setCartItems([]);
+        localStorage.removeItem(CART_KEY);
+    }, []);
+
     const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const cartTotal = cartItems.reduce((sum, item) => sum + item.finalPrice * item.quantity, 0);
 
@@ -106,7 +168,9 @@ export function CartProvider({ children })
             updateQuantity,
             clearCart,
             cartCount,
-            cartTotal
+            cartTotal,
+            syncCartOnLogin,
+            clearCartOnLogout
         }}>
             {children}
         </CartContext.Provider>

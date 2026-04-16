@@ -1,11 +1,13 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import avatar from '../../../../assets/images/Avatar.jpg'
 import AuthService from '../../../../Services/AuthService'
 import { useDispatch } from 'react-redux'
 import { logout as logoutAction } from '../../../../redux/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
+import { useCart } from '../../../../CartContext'
 
-const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef}) => {
+const FormActionLogin = ({ toggleActionLogin, popupActionRef, setToggleActionLogin, setToggleProfile, buttonProfileRef }) =>
+{
     const token = localStorage.getItem("token");
     const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
     const dispatch = useDispatch();
@@ -14,30 +16,40 @@ const FormActionLogin = ({toggleActionLogin, popupActionRef, setToggleActionLogi
         Email: '',
         ProfileAvatar: ''
     });
-    useEffect(() => {
-        if (toggleActionLogin && token) {
+    useEffect(() =>
+    {
+        if (toggleActionLogin && token)
+        {
             AuthService.profile()
-            .then((res) => {
-                setProfileData({
-                    Email: res?.email,
-                    ProfileAvatar: res?.profileAvatar
+                .then((res) =>
+                {
+                    setProfileData({
+                        Email: res?.email,
+                        ProfileAvatar: res?.profileAvatar
+                    });
+                })
+                .catch((error) =>
+                {
+                    console.error("Error fetching profile:", error);
                 });
-            })
-            .catch((error) => {
-                console.error("Error fetching profile:", error);
-            });
         }
     }, [toggleActionLogin]);
 
-    const handleLogout = async () => {
+    const { clearCartOnLogout } = useCart();
+
+    const handleLogout = async () =>
+    {
+        clearCartOnLogout();
         const result = await AuthService.logout();
-        if(result) {
+        if (result)
+        {
             dispatch(logoutAction());
             setToggleActionLogin(false);
             navigate('/');
         }
     }
-    const handleProfileClick = () => {
+    const handleProfileClick = () =>
+    {
         setToggleActionLogin(false);
         setToggleProfile(true);
     }
