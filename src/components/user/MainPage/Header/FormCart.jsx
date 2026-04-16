@@ -109,10 +109,16 @@ const FormCart = ({ toggleCart, popupRef, setToggleCart }) =>
                         <span className='text-xl font-bold text-rose-600'>{formatPrice(cartTotal)} ₫</span>
                     </div>
                     <div className='flex justify-between gap-3'>
-                        <button className='flex-1 py-2.5 px-4 rounded-md text-sm font-medium border border-rose-600 text-rose-600 bg-white hover:bg-rose-50 transition-colors cursor-pointer'>
+                        <button
+                            onClick={() => { setToggleCart(false); navigate('/checkout'); }}
+                            className='flex-1 py-2.5 px-4 rounded-md text-sm font-medium border border-rose-600 text-rose-600 bg-white hover:bg-rose-50 transition-colors cursor-pointer'
+                        >
                             Xem giỏ hàng
                         </button>
-                        <button className='flex-1 py-2.5 px-4 rounded-md text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-sm cursor-pointer'>
+                        <button
+                            onClick={() => { setToggleCart(false); navigate('/checkout'); }}
+                            className='flex-1 py-2.5 px-4 rounded-md text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-sm cursor-pointer'
+                        >
                             Thanh toán
                         </button>
                     </div>

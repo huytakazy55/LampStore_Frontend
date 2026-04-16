@@ -8,22 +8,22 @@ const Footer = () => {
                 {/* === Top yellow S-curve flowing from left === */}
                 <svg className='absolute top-0 left-0 w-full h-full pointer-events-none' viewBox="0 0 1440 500" preserveAspectRatio="none" fill="none">
                     {/* Outer yellow curve - wraps behind the circle */}
-                    <path d="M0,0 L0,120 C0,200 80,320 200,380 C300,430 380,500 380,500 L0,500 Z" fill="#facc15"/>
+                    <path d="M0,0 L0,120 C0,200 80,320 200,380 C300,430 380,500 380,500 L0,500 Z" fill="#facc15" />
                     {/* Inner black curve - creates the S-shape cutout */}
-                    <path d="M0,0 L0,80 C20,160 100,260 200,320 C280,370 320,440 330,500 L0,500 Z" fill="black"/>
+                    <path d="M0,0 L0,80 C20,160 100,260 200,320 C280,370 340,440 400,500 L0,500 Z" fill="black" />
                 </svg>
 
                 <div className='w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-0 py-10 md:py-14 xl:mx-auto xl:max-w-[1440px] px-6 xl:px-0 relative z-10'>
-                    
+
                     {/* === Cột trái: Bản đồ trong khung tròn === */}
                     <div className='w-full lg:w-[30%] flex justify-center lg:justify-start items-center'>
                         <div className='w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-yellow-400 shadow-xl shadow-yellow-400/10 flex-shrink-0'>
-                            <iframe 
-                                className='w-full h-full' 
+                            <iframe
+                                className='w-full h-full'
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.6778758888713!2d105.81908607604745!3d21.005545788574118!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ad5fb9812307%3A0x63c20c5aa29db56b!2zS2h1IHThuq1wIHRo4buDIEEyIHBo4buRIFbEqW5oIEjhu5MsIFRo4buLbmggUXVhbmcsIMSQ4buRbmcgxJBhLCBIw6AgTuG7mWksIFZpZXRuYW0!5e0!3m2!1svi!2s!4v1726261210365!5m2!1svi!2s"
-                                style={{ border: 0 }} 
-                                allowFullScreen="" 
-                                loading="lazy" 
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade">
                             </iframe>
                         </div>
@@ -106,9 +106,9 @@ const Footer = () => {
                                 { icon: 'bxl-tiktok', label: 'TikTok' },
                                 { icon: 'bxl-youtube', label: 'YouTube' },
                             ].map((social) => (
-                                <a 
+                                <a
                                     key={social.icon}
-                                    href='#' 
+                                    href='#'
                                     aria-label={social.label}
                                     className='w-10 h-10 rounded-full border border-gray-700 flex items-center justify-center text-gray-500 transition-all duration-300 hover:text-yellow-400 hover:border-yellow-400 hover:-translate-y-1'
                                 >
@@ -129,9 +129,9 @@ const Footer = () => {
                 {/* === Bottom yellow S-curve wave === */}
                 <svg className='absolute bottom-0 left-0 w-full pointer-events-none' style={{ height: '80px' }} viewBox="0 0 1440 80" preserveAspectRatio="none">
                     {/* Yellow ribbon wave */}
-                    <path d="M800,80 C850,80 900,70 950,55 C1050,25 1150,5 1250,15 C1350,25 1400,50 1440,60 L1440,80 Z" fill="#facc15"/>
+                    <path d="M800,80 C850,80 900,70 950,55 C1050,25 1150,5 1250,15 C1350,25 1400,50 1440,60 L1440,80 Z" fill="#facc15" />
                     {/* Black overlay to create S-shape */}
-                    <path d="M850,80 C900,80 950,72 1000,60 C1100,35 1200,18 1300,25 C1380,30 1420,45 1440,55 L1440,80 Z" fill="#111"/>
+                    <path d="M850,80 C900,80 950,72 1000,60 C1100,35 1200,18 1300,25 C1380,30 1420,45 1440,55 L1440,80 Z" fill="#111" />
                 </svg>
             </div>
 

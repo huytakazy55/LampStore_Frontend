@@ -20,7 +20,7 @@ ENV REACT_APP_API_ENDPOINT=$REACT_APP_API_ENDPOINT
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM --platform=$BUILDPLATFORM nginx:1.27-alpine
 
 # Copy built assets from build stage
 COPY --from=build /app/build /usr/share/nginx/html

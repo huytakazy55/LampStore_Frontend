@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import defaultImg from '../../../assets/images/cameras-2.jpg';
 import ProductManage from '../../../Services/ProductManage';
 import { useCart } from '../../../CartContext';
+import { useNavigate } from 'react-router-dom';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
@@ -21,6 +22,7 @@ const getImgSrc = (path) =>
 const AddToCartModal = ({ isOpen, onClose, product }) =>
 {
     const { addToCart } = useCart();
+    const navigate = useNavigate();
     const [variant, setVariant] = useState(null);
     const [variantTypes, setVariantTypes] = useState([]);
     const [images, setImages] = useState([]);
@@ -269,7 +271,27 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
                                 Thêm vào giỏ
                             </button>
                             <button
-                                onClick={() => { handleAddToCart(); if (allOptionsSelected) onClose(); }}
+                                onClick={() => {
+                                    if (!allOptionsSelected) {
+                                        setShowError(true);
+                                        return;
+                                    }
+                                    // Tạo item checkout trực tiếp
+                                    const totalAdditionalBuy = Object.values(selectedOptions)
+                                        .reduce((sum, opt) => sum + (opt.additionalPrice || 0), 0);
+                                    const buyItem = {
+                                        key: `buynow_${product.id}_${Date.now()}`,
+                                        productId: product.id,
+                                        name: product.name,
+                                        image: mainImage,
+                                        basePrice: basePrice,
+                                        finalPrice: basePrice + totalAdditionalBuy,
+                                        quantity,
+                                        selectedOptions
+                                    };
+                                    onClose();
+                                    navigate('/checkout', { state: { buyNowItems: [buyItem] } });
+                                }}
                                 className="flex-1 bg-rose-600 text-white py-3 rounded-md font-medium hover:bg-rose-700 transition-colors shadow-sm cursor-pointer"
                             >
                                 Mua ngay

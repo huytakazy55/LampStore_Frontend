@@ -13,8 +13,7 @@ import CategoryManage from '../../../../Services/CategoryManage';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../../CartContext';
 
-const Header = () =>
-{
+const Header = () => {
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
   const navigate = useNavigate();
   const { cartCount, cartTotal } = useCart();
@@ -43,39 +42,30 @@ const Header = () =>
   const searchRef = useRef(null);
   const avatarURL = useSelector((state) => state.avatar.avatar);
 
-  useEffect(() =>
-  {
-    if (token)
-    {
+  useEffect(() => {
+    if (token) {
       AuthService.profile()
-        .then((res) =>
-        {
+        .then((res) => {
           setAvatar({
             ProfileAvatar: res?.profileAvatar
           });
         })
-        .catch((error) =>
-        {
+        .catch((error) => {
           console.error("Error fetching profile:", error);
         });
-    } else
-    {
+    } else {
       setAvatar({ ProfileAvatar: '' });
     }
   }, [token]);
 
   // Fetch categories
-  useEffect(() =>
-  {
-    const fetchCategories = async () =>
-    {
-      try
-      {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
         const response = await CategoryManage.GetCategory();
         const categoriesData = response.data.$values || response.data || [];
         setCategories(categoriesData);
-      } catch (error)
-      {
+      } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
@@ -83,53 +73,43 @@ const Header = () =>
     fetchCategories();
   }, []);
 
-  const toggleLoginForm = () =>
-  {
+  const toggleLoginForm = () => {
     setToggleLogin(!toggleLogin);
   }
 
-  const toggleArrow = () =>
-  {
+  const toggleArrow = () => {
     setArrowIcon(!arrowIcon);
   };
 
-  const closeArrow = () =>
-  {
+  const closeArrow = () => {
     setArrowIcon(false);
   };
 
-  const toggleActionLoginForm = () =>
-  {
+  const toggleActionLoginForm = () => {
     setToggleActionLogin(!toggleActionLogin);
   }
 
-  const toggleFormcart = () =>
-  {
+  const toggleFormcart = () => {
     setToggleCart(!toggleCart);
   }
 
-  const toggleFormProfile = () =>
-  {
+  const toggleFormProfile = () => {
     setToggleProfile(!toggleProfile);
   }
 
-  const handleClickOutside = (event, ref, buttonRef, toggleFunction) =>
-  {
+  const handleClickOutside = (event, ref, buttonRef, toggleFunction) => {
     if (ref.current && !ref.current.contains(event.target) &&
-      buttonRef.current && !buttonRef.current.contains(event.target))
-    {
+      buttonRef.current && !buttonRef.current.contains(event.target)) {
       toggleFunction(false);
     }
   };
 
   // Xử lý tìm kiếm nhanh
-  const handleQuickSearch = async () =>
-  {
+  const handleQuickSearch = async () => {
     if (!searchKeyword.trim()) return;
 
     setIsSearching(true);
-    try
-    {
+    try {
       const result = await SearchService.quickSearch(searchKeyword);
 
       // Chuyển đến trang kết quả tìm kiếm
@@ -140,20 +120,16 @@ const Header = () =>
           categoryId: selectedCategory
         }
       });
-    } catch (error)
-    {
+    } catch (error) {
       console.error('Search error:', error);
-    } finally
-    {
+    } finally {
       setIsSearching(false);
     }
   };
 
   // Debounced search suggestions
-  const fetchSuggestions = useCallback(async (keyword) =>
-  {
-    if (!keyword.trim())
-    {
+  const fetchSuggestions = useCallback(async (keyword) => {
+    if (!keyword.trim()) {
       setSuggestions({ categories: [], products: [] });
       setShowSuggestions(false);
       return;
@@ -167,8 +143,7 @@ const Header = () =>
     ).slice(0, 3);
 
     // Fetch product suggestions from API
-    try
-    {
+    try {
       const result = await SearchService.quickSearch(keyword, 1, 5);
       const products = result?.$values || result?.products?.$values || result?.products || [];
       setSuggestions({
@@ -176,29 +151,25 @@ const Header = () =>
         products: Array.isArray(products) ? products.slice(0, 6) : []
       });
       setShowSuggestions(true);
-    } catch (error)
-    {
+    } catch (error) {
       setSuggestions({ categories: matchedCategories, products: [] });
       setShowSuggestions(matchedCategories.length > 0);
     }
   }, [categories]);
 
   // Handle input change with debounce
-  const handleSearchInputChange = (e) =>
-  {
+  const handleSearchInputChange = (e) => {
     const value = e.target.value;
     setSearchKeyword(value);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() =>
-    {
+    debounceRef.current = setTimeout(() => {
       fetchSuggestions(value);
     }, 300);
   };
 
   // Handle suggestion click - category
-  const handleCategorySuggestionClick = (category) =>
-  {
+  const handleCategorySuggestionClick = (category) => {
     setShowSuggestions(false);
     setSearchKeyword('');
     navigate('/search', {
@@ -210,50 +181,42 @@ const Header = () =>
   };
 
   // Handle suggestion click - product
-  const handleProductSuggestionClick = (product) =>
-  {
+  const handleProductSuggestionClick = (product) => {
     setShowSuggestions(false);
     setSearchKeyword(product.name || '');
     navigate(`/product/${product.id}`);
   };
 
   // Xử lý Enter key
-  const handleKeyDown = (e) =>
-  {
-    if (e.key === 'Enter')
-    {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
       setShowSuggestions(false);
       handleQuickSearch();
     }
   };
 
 
-  useEffect(() =>
-  {
-    const handleOutsideClick = (event) =>
-    {
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
       handleClickOutside(event, popupRef, buttonRef, setToggleCart);
       handleClickOutside(event, popupActionRef, buttonActionRef, setToggleActionLogin);
       handleClickOutside(event, popupProfileRef, buttonProfileRef, setToggleProfile);
 
       // Close suggestions when click outside
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&
-        searchRef.current && !searchRef.current.contains(event.target))
-      {
+        searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSuggestions(false);
       }
     };
 
     document.addEventListener('click', handleOutsideClick, true);
-    return () =>
-    {
+    return () => {
       document.removeEventListener('click', handleOutsideClick, true);
     };
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() =>
-  {
+  useEffect(() => {
     setMobileMenuOpen(false);
   }, [navigate]);
 
@@ -279,7 +242,7 @@ const Header = () =>
         <div className='hidden md:flex border-2 border-yellow-400 rounded-[30px] w-2/5 lg:w-1/2 h-11 relative' ref={searchRef}>
           {/* Input tìm kiếm */}
           <input
-            className='caret-y border-yellow-400 outline-0 border-0 w-3/5 py-[2px] px-[20px] h-full rounded-l-[28px]'
+            className='caret-y border-yellow-400 outline-0 border-0 w-3/4 py-[2px] px-[20px] h-full rounded-l-[28px]'
             type="text"
             placeholder='Tìm kiếm sản phẩm...'
             value={searchKeyword}
@@ -336,7 +299,7 @@ const Header = () =>
           )}
 
           {/* Dropdown danh mục */}
-          <div className='hidden lg:block w-2/5 h-full relative border-l border-gray-300'>
+          <div className='hidden lg:block w-1/4 h-full relative border-l border-gray-300'>
             <div
               className='flex items-center justify-between h-full px-4 cursor-pointer select-none hover:bg-gray-50 transition-colors duration-200'
               onClick={() => setArrowIcon(!arrowIcon)}

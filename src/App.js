@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import AdminDashboard from './components/admin/Dashboard/AdminDashboard/AdminDashboard';
 import ProtectedRoute from './utils/ProtectedRoute';
 import ProductDetail from './components/user/ProductDetailPage/ProductDetail';
+import CheckoutPage from './pages/CheckoutPage';
 import ChatButton from './components/user/Chat/ChatButton';
 import TokenExpiryWarning from './components/common/TokenExpiryWarning';
 import './App.css';
@@ -78,6 +79,7 @@ function AppContent()
           }
         />
         <Route path='/product/:id' element={<ProductDetail />} />
+        <Route path='/checkout' element={<CheckoutPage />} />
       </Routes>
 
       {/* Chat Button - chỉ hiển thị cho user đã login và không ở trang admin */}
