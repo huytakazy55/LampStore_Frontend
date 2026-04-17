@@ -13,12 +13,14 @@ import CategoryManage from '../../../../Services/CategoryManage';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../../CartContext';
 import { useWishlist } from '../../../../WishlistContext';
+import { useTheme } from '../../../../ThemeContext';
 
 const Header = () => {
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
   const navigate = useNavigate();
   const { cartCount, cartTotal } = useCart();
   const { wishlistCount } = useWishlist();
+  const { isDark, toggleDarkMode } = useTheme();
   const { token, isAuthenticated } = useSelector((state) => state.auth);
   const [toggleLogin, setToggleLogin] = useState(false);
   const [toggleActionLogin, setToggleActionLogin] = useState(false);
@@ -226,8 +228,20 @@ const Header = () => {
     <>
       <div className='w-full xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-16 md:h-28 px-4 xl:px-0'>
         {/* Logo */}
-        <div className='h-12 md:h-24 flex-shrink-0'>
-          <a href="/"><img className='h-full max-w-full' src={Logo} alt="Logo" /></a>
+        <div className='flex-shrink-0'>
+          <a href="/" className='flex items-center gap-2 no-underline group'>
+            <div className='w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-amber-300/50 transition-all duration-300 group-hover:scale-105'>
+              <i className='bx bx-bulb text-xl md:text-3xl text-white'></i>
+            </div>
+            <div className='hidden sm:block'>
+              <div className='text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white transition-colors duration-300'>
+                Capy<span className='text-amber-500'>Lumiere</span>
+              </div>
+              <div className='text-[9px] md:text-[10px] text-gray-400 dark:text-gray-500 font-medium tracking-[0.15em] uppercase -mt-1 transition-colors duration-300'>
+                Premium Lighting
+              </div>
+            </div>
+          </a>
         </div>
 
         {/* Mobile menu toggle */}
@@ -368,8 +382,15 @@ const Header = () => {
         </div>
 
         {/* Action icons - desktop */}
-        <div className='hidden md:block w-auto lg:w-1/5 text-black'>
+        <div className='hidden md:block w-auto lg:w-1/5 text-black dark:text-white'>
           <ul className='flex justify-end lg:justify-between items-center gap-3 lg:gap-0'>
+            {/* Dark mode toggle */}
+            <li className='relative cursor-pointer' onClick={toggleDarkMode}>
+              <div className='w-8 h-8 flex items-center justify-center rounded-full transition-all duration-500 hover:bg-amber-100 dark:hover:bg-gray-700'>
+                <i className={`bx ${isDark ? 'bx-sun text-amber-400' : 'bx-moon text-indigo-500'} text-xl transition-all duration-500`}
+                  style={{ transform: isDark ? 'rotate(360deg)' : 'rotate(0deg)' }}></i>
+              </div>
+            </li>
             <li className='group relative cursor-pointer' onClick={() => navigate('/wishlist')}>
               <i className='bx bx-heart text-h2 leading-none align-middle text-red-600 cursor-pointer transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
               {wishlistCount > 0 && (

@@ -6,29 +6,24 @@ import AddToCartModal from '../AddToCartModal';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) =>
-{
+const formatPrice = (price) => {
   if (!price) return '0';
   return price.toLocaleString('vi-VN');
 };
 
-const getImageSrc = (product) =>
-{
-  if (product.images && product.images.length > 0)
-  {
+const getImageSrc = (product) => {
+  if (product.images && product.images.length > 0) {
     const path = product.images[0].imagePath || product.images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
-  if (product.Images && product.Images.length > 0)
-  {
+  if (product.Images && product.Images.length > 0) {
     const path = product.Images[0].imagePath || product.Images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
   return defaultImg;
 };
 
-const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
-{
+const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
   const originalPrice = variant?.price || 0;
@@ -37,20 +32,19 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
 
   return (
     <div
-      className='relative group cursor-pointer bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 border border-gray-100'
+      className='relative group cursor-pointer bg-white rounded-sm overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 border border-gray-100'
       onClick={() => navigate(`/product/${product.id}`)}
     >
       {/* Discount Badge */}
       {hasDiscount && (
-        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg">
+        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
           -{discountPercent}%
         </div>
       )}
 
-      {/* Image Container */}
-      <div className='relative h-36 sm:h-44 md:h-52 bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4 overflow-hidden'>
+      <div className='relative h-36 sm:h-44 md:h-52 overflow-hidden'>
         <img
-          className='max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-110'
+          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
           src={getImageSrc(product)}
           alt={product.name}
           loading="lazy"
@@ -83,9 +77,8 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
             )}
           </div>
           <button
-            className='w-8 h-8 md:w-9 md:h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
-            onClick={(e) =>
-            {
+            className='w-8 h-8 md:w-9 md:h-9 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
+            onClick={(e) => {
               e.stopPropagation();
               onAddToCartClick(product);
             }}
@@ -98,8 +91,7 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
   );
 };
 
-const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
-{
+const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
   const originalPrice = variant?.price || 0;
@@ -108,12 +100,12 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
 
   return (
     <div
-      className='w-full lg:w-[33%] bg-white rounded-2xl overflow-hidden p-4 md:p-6 flex flex-col cursor-pointer group transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100'
+      className='w-full lg:w-[33%] bg-white rounded-sm overflow-hidden p-4 md:p-6 flex flex-col cursor-pointer group transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100'
       onClick={() => navigate(`/product/${product.id}`)}
     >
       {/* Discount Badge */}
       {hasDiscount && (
-        <div className="inline-flex self-start bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg mb-2">
+        <div className="inline-flex self-start bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg mb-2">
           -{discountPercent}%
         </div>
       )}
@@ -128,10 +120,9 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
         {product.name}
       </h3>
 
-      {/* Image */}
-      <div className='w-full h-48 md:h-[60%] flex justify-center items-center bg-gradient-to-b from-gray-50 to-white rounded-xl p-3 my-3 overflow-hidden'>
+      <div className='w-full h-48 md:h-[60%] overflow-hidden rounded-sm my-3'>
         <img
-          className='w-[85%] h-[85%] object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-110'
+          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
           src={getImageSrc(product)}
           alt={product.name}
           loading="lazy"
@@ -141,14 +132,13 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
 
       {/* Thumbnails */}
       <div className='flex gap-2 mb-3'>
-        {product.images && product.images.slice(0, 3).map((img, i) =>
-        {
+        {product.images && product.images.slice(0, 3).map((img, i) => {
           const path = img.imagePath || img.ImagePath;
           const src = path ? (path.startsWith('http') ? path : `${API_ENDPOINT}${path}`) : defaultImg;
           return (
             <img
               key={i}
-              className='w-12 h-12 md:w-16 md:h-16 border border-gray-200 rounded-lg object-contain hover:border-amber-400 transition-colors'
+              className='w-12 h-12 md:w-16 md:h-16 border border-gray-200 rounded-sm object-cover hover:border-amber-400 transition-colors'
               src={src}
               alt=""
               loading="lazy"
@@ -171,9 +161,8 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
           )}
         </div>
         <button
-          className='w-9 h-9 md:w-10 md:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
-          onClick={(e) =>
-          {
+          className='w-9 h-9 md:w-10 md:h-10 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
+          onClick={(e) => {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
@@ -185,8 +174,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
   );
 };
 
-const BestSeller = () =>
-{
+const BestSeller = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -194,20 +182,16 @@ const BestSeller = () =>
   const [cartModalProduct, setCartModalProduct] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() =>
-  {
-    const fetchProducts = async () =>
-    {
-      try
-      {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
         setLoading(true);
         const response = await ProductManage.GetProduct();
         const allProducts = response.data?.$values || response.data || [];
 
         const sorted = [...allProducts].sort((a, b) => (b.sellCount || 0) - (a.sellCount || 0));
 
-        const productsWithDetails = sorted.slice(0, 15).map((product) =>
-        {
+        const productsWithDetails = sorted.slice(0, 15).map((product) => {
           const variant = product.variant;
           const imgData = product.images?.$values || product.images;
           const images = Array.isArray(imgData) ? imgData : [];
@@ -222,11 +206,9 @@ const BestSeller = () =>
             .map(p => [p.category?.id || p.categoryId, p.category?.name || 'Khác'])
         ).entries()].map(([id, name]) => ({ id, name })).slice(0, 3);
         setCategories(cats);
-      } catch (error)
-      {
+      } catch (error) {
         console.error('Error fetching bestsellers:', error);
-      } finally
-      {
+      } finally {
         setLoading(false);
       }
     };
@@ -242,23 +224,19 @@ const BestSeller = () =>
   const featuredProduct = filteredProducts[8] || filteredProducts[0];
 
   // Timeout để tránh spinner vô hạn
-  useEffect(() =>
-  {
-    const timer = setTimeout(() =>
-    {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       if (loading) setLoading(false);
     }, 8000);
     return () => clearTimeout(timer);
   }, [loading]);
 
   // Ẩn hoàn toàn nếu không có data
-  if (!loading && products.length === 0)
-  {
+  if (!loading && products.length === 0) {
     return null;
   }
 
-  if (loading)
-  {
+  if (loading) {
     return (
       <div className='w-full py-8 md:py-16 bg-gray-100 flex justify-center items-center'>
         <div className="text-center">

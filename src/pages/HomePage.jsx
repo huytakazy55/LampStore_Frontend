@@ -9,7 +9,7 @@ import Footer from '../components/user/MainPage/Footer/Footer';
 import CustomScrollbar from '../utils/CustomScrollbar';
 import NotificationService from '../Services/NotificationService';
 import LazySection from '../components/common/LazySection';
-import BackToTop from '../components/common/BackToTop';
+import ScrollTimeline from '../components/common/ScrollTimeline';
 
 // === Code Splitting: Lazy load các component nặng ===
 // Chỉ load JS bundle khi component thực sự cần render
@@ -30,21 +30,16 @@ const SectionSpinner = ({ height = '200px' }) => (
   </div>
 );
 
-const HomePage = () =>
-{
-  useEffect(() =>
-  {
-    const initializeNotifications = async () =>
-    {
-      try
-      {
+const HomePage = () => {
+  useEffect(() => {
+    const initializeNotifications = async () => {
+      try {
         await NotificationService.setupSignalRNotifications();
         NotificationService.requestNotificationPermission();
         NotificationService.cleanOldNotifications();
 
         console.log('📢 HomePage: Notification system initialized for user');
-      } catch (error)
-      {
+      } catch (error) {
         console.error('❌ HomePage: Failed to initialize notifications:', error);
       }
     };
@@ -59,17 +54,24 @@ const HomePage = () =>
         <TopBar />
         <Header />
         <NavbarPrimary />
-        <SiteContent />
-        <BackToTop />
+
+        <div data-section="hero" data-label="Trang chủ">
+          <SiteContent />
+        </div>
+
+
+        <ScrollTimeline />
 
         {/* === BELOW THE FOLD: Lazy load khi scroll đến === */}
 
         {/* CategorySale - grid danh mục */}
-        <LazySection height="280px">
-          <Suspense fallback={<SectionSpinner height="280px" />}>
-            <CategorySale />
-          </Suspense>
-        </LazySection>
+        <div data-section="categories" data-label="Danh mục">
+          <LazySection height="280px">
+            <Suspense fallback={<SectionSpinner height="280px" />}>
+              <CategorySale />
+            </Suspense>
+          </LazySection>
+        </div>
 
         {/* FeatureList - nhẹ, load sớm */}
         <LazySection height="80px">
@@ -79,26 +81,31 @@ const HomePage = () =>
         </LazySection>
 
         {/* ProductCarousel - nặng, fetch products */}
-        <LazySection height="500px">
-          <Suspense fallback={<SectionSpinner height="500px" />}>
-            <ProductCarousel />
-          </Suspense>
-        </LazySection>
-
+        <div data-section="products" data-label="Sản phẩm">
+          <LazySection height="500px">
+            <Suspense fallback={<SectionSpinner height="500px" />}>
+              <ProductCarousel />
+            </Suspense>
+          </LazySection>
+        </div>
 
         {/* SectionProductCardCarousel */}
-        <LazySection height="400px">
-          <Suspense fallback={<SectionSpinner height="400px" />}>
-            <SectionProductCardCarousel />
-          </Suspense>
-        </LazySection>
+        <div data-section="trending" data-label="Xu hướng">
+          <LazySection height="400px">
+            <Suspense fallback={<SectionSpinner height="400px" />}>
+              <SectionProductCardCarousel />
+            </Suspense>
+          </LazySection>
+        </div>
 
         {/* BestSeller - nặng nhất, fetch nhiều data */}
-        <LazySection height="600px">
-          <Suspense fallback={<SectionSpinner height="600px" />}>
-            <BestSeller />
-          </Suspense>
-        </LazySection>
+        <div data-section="bestseller" data-label="Bán chạy">
+          <LazySection height="600px">
+            <Suspense fallback={<SectionSpinner height="600px" />}>
+              <BestSeller />
+            </Suspense>
+          </LazySection>
+        </div>
 
         {/* BannerImage - fetch banners */}
         <LazySection height="160px">
@@ -108,11 +115,13 @@ const HomePage = () =>
         </LazySection>
 
         {/* NewsSection - Blog & Tips */}
-        <LazySection height="450px">
-          <Suspense fallback={<SectionSpinner height="450px" />}>
-            <NewsSection />
-          </Suspense>
-        </LazySection>
+        <div data-section="news" data-label="Tin tức">
+          <LazySection height="450px">
+            <Suspense fallback={<SectionSpinner height="450px" />}>
+              <NewsSection />
+            </Suspense>
+          </LazySection>
+        </div>
 
         {/* BrandCarousel - nhẹ */}
         <LazySection height="112px">
@@ -128,7 +137,9 @@ const HomePage = () =>
           </Suspense>
         </LazySection>
 
-        <Footer />
+        <div data-section="footer" data-label="Cuối trang">
+          <Footer />
+        </div>
       </CustomScrollbar>
     </>
   );

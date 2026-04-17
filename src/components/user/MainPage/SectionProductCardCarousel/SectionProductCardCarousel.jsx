@@ -3,6 +3,7 @@ import Slider2 from "react-slick";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../../../../WishlistContext';
+import AddToCartModal from '../AddToCartModal';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
@@ -24,8 +25,7 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
-const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =>
-{
+const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist, onAddToCartClick }) => {
   const images = product.images?.$values || product.images || [];
   const firstImage = images.length > 0 ? images[0] : null;
   const imageSrc = firstImage
@@ -39,15 +39,14 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
   const hasDiscount = discountPrice > 0 && discountPrice < price;
   const discountPercent = hasDiscount ? Math.round((1 - discountPrice / price) * 100) : 0;
 
-  const formatPrice = (p) =>
-  {
+  const formatPrice = (p) => {
     if (!p) return '0';
     return new Intl.NumberFormat('vi-VN').format(p);
   };
 
   return (
     <div
-      className='!w-[98%] h-[12rem] md:h-[14rem] cursor-pointer relative m-1 group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300'
+      className='!w-[98%] h-[12rem] md:h-[14rem] cursor-pointer relative m-1 group bg-white rounded-sm overflow-hidden border border-gray-100 hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300'
       onClick={onClick}
     >
       <div className='flex gap-3 h-full'>
@@ -55,7 +54,7 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
         <div className='h-full aspect-square flex-shrink-0 bg-gradient-to-br from-gray-50 to-white flex items-center justify-center p-3 relative overflow-hidden'>
           {/* Discount Badge */}
           {hasDiscount && (
-            <div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md">
+            <div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-sm shadow-md">
               -{discountPercent}%
             </div>
           )}
@@ -93,7 +92,10 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
                 </div>
               )}
             </div>
-            <button className='w-7 h-7 md:w-8 md:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'>
+            <button
+              className='w-7 h-7 md:w-8 md:h-8 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
+              onClick={(e) => { e.stopPropagation(); onAddToCartClick && onAddToCartClick(product); }}
+            >
               <i className='bx bxs-cart-add text-sm md:text-base'></i>
             </button>
           </div>
@@ -112,19 +114,16 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist }) =
   );
 };
 
-const SectionProductCardCarousel = () =>
-{
+const SectionProductCardCarousel = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const [cartModalProduct, setCartModalProduct] = useState(null);
 
-  useEffect(() =>
-  {
-    const fetchBestSelling = async () =>
-    {
-      try
-      {
+  useEffect(() => {
+    const fetchBestSelling = async () => {
+      try {
         const response = await axios.get(`${API_ENDPOINT}/api/Products`);
         const allProducts = response.data?.$values || response.data || [];
 
@@ -135,11 +134,9 @@ const SectionProductCardCarousel = () =>
           .slice(0, 12);
 
         setProducts(sorted);
-      } catch (error)
-      {
+      } catch (error) {
         console.error('Error fetching best selling products:', error);
-      } finally
-      {
+      } finally {
         setLoading(false);
       }
     };
@@ -202,11 +199,18 @@ const SectionProductCardCarousel = () =>
                 onClick={() => navigate(`/product/${product.id}`)}
                 isInWishlist={isInWishlist(product.id)}
                 onToggleWishlist={toggleWishlist}
+                onAddToCartClick={setCartModalProduct}
               />
             ))}
           </Slider2>
         )}
       </div>
+
+      <AddToCartModal
+        isOpen={!!cartModalProduct}
+        onClose={() => setCartModalProduct(null)}
+        product={cartModalProduct}
+      />
     </div>
   )
 }

@@ -179,7 +179,7 @@ const TrendingProduct = () => {
                         {formatPrice(price)}<span>₫</span>
                       </div>
                       <div
-                        className='w-7 h-7 md:w-9 md:h-9 rounded-[50%] bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
+                        className='w-7 h-7 md:w-9 md:h-9 rounded-sm bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
                         onClick={(e) => {
                           e.stopPropagation();
                           setCartModalProduct(product);

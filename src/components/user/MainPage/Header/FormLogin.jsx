@@ -12,8 +12,7 @@ import GoogleSignIn from './GoogleSignIn';
 import ForgotPassword from '../../ForgotPassword/ForgotPassword';
 import { useCart } from '../../../../CartContext';
 
-const FormLogin = ({ toggleLogin, setToggleLogin }) =>
-{
+const FormLogin = ({ toggleLogin, setToggleLogin }) => {
     const dispatch = useDispatch();
     const { syncCartOnLogin } = useCart();
     const [stateSignin, setStateSignin] = useState({ username: '', password: '', rememberMe: false });
@@ -29,33 +28,26 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
     const role = useSelector((state) => state.auth.role);
     const navigate = useNavigate();
 
-    const showToast = (message, type = 'success') =>
-    {
-        if (type === 'success')
-        {
+    const showToast = (message, type = 'success') => {
+        if (type === 'success') {
             toast.success(message);
-        } else if (type === 'error')
-        {
+        } else if (type === 'error') {
             toast.error(message);
         }
     };
 
-    useEffect(() =>
-    {
-        if (role === 'Administrator')
-        {
+    useEffect(() => {
+        if (role === 'Administrator') {
             navigate('/admin');
         }
     }, [role, navigate]);
 
     // Load remembered username when component mounts
-    useEffect(() =>
-    {
+    useEffect(() => {
         const rememberedUsername = localStorage.getItem('rememberedUsername');
         const isRemembered = localStorage.getItem('rememberMe') === 'true';
 
-        if (rememberedUsername && isRemembered)
-        {
+        if (rememberedUsername && isRemembered) {
             setStateSignin(prevState => ({
                 ...prevState,
                 username: rememberedUsername,
@@ -65,8 +57,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
         }
     }, []);
 
-    const ChangeFormLogin = () =>
-    {
+    const ChangeFormLogin = () => {
         setChangeForm(!changeForm);
         // Reset form errors when switching forms
         setFormErrors({});
@@ -78,8 +69,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
         setFocusPasswordSignup(false);
     }
 
-    const handleModalClose = () =>
-    {
+    const handleModalClose = () => {
         setToggleLogin(false);
         // Reset forms when modal closes
         setChangeForm(false);
@@ -94,67 +84,55 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
         const rememberedUsername = localStorage.getItem('rememberedUsername');
         const isRemembered = localStorage.getItem('rememberMe') === 'true';
 
-        if (rememberedUsername && isRemembered)
-        {
+        if (rememberedUsername && isRemembered) {
             setStateSignin(prevState => ({
                 ...prevState,
                 username: rememberedUsername,
                 rememberMe: true
             }));
             setIsRememberedAccount(true);
-        } else
-        {
+        } else {
             setStateSignin({ username: '', password: '', rememberMe: false });
             setIsRememberedAccount(false);
         }
         setStateSignup({ username: '', email: '', password: '' });
     }
 
-    const togglePasswordLoginVisibility = () =>
-    {
+    const togglePasswordLoginVisibility = () => {
         setShowPasswordLogin(!showPasswordLogin);
     };
 
-    const togglePasswordSignupVisibility = () =>
-    {
+    const togglePasswordSignupVisibility = () => {
         setShowPasswordSignup(!showPasswordSignup);
     };
 
-    const handlePasswordLoginFocus = () =>
-    {
+    const handlePasswordLoginFocus = () => {
         setFocusPasswordLogin(true);
     };
 
-    const handlePasswordLoginBlur = () =>
-    {
+    const handlePasswordLoginBlur = () => {
         setFocusPasswordLogin(false);
     };
 
-    const handlePasswordSignupFocus = () =>
-    {
+    const handlePasswordSignupFocus = () => {
         setFocusPasswordSignup(true);
     };
 
-    const handlePasswordSignupBlur = () =>
-    {
+    const handlePasswordSignupBlur = () => {
         setFocusPasswordSignup(false);
     };
 
-    const handleForgotPasswordClick = (e) =>
-    {
+    const handleForgotPasswordClick = (e) => {
         e.preventDefault();
         setShowForgotPassword(true);
     };
 
-    const handleForgotPasswordClose = () =>
-    {
+    const handleForgotPasswordClose = () => {
         setShowForgotPassword(false);
     };
 
-    const handleGoogleLoginSuccess = async (googleUserData) =>
-    {
-        try
-        {
+    const handleGoogleLoginSuccess = async (googleUserData) => {
+        try {
             // Gọi API backend để xử lý Google login
             const response = await AuthService.googleSignIn(googleUserData);
             const tokenResponse = response.data;
@@ -169,109 +147,88 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
 
             handleModalClose();
 
-            if (tokenResponse && tokenResponse.accessToken)
-            {
+            if (tokenResponse && tokenResponse.accessToken) {
                 const decoded = jwtDecode(tokenResponse.accessToken);
                 dispatch(loginAction({ token: tokenResponse.accessToken, role: decoded.role }));
                 // Sync giỏ hàng localStorage → backend
                 await syncCartOnLogin();
             }
-        } catch (error)
-        {
+        } catch (error) {
             console.error('Google login error:', error);
             showToast('Đăng nhập Google thất bại!', 'error');
         }
     };
 
-    const handleGoogleLoginError = (error) =>
-    {
+    const handleGoogleLoginError = (error) => {
         console.error('Google login error:', error);
         showToast('Có lỗi xảy ra khi đăng nhập Google!', 'error');
     };
 
-    const validateFormSignin = () =>
-    {
+    const validateFormSignin = () => {
         let errors = {};
-        if (!stateSignin.username)
-        {
+        if (!stateSignin.username) {
             errors.username = 'Username is required';
         }
-        if (!stateSignin.password)
-        {
+        if (!stateSignin.password) {
             errors.password = 'Password is required';
         }
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
-    const validateFormSignup = () =>
-    {
+    const validateFormSignup = () => {
         let errors = {};
-        if (!stateSignup.username)
-        {
+        if (!stateSignup.username) {
             errors.username = 'Tên đăng nhập là bắt buộc';
         }
-        if (!stateSignup.email)
-        {
+        if (!stateSignup.email) {
             errors.email = 'Email là bắt buộc';
-        } else if (!/\S+@\S+\.\S+/.test(stateSignup.email))
-        {
+        } else if (!/\S+@\S+\.\S+/.test(stateSignup.email)) {
             errors.email = 'Email không hợp lệ';
         }
-        if (!stateSignup.password)
-        {
+        if (!stateSignup.password) {
             errors.password = 'Mật khẩu là bắt buộc';
-        } else if (stateSignup.password.length < 6)
-        {
+        } else if (stateSignup.password.length < 6) {
             errors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
         }
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
-    const handleSignin = (e) =>
-    {
+    const handleSignin = (e) => {
         e.preventDefault();
 
-        if (validateFormSignin())
-        {
+        if (validateFormSignin()) {
             AuthService.signin(stateSignin.username, stateSignin.password, stateSignin.rememberMe)
-                .then((res) =>
-                {
+                .then((res) => {
                     const tokenResponse = res.data;
 
                     showToast('Đăng nhập thành công!');
                     window.dispatchEvent(new Event('userLoginStatusChanged'));
 
                     // Handle Remember Me functionality
-                    if (stateSignin.rememberMe)
-                    {
+                    if (stateSignin.rememberMe) {
                         localStorage.setItem('rememberedUsername', stateSignin.username);
                         localStorage.setItem('rememberMe', 'true');
-                    } else
-                    {
+                    } else {
                         localStorage.removeItem('rememberedUsername');
                         localStorage.removeItem('rememberMe');
                     }
 
                     handleModalClose();
 
-                    if (tokenResponse && tokenResponse.accessToken)
-                    {
+                    if (tokenResponse && tokenResponse.accessToken) {
                         const decoded = jwtDecode(tokenResponse.accessToken);
                         dispatch(loginAction({ token: tokenResponse.accessToken, role: decoded.role }));
                         // Sync giỏ hàng localStorage → backend
                         syncCartOnLogin();
                     }
                 })
-                .catch((err) =>
-                {
-                    if (err.response)
-                    {
+                .catch((err) => {
+                    if (err.response) {
                         const errorMessage = err.response.data || "Có lỗi xảy ra!";
                         showToast(errorMessage, "error");
-                    } else
-                    {
+                    } else {
                         console.log(err);
                         showToast("Không thể kết nối tới máy chủ. Vui lòng thử lại sau.", "error");
                     }
@@ -279,29 +236,24 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
         }
     };
 
-    const handleSignup = (e) =>
-    {
+    const handleSignup = (e) => {
         e.preventDefault();
-        if (validateFormSignup())
-        {
+        if (validateFormSignup()) {
             AuthService.signup(stateSignup.username, stateSignup.email, stateSignup.password)
-                .then((res) =>
-                {
+                .then((res) => {
                     showToast('Đăng ký thành công!');
                     // Reset form after successful signup
                     setStateSignup({ username: '', email: '', password: '' });
                     setChangeForm(false); // Switch back to login form
                 })
-                .catch((err) =>
-                {
+                .catch((err) => {
                     const errorMessage = err.response?.data?.errors?.$values?.[0] || err.response?.data || "Có lỗi xảy ra khi đăng ký!";
                     showToast(errorMessage, "error");
                 });
         }
     }
 
-    const HandleOnChangeStateSignin = (e) =>
-    {
+    const HandleOnChangeStateSignin = (e) => {
         const { name, value, type, checked } = e.target;
         setStateSignin((prevState) => ({
             ...prevState,
@@ -309,19 +261,16 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
         }));
 
         // Handle Remember Me checkbox change
-        if (name === 'rememberMe' && !checked)
-        {
+        if (name === 'rememberMe' && !checked) {
             // If unchecking Remember Me, remove stored credentials
             localStorage.removeItem('rememberedUsername');
             localStorage.removeItem('rememberMe');
         }
 
         // Reset remembered account indicator when username is manually changed
-        if (name === 'username' && isRememberedAccount)
-        {
+        if (name === 'username' && isRememberedAccount) {
             const rememberedUsername = localStorage.getItem('rememberedUsername');
-            if (value !== rememberedUsername)
-            {
+            if (value !== rememberedUsername) {
                 setIsRememberedAccount(false);
             }
         }
@@ -332,8 +281,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
         }));
     }
 
-    const HandleOnChangeStateSignup = (e) =>
-    {
+    const HandleOnChangeStateSignup = (e) => {
         const { name, value } = e.target;
         setStateSignup((prevState) => ({
             ...prevState,
@@ -363,6 +311,28 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) =>
                     }
                     .login-modal input {
                         color: white !important;
+                        background: transparent !important;
+                        border: none !important;
+                        outline: none !important;
+                        box-shadow: none !important;
+                        -webkit-box-shadow: none !important;
+                    }
+                    .login-modal input:-webkit-autofill,
+                    .login-modal input:-webkit-autofill:hover,
+                    .login-modal input:-webkit-autofill:focus,
+                    .login-modal input:-webkit-autofill:active {
+                        -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+                        box-shadow: 0 0 0 1000px transparent inset !important;
+                        -webkit-text-fill-color: white !important;
+                        background-color: transparent !important;
+                        background-clip: text !important;
+                        -webkit-background-clip: text !important;
+                        transition: background-color 5000s ease-in-out 0s !important;
+                    }
+                    .login-modal input:focus {
+                        outline: none !important;
+                        border: none !important;
+                        box-shadow: none !important;
                     }
                     .login-modal .ant-modal-mask {
                         background: rgba(0, 0, 0, 0.5) !important;

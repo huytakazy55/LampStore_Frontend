@@ -8,9 +8,10 @@ Scrollbar.use(OverscrollPlugin);
 const CustomScrollbar = ({ children }) => {
   const scrollbarRef = useRef(null);
   const [scrollContainer, setScrollContainer] = useState(null);
+  const [scrollbarInstance, setScrollbarInstance] = useState(null);
 
   useEffect(() => {
-    const scrollbarInstance = Scrollbar.init(scrollbarRef.current, {
+    const instance = Scrollbar.init(scrollbarRef.current, {
       damping: 0.05,
       delegateTo: document.body,
       plugins: {
@@ -22,10 +23,21 @@ const CustomScrollbar = ({ children }) => {
       },
     });
 
-    // Lưu scroll container element để chia sẻ qua context
-    // smooth-scrollbar tạo .scroll-content bên trong
+    // Store both the element and the Scrollbar instance
     const contentEl = scrollbarRef.current?.querySelector('.scroll-content') || scrollbarRef.current;
     setScrollContainer(contentEl);
+    setScrollbarInstance(instance);
+
+    // Dispatch custom scroll events so child components can listen
+    instance.addListener((status) => {
+      const event = new CustomEvent('smoothscroll', {
+        detail: {
+          offset: status.offset,
+          limit: status.limit,
+        },
+      });
+      window.dispatchEvent(event);
+    });
 
     const cartModal = document.querySelector('.cart-modal');
     if (cartModal) {
@@ -36,7 +48,7 @@ const CustomScrollbar = ({ children }) => {
       if (cartModal) {
         cartModal.removeEventListener('wheel', (e) => e.stopPropagation());
       }
-      scrollbarInstance.destroy();
+      instance.destroy();
     };
   }, []);
 

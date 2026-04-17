@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 const plugin = require("tailwindcss/plugin");
 export default {
+  darkMode: 'class',
   content: ["./src/**/*.{js,jsx,ts,tsx}"], // Đảm bảo Tailwind quét tất cả file React
   theme: {
     extend: {
@@ -33,7 +34,7 @@ export default {
     },
   },
   plugins: [
-    plugin(function({ addUtilities }) {
+    plugin(function ({ addUtilities }) {
       addUtilities({
         '.clip-custom': {
           'clip-path': 'polygon(150% 0, 0 125%, 100% 100%)',

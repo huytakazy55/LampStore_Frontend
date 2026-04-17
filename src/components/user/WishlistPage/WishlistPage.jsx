@@ -102,20 +102,20 @@ const WishlistPage = () => {
                         <i className='bx bxs-heart text-rose-500 mr-2'></i>
                         Danh sách yêu thích
                     </h1>
-                    <span className='bg-rose-100 text-rose-600 text-sm px-3 py-0.5 rounded-full font-medium'>
+                    <span className='bg-rose-100 text-rose-600 text-sm px-3 py-0.5 rounded-sm font-medium'>
                         {wishlistItems.length} sản phẩm
                     </span>
                 </div>
 
                 {wishlistItems.length === 0 ? (
                     /* Empty State */
-                    <div className='w-full py-16 flex flex-col items-center justify-center bg-white rounded-lg shadow-sm'>
+                    <div className='w-full py-16 flex flex-col items-center justify-center bg-white rounded-sm shadow-sm'>
                         <i className='bx bx-heart text-7xl text-gray-300 mb-4'></i>
                         <h2 className='text-lg font-medium text-gray-600 mb-2'>Chưa có sản phẩm yêu thích</h2>
                         <p className='text-sm text-gray-400 mb-6'>Hãy khám phá và thêm sản phẩm bạn yêu thích!</p>
                         <button
                             onClick={() => navigate('/')}
-                            className='bg-rose-600 text-white px-6 py-2.5 rounded-md hover:bg-rose-700 transition font-medium cursor-pointer'
+                            className='bg-rose-600 text-white px-6 py-2.5 rounded-sm hover:bg-rose-700 transition font-medium cursor-pointer'
                         >
                             <i className='bx bx-store mr-1'></i> Khám phá sản phẩm
                         </button>
@@ -133,7 +133,7 @@ const WishlistPage = () => {
                                 : 0;
 
                             return (
-                                <div key={item.id} className='bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow'>
+                                <div key={item.id} className='bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-shadow'>
                                     {/* Image */}
                                     <div
                                         className='relative h-48 bg-gray-50 flex items-center justify-center cursor-pointer overflow-hidden'
@@ -156,7 +156,7 @@ const WishlistPage = () => {
                                                 e.stopPropagation();
                                                 handleRemove(item.productId);
                                             }}
-                                            className='absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-rose-50 rounded-full flex items-center justify-center shadow-sm transition-colors cursor-pointer'
+                                            className='absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-rose-50 rounded-sm flex items-center justify-center shadow-sm transition-colors cursor-pointer'
                                             title="Xóa khỏi yêu thích"
                                         >
                                             <i className='bx bxs-heart text-rose-500 text-lg'></i>
@@ -197,14 +197,14 @@ const WishlistPage = () => {
                                         <div className='flex gap-2'>
                                             <button
                                                 onClick={() => handleAddToCart(item)}
-                                                className='flex-1 flex items-center justify-center gap-1 bg-rose-50 border border-rose-600 text-rose-600 py-2 rounded-md hover:bg-rose-100 transition-colors text-sm font-medium cursor-pointer'
+                                                className='flex-1 flex items-center justify-center gap-1 bg-rose-50 border border-rose-600 text-rose-600 py-2 rounded-sm hover:bg-rose-100 transition-colors text-sm font-medium cursor-pointer'
                                             >
                                                 <i className='bx bx-cart-add text-lg'></i>
                                                 Thêm vào giỏ
                                             </button>
                                             <button
                                                 onClick={() => navigate(`/product/${item.productId}`)}
-                                                className='flex-1 bg-rose-600 text-white py-2 rounded-md hover:bg-rose-700 transition-colors text-sm font-medium cursor-pointer'
+                                                className='flex-1 bg-rose-600 text-white py-2 rounded-sm hover:bg-rose-700 transition-colors text-sm font-medium cursor-pointer'
                                             >
                                                 Mua ngay
                                             </button>
