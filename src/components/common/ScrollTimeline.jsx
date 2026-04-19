@@ -31,36 +31,43 @@ const TIMELINE_TOP = 12.5; // vh
 const TIMELINE_BOTTOM = 87.5; // vh
 const TIMELINE_RANGE = TIMELINE_BOTTOM - TIMELINE_TOP; // 75vh
 
-const ScrollTimeline = () => {
+const ScrollTimeline = () =>
+{
     const progressLineRef = useRef(null);
     const dotRefs = useRef({});
     const containerRef = useRef(null);
     const sectionIds = Object.keys(SECTION_ICONS);
 
     // Get smooth-scrollbar instance
-    const getScrollbarInstance = useCallback(() => {
-        try {
+    const getScrollbarInstance = useCallback(() =>
+    {
+        try
+        {
             const Scrollbar = require('smooth-scrollbar').default;
             const instances = Scrollbar.getAll();
             return instances.length > 0 ? instances[0] : null;
-        } catch (e) {
+        } catch (e)
+        {
             return null;
         }
     }, []);
 
     // Direct DOM update — no React state, no re-render, instant
-    const updateTimeline = useCallback((scrollY, limit, viewportH) => {
+    const updateTimeline = useCallback((scrollY, limit, viewportH) =>
+    {
         const contentH = limit + viewportH;
         const progress = limit > 0 ? Math.min(scrollY / limit, 1) : 0;
 
         // Update progress line immediately via DOM
-        if (progressLineRef.current) {
+        if (progressLineRef.current)
+        {
             progressLineRef.current.style.clipPath = `inset(0 0 ${100 - progress * 100}% 0)`;
         }
 
         // Update dots based on progress line position (not viewport)
         const count = sectionIds.length;
-        sectionIds.forEach((sectionId, idx) => {
+        sectionIds.forEach((sectionId, idx) =>
+        {
             const dotEl = dotRefs.current[sectionId];
             if (!dotEl) return;
 
@@ -79,35 +86,46 @@ const ScrollTimeline = () => {
             const label = dotEl.querySelector('.timeline-label');
             const pulse = dotEl.querySelector('.timeline-pulse');
 
-            if (dot) {
-                if (isActive || isLastActive) {
+            if (dot)
+            {
+                if (isActive || isLastActive)
+                {
                     dot.className = 'timeline-dot w-7 h-7 rounded-full flex items-center justify-center border-2 bg-amber-500 border-amber-400 scale-110 shadow-lg shadow-amber-300/50';
-                } else if (isReached) {
+                } else if (isReached)
+                {
                     dot.className = 'timeline-dot w-7 h-7 rounded-full flex items-center justify-center border-2 bg-amber-500 border-amber-400';
-                } else {
+                } else
+                {
                     dot.className = 'timeline-dot w-7 h-7 rounded-full flex items-center justify-center border-2 bg-white border-gray-300';
                 }
             }
-            if (icon) {
+            if (icon)
+            {
                 icon.style.color = isReached ? 'white' : '#9ca3af';
             }
-            if (label) {
+            if (label)
+            {
                 // Only show on hover (handled by CSS group-hover)
                 label.style.opacity = '';
             }
-            if (pulse) {
+            if (pulse)
+            {
                 pulse.style.display = (isActive || isLastActive) ? 'block' : 'none';
             }
         });
     }, [sectionIds]);
 
-    useEffect(() => {
+    useEffect(() =>
+    {
         let cleanupSmoothScroll = null;
 
-        const tryAttach = () => {
+        const tryAttach = () =>
+        {
             const sb = getScrollbarInstance();
-            if (sb) {
-                const listener = (status) => {
+            if (sb)
+            {
+                const listener = (status) =>
+                {
                     updateTimeline(status.offset.y, status.limit.y, sb.size.container.height);
                 };
                 sb.addListener(listener);
@@ -118,7 +136,8 @@ const ScrollTimeline = () => {
             return false;
         };
 
-        const handleNativeScroll = () => {
+        const handleNativeScroll = () =>
+        {
             const scrollY = window.pageYOffset || 0;
             const viewportH = window.innerHeight;
             const contentH = document.documentElement.scrollHeight;
@@ -127,18 +146,22 @@ const ScrollTimeline = () => {
         };
 
         const hasSB = tryAttach();
-        if (!hasSB) {
+        if (!hasSB)
+        {
             window.addEventListener('scroll', handleNativeScroll, { passive: true });
             handleNativeScroll();
         }
 
-        const retryTimer = !hasSB ? setTimeout(() => {
-            if (tryAttach()) {
+        const retryTimer = !hasSB ? setTimeout(() =>
+        {
+            if (tryAttach())
+            {
                 window.removeEventListener('scroll', handleNativeScroll);
             }
         }, 1500) : null;
 
-        return () => {
+        return () =>
+        {
             if (cleanupSmoothScroll) cleanupSmoothScroll();
             window.removeEventListener('scroll', handleNativeScroll);
             if (retryTimer) clearTimeout(retryTimer);
@@ -146,22 +169,26 @@ const ScrollTimeline = () => {
     }, [getScrollbarInstance, updateTimeline]);
 
     // Click to scroll to section
-    const scrollToSection = useCallback((sectionId) => {
+    const scrollToSection = useCallback((sectionId) =>
+    {
         const el = document.querySelector(`[data-section="${sectionId}"]`);
         if (!el) return;
 
         const sb = getScrollbarInstance();
-        if (sb) {
+        if (sb)
+        {
             const rect = el.getBoundingClientRect();
             const targetY = sb.offset.y + rect.top - 80;
             sb.scrollTo(0, targetY, 600);
-        } else {
+        } else
+        {
             el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, [getScrollbarInstance]);
 
     // Calculate dot positions based on equal spacing
-    const getDotTop = (idx) => {
+    const getDotTop = (idx) =>
+    {
         const count = sectionIds.length;
         if (count <= 1) return TIMELINE_TOP;
         return TIMELINE_TOP + (idx / (count - 1)) * TIMELINE_RANGE;
@@ -170,9 +197,9 @@ const ScrollTimeline = () => {
     return createPortal(
         <div
             ref={containerRef}
-            className="fixed top-0 z-[55] pointer-events-none hidden xl:block"
+            className="fixed top-20 z-[55] pointer-events-none hidden xl:block"
             style={{
-                right: '100px',
+                left: 'max(16px, calc((100vw - 1440px) / 2 - 100px))',
                 height: '100vh',
                 width: '40px',
             }}
@@ -200,7 +227,8 @@ const ScrollTimeline = () => {
             />
 
             {/* Section dots */}
-            {sectionIds.map((id, idx) => {
+            {sectionIds.map((id, idx) =>
+            {
                 const dotTop = getDotTop(idx);
                 const icon = SECTION_ICONS[id];
                 const label = SECTION_LABELS[id];
@@ -220,11 +248,11 @@ const ScrollTimeline = () => {
 
                         {/* Tooltip label */}
                         <div
-                            className="timeline-label absolute right-full mr-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-900 text-white text-[10px] font-medium px-2.5 py-1 rounded-sm opacity-0 group-hover:opacity-100 pointer-events-none"
+                            className="timeline-label absolute left-full ml-3 top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-900 text-white text-[10px] font-medium px-2.5 py-1 rounded-sm opacity-0 group-hover:opacity-100 pointer-events-none"
                             style={{ transition: 'opacity 0.15s' }}
                         >
                             {label}
-                            <div className="absolute left-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-l-[4px] border-t-transparent border-b-transparent border-l-gray-900" />
+                            <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-[4px] border-b-[4px] border-r-[4px] border-t-transparent border-b-transparent border-r-gray-900" />
                         </div>
 
                         {/* Active pulse */}

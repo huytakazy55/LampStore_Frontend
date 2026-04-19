@@ -1,29 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import AuthService from '../../../../Services/AuthService';
 
-const TopBar = () => {
+const TopBar = () =>
+{
     const [name, setName] = useState('');
     const token = localStorage.getItem('token');
-    useEffect(() => {
-        if (token) {
+    useEffect(() =>
+    {
+        if (token)
+        {
             AuthService.profile()
-            .then((res) => {
-                setName(res.fullName);
-            })
-            .catch((error) => {
-                console.error("Error fetching profile:", error);
-            });
+                .then((res) =>
+                {
+                    setName(res.fullName);
+                })
+                .catch((error) =>
+                {
+                    console.error("Error fetching profile:", error);
+                });
         }
     }, [token]);
     return (
-        <div className='h-10 md:h-12 bg-gray-100 border-b border-gray-300'> 
-            <nav className='xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full px-4 xl:px-0'> 
+        <div className='h-10 md:h-12 bg-gray-100 border-b border-gray-300'>
+            <nav className='xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full px-4 xl:px-0'>
                 <div className='hidden sm:block'>
-                    <p className='text-xs md:text-sm'>Welcome to Worldwide Lamp Store</p>
+                    <p className='text-xs md:text-sm'>Welcome to CapyLumine</p>
                 </div>
                 {/* Mobile: chỉ hiện Welcome ngắn */}
                 <div className='sm:hidden'>
-                    <p className='text-xs'>Welcome to Lamp Store</p>
+                    <p className='text-xs'>Welcome to CapyLumine</p>
                 </div>
                 <div>
                     <ul className='flex justify-between gap-2 md:gap-4 text-xs md:text-sm'>
@@ -38,7 +43,7 @@ const TopBar = () => {
                 </div>
             </nav>
         </div>
-        )
-    }
+    )
+}
 
 export default TopBar

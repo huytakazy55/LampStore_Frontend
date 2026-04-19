@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom';
 import { useDispatch } from 'react-redux';
 import { setAvatar } from '../../../../redux/slices/avatarSlice';
 import avatar from '../../../../assets/images/Avatar.jpg'
@@ -8,7 +9,8 @@ import { jwtDecode } from 'jwt-decode'
 import { toast } from 'react-toastify'
 import Compressor from 'compressorjs';
 
-const FormProfile = ({popupProfileRef, toggleProfile}) => {
+const FormProfile = ({ popupProfileRef, toggleProfile, setToggleProfile }) =>
+{
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
@@ -26,10 +28,13 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
 
   const [previewImage, setPreviewImage] = useState('');
 
-  useEffect(() => {
-    if(toggleProfile && token) {
+  useEffect(() =>
+  {
+    if (toggleProfile && token)
+    {
       AuthService.profile()
-        .then((res) => {
+        .then((res) =>
+        {
           const userId = jwtDecode(token).nameid;
           setProfileData({
             id: res?.id,
@@ -41,179 +46,273 @@ const FormProfile = ({popupProfileRef, toggleProfile}) => {
             ProfileAvatar: res?.profileAvatar
           });
         })
-        .catch((error) => {
+        .catch((error) =>
+        {
           console.error("Error fetching profile:", error);
         });
     }
   }, [toggleProfile]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e) =>
+  {
     e.preventDefault();
- 
-    if(profileData.id) {
+
+    if (profileData.id)
+    {
       ProfileService.UpdateUserProfile(profileData.id, profileData.FullName, profileData.UserId, profileData.Email, profileData.PhoneNumber, profileData.Address)
-        .then((response) => {
+        .then((response) =>
+        {
           toast.success("Đã cập nhật thông tin hồ sơ.");
           console.log(response.data);
         })
-        .catch((error) => {
+        .catch((error) =>
+        {
           toast.error("Lỗi cập nhật hồ sơ.")
           console.log(error);
         });
-    } else {
+    } else
+    {
       ProfileService.CreateUserProfile(profileData.FullName, profileData.UserId, profileData.Email, profileData.PhoneNumber, profileData.Address)
-      .then((res) => {
-        toast.success("Thêm mới hồ sơ thành công.");
-      })
-      .catch((err) => {
-        toast.error("Có lỗi xảy ra khi thêm mới hồ sơ.");
-      })
+        .then((res) =>
+        {
+          toast.success("Thêm mới hồ sơ thành công.");
+        })
+        .catch((err) =>
+        {
+          toast.error("Có lỗi xảy ra khi thêm mới hồ sơ.");
+        })
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e) =>
+  {
     const { name, value } = e.target;
     setProfileData({ ...profileData, [name]: value });
   };
 
-  const handleDeleteAvatar = (e) => {
+  const handleDeleteAvatar = (e) =>
+  {
     e.preventDefault();
-    if(profileData.ProfileAvatar) {
+    if (profileData.ProfileAvatar)
+    {
       ProfileService.DeleteAvatar(profileData.id)
-      .then((res) => {
-        toast.success("Đã xóa ảnh đại diện.");
-        dispatch(setAvatar(''));
-        setPreviewImage(null);
-        profileData.ProfileAvatar = '';
-      })
-      .catch((err) => {
-        toast.error("Có lỗi xảy ra.");
-      })
-    }else {
+        .then((res) =>
+        {
+          toast.success("Đã xóa ảnh đại diện.");
+          dispatch(setAvatar(''));
+          setPreviewImage(null);
+          profileData.ProfileAvatar = '';
+        })
+        .catch((err) =>
+        {
+          toast.error("Có lỗi xảy ra.");
+        })
+    } else
+    {
       toast.error("Không tồn tại ảnh đại diện.");
     }
   }
 
-
-  const handleInfoSideActive = (tab) => {
-    setInfoSideActive(tab);
-  }
-
-  const handleFileChange = (e) => {
+  const handleFileChange = (e) =>
+  {
     const file = e.target.files[0];
-    const maxSize = 1 * 1024 * 1024; // 1MB
-  
-    if (file) {
-      if (file.size > maxSize) {
+    const maxSize = 1 * 1024 * 1024;
+
+    if (file)
+    {
+      if (file.size > maxSize)
+      {
         toast.error("Kích thước ảnh phải nhỏ hơn 1MB.");
         return;
       }
-  
-      // Sử dụng Compressor.js để nén ảnh
+
       new Compressor(file, {
-        quality: 0.8, // Chất lượng ảnh nén từ 0 đến 1
-        maxWidth: 500, // Độ rộng tối đa của ảnh nén
-        maxHeight: 500, // Độ cao tối đa của ảnh nén
-        success(result) {
-          // Nén ảnh thành công
+        quality: 0.8,
+        maxWidth: 500,
+        maxHeight: 500,
+        success(result)
+        {
           const formData = new FormData();
           formData.append('ProfileAvatar', result, result.name);
 
           ProfileService.UploadAvatar(profileData.id, formData)
-            .then((response) => {
+            .then((response) =>
+            {
               const avatarURL = URL.createObjectURL(result);
               setPreviewImage(avatarURL);
               toast.success("Upload ảnh đại diện thành công.");
               dispatch(setAvatar(avatarURL));
             })
-            .catch((error) => {
+            .catch((error) =>
+            {
               toast.error("Upload ảnh không thành công.");
             });
         },
-        error(err) {
-          // Xử lý lỗi nén ảnh
+        error(err)
+        {
           toast.error("Có lỗi xảy ra khi nén ảnh.");
         }
       });
     }
   };
 
-  return (
-    <div ref={popupProfileRef} onClick={(e) => e.stopPropagation()} className={`w-[70rem] h-[35rem] absolute left-1/2 top-[10rem] z-[1000] border-t-2 border-yellow-400 translate-x-[-50%] transition-all duration-300 ease-in-out flex justify-between  ${toggleProfile ? 'visible opacity-100 translate-y-0' : 'invisible opacity-0 translate-y-[1rem]'}`}>
-        <div className='w-[29%] h-[80%] shadow-sm bg-white text-center p-8'>
-          <p className='font-bold text-h3 mb-4'>{profileData.FullName ? profileData.FullName : "--"}</p>
-          <div className='relative'>
-            <div className='w-40 h-40 rounded-[50%] overflow-hidden border-2 border-yellow-400 p-[5px] mx-auto relative'>
-              <img className='w-full h-full rounded-[50%]' src={previewImage ? previewImage : (profileData.ProfileAvatar ? (profileData.ProfileAvatar.startsWith('http') ? profileData.ProfileAvatar : `${API_ENDPOINT}${profileData.ProfileAvatar}`) : avatar)} alt="Avatar" />
-            </div>
-            <div className='absolute w-[35px] h-[35px] top-[0.6rem] right-[3.5rem] bg-white border-2 border-yellow-400 rounded-[50%] text-[var(--darkness-color)]' onClick={(e) => handleDeleteAvatar(e)} ><a href='#'><i className='bx bx-trash text-h2 leading-[1.3] align-middle'></i></a></div>
+  const avatarSrc = previewImage
+    ? previewImage
+    : profileData.ProfileAvatar
+      ? (profileData.ProfileAvatar.startsWith('http') ? profileData.ProfileAvatar : `${API_ENDPOINT}${profileData.ProfileAvatar}`)
+      : avatar;
+
+  return ReactDOM.createPortal(
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center transition-all duration-300 ${toggleProfile ? 'visible opacity-100' : 'invisible opacity-0 pointer-events-none'}`}>
+      {/* Backdrop */}
+      <div className='absolute inset-0 bg-black/40 backdrop-blur-sm' onClick={() => setToggleProfile && setToggleProfile(false)}></div>
+
+      {/* Modal */}
+      <div ref={popupProfileRef} onClick={(e) => e.stopPropagation()}
+        className={`relative w-[95%] max-w-[820px] bg-white dark:bg-gray-900 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] overflow-hidden transition-all duration-300 ${toggleProfile ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
+
+        {/* Header */}
+        <div className='relative bg-gradient-to-r from-rose-600 to-amber-500 px-6 py-5 overflow-hidden'>
+          <div className='absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2'></div>
+          <div className='absolute bottom-0 left-16 w-20 h-20 bg-white/5 rounded-full translate-y-1/2'></div>
+          <div className='relative z-10'>
+            <h2 className='text-lg font-bold text-white flex items-center gap-2'>
+              <i className='bx bx-user-circle text-xl'></i>
+              Thông tin cá nhân
+            </h2>
+            <p className='text-sm text-white/70 mt-0.5'>Quản lý thông tin hồ sơ của bạn</p>
           </div>
-          <input
-            type="file"
-            id="fileInput"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
-          <button type="button" onClick={() => document.getElementById('fileInput').click()} className='bg-yellow-400 py-[5px] px-[10px] text-white text-h4 flex justify-center items-center my-4 mx-auto rounded-[2px]'>
-            <i className='bx bx-upload text-h3 pr-[5px] pb-[2px] pl-2px'></i> Tải lên ảnh mới
-          </button>
-          <div className='border-[1px] border-gray-700 rounded-[3px] bg-gray-200 py-[5px] px-[10px] text-small my-4 mx-auto text-gray-600 mb-8'>
-            <p>Tải lên ảnh đại diện mới. Ảnh sẽ được tự động thay đổi kích thước.</p>
-            <p>Ảnh có độ lớn không quá <b>1 MB</b></p>
-          </div>
-          <p>Ngày tạo: <b>16 - 08 - 2024</b></p>
         </div>
-        <div className='w-[70%] h-full shadow-md bg-white'>
-          <div className='h-1/5 bg-slate-200 border-b border-gray-500 pt-8 px-8 pb-0 relative'>
-            <p className='font-bold text-h2'>Chỉnh sửa thông tin</p>
-            <div className='flex justify-start items-center absolute bottom-0 gap-6'>
-              <div onClick={() => handleInfoSideActive('info')} className={`mt-1 relative cursor-pointer ${infoSideActive === 'info' ? 'font-semibold after:content-[""] after:w-full after:h-[2px] after:bg-yellow-400 after:absolute after:bottom-[-1px] after:left-0' : ''}`}>Thông tin người dùng</div>
-              <div onClick={() => handleInfoSideActive('bill')} className={`mt-1 relative cursor-pointer ${infoSideActive === 'bill' ? 'font-semibold after:content-[""] after:w-full after:h-[2px] after:bg-yellow-400 after:absolute after:bottom-[-1px] after:left-0' : ''}`}>Thông tin hóa đơn</div>
+
+        {/* Body */}
+        <div className='flex flex-col md:flex-row max-h-[calc(85vh-80px)] overflow-y-auto'>
+
+          {/* Left Panel - Avatar */}
+          <div className='md:w-[260px] flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-100 dark:border-gray-800 p-6 flex flex-col items-center bg-gray-50/50 dark:bg-gray-800/30'>
+            {/* Avatar */}
+            <div className='relative mb-4 group'>
+              <div className='w-28 h-28 rounded-full overflow-hidden ring-4 ring-white dark:ring-gray-700 shadow-lg'>
+                <img className='w-full h-full object-cover' src={avatarSrc} alt="Avatar" />
+              </div>
+              {/* Delete button */}
+              {profileData.ProfileAvatar && (
+                <button onClick={handleDeleteAvatar}
+                  className='absolute -top-1 -right-1 w-7 h-7 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-md hover:bg-red-50 hover:border-red-200 transition-colors cursor-pointer group/del'>
+                  <i className='bx bx-trash text-sm text-gray-400 group-hover/del:text-red-500 transition-colors'></i>
+                </button>
+              )}
             </div>
+
+            <p className='text-base font-semibold text-gray-800 dark:text-gray-100 text-center mb-1'>
+              {profileData.FullName || '—'}
+            </p>
+            <p className='text-xs text-gray-400 dark:text-gray-500 text-center mb-5'>{profileData.Email || ''}</p>
+
+            {/* Upload button */}
+            <input type="file" id="fileInput" className='hidden' onChange={handleFileChange} accept="image/*" />
+            <button type="button" onClick={() => document.getElementById('fileInput').click()}
+              className='w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white text-sm font-medium rounded-lg shadow-md shadow-rose-200 dark:shadow-rose-900/30 transition-all cursor-pointer'>
+              <i className='bx bx-upload text-base'></i>
+              Tải ảnh mới
+            </button>
+
+            <p className='text-[11px] text-gray-400 dark:text-gray-500 text-center mt-3 leading-relaxed'>
+              Ảnh JPG, PNG tối đa <strong>1 MB</strong>.<br />Sẽ được tự động resize.
+            </p>
           </div>
-          <div className='w-full h-[80%] p-8'>
-            <div className={`${infoSideActive === 'info' ? 'block' : 'hidden'}`}>
-                <form name='relative pb-8' onSubmit={handleSubmit} action="" method="post">
-                  <div className='flex justify-between items-center mb-6'>
-                    <div className='w-[45%]'>
-                      <p className='mb-2'>Tên người dùng</p>
-                      <input className='border-[1px] outline-none w-full py-[5px] px-[10px] focus:border-yellow-400' type="text" id='FullName' name='FullName' value={profileData.FullName} onChange={handleInputChange}/>
+
+          {/* Right Panel - Form */}
+          <div className='flex-1 min-w-0'>
+            {/* Tabs */}
+            <div className='flex border-b border-gray-100 dark:border-gray-800 px-6 pt-1'>
+              <button onClick={() => setInfoSideActive('info')}
+                className={`relative px-1 py-3 mr-6 text-sm font-medium transition-colors cursor-pointer ${infoSideActive === 'info'
+                  ? 'text-rose-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-rose-600 after:rounded-full'
+                  : 'text-gray-400 hover:text-gray-600'}`}>
+                <i className='bx bx-user mr-1.5 align-middle'></i>
+                Thông tin người dùng
+              </button>
+              <button onClick={() => setInfoSideActive('bill')}
+                className={`relative px-1 py-3 text-sm font-medium transition-colors cursor-pointer ${infoSideActive === 'bill'
+                  ? 'text-rose-600 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-rose-600 after:rounded-full'
+                  : 'text-gray-400 hover:text-gray-600'}`}>
+                <i className='bx bx-receipt mr-1.5 align-middle'></i>
+                Thông tin hóa đơn
+              </button>
+            </div>
+
+            {/* Form Content */}
+            <div className='p-6'>
+              <div className={`${infoSideActive === 'info' ? 'block' : 'hidden'}`}>
+                <form onSubmit={handleSubmit}>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-5 mb-5'>
+                    <div>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2' htmlFor='FullName'>
+                        Tên người dùng
+                      </label>
+                      <input
+                        className='w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:focus:ring-rose-900/30 transition-all placeholder-gray-300'
+                        type="text" id='FullName' name='FullName' value={profileData.FullName} onChange={handleInputChange}
+                        placeholder='Nhập tên của bạn' />
                     </div>
-                    <div className='w-[45%]'>
-                      <p className='mb-2'>Email</p>
-                      <input className='border-[1px] outline-none w-full py-[5px] px-[10px] focus:border-yellow-400' type="text" id='Email' name='Email' value={profileData.Email} onChange={handleInputChange}/>
+                    <div>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2' htmlFor='Email'>
+                        Email
+                      </label>
+                      <input
+                        className='w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:focus:ring-rose-900/30 transition-all placeholder-gray-300'
+                        type="email" id='Email' name='Email' value={profileData.Email} onChange={handleInputChange}
+                        placeholder='email@example.com' />
                     </div>
                   </div>
-                  <div className='flex justify-between items-center mb-6'>
-                    <div className='w-[45%]'>
-                      <p className='mb-2'>Số điện thoại</p>
-                      <input className='border-[1px] outline-none w-full py-[5px] px-[10px] focus:border-yellow-400' type="text" id='PhoneNumber' name='PhoneNumber' value={profileData.PhoneNumber} onChange={handleInputChange}/>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-5 mb-6'>
+                    <div>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2' htmlFor='PhoneNumber'>
+                        Số điện thoại
+                      </label>
+                      <input
+                        className='w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:focus:ring-rose-900/30 transition-all placeholder-gray-300'
+                        type="text" id='PhoneNumber' name='PhoneNumber' value={profileData.PhoneNumber} onChange={handleInputChange}
+                        placeholder='0xxx xxx xxx' />
                     </div>
-                    <div className='w-[45%]'>
-                      <p className='mb-2'>Địa chỉ</p>
-                      <input className='border-[1px] outline-none w-full py-[5px] px-[10px] focus:border-yellow-400' type="text" id='Address' name='Address' value={profileData.Address} onChange={handleInputChange}/>
+                    <div>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2' htmlFor='Address'>
+                        Địa chỉ
+                      </label>
+                      <input
+                        className='w-full px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-800 dark:text-gray-200 outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 dark:focus:ring-rose-900/30 transition-all placeholder-gray-300'
+                        type="text" id='Address' name='Address' value={profileData.Address} onChange={handleInputChange}
+                        placeholder='Số nhà, đường, quận/huyện...' />
                     </div>
                   </div>
-                  <div className='text-h3 font-semibold mb-2'>Social Profile</div>
-                  <div className='flex justify-between items-center mb-6'>
-                    <div className="w-[45%] flex justify-center items-center">
-                      <i className='bx bxl-facebook-square border-[1px] text-h2 w-[15%] leading-[1.48] text-center'></i>
-                      <input className='border-[1px] outline-none w-full py-[5px] px-[10px] focus:border-yellow-400' type="text" name="FacebookUser" id="FacebookUser" placeholder='Facebook Username'/>
-                    </div>
-                    <div className="w-[45%] flex justify-center items-center">
-                      <i className='bx bxl-google border-[1px] text-h2 w-[15%] leading-[1.48] text-center'></i>
-                      <input className='border-[1px] outline-none w-full py-[5px] px-[10px] focus:border-yellow-400' type="text" name="GoogleUser" id="GoogleUser" placeholder='Google Username'/>
-                    </div>
+
+                  {/* Submit */}
+                  <div className='flex justify-end'>
+                    <button
+                      className='flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-700 hover:to-amber-600 text-white text-sm font-semibold rounded-lg shadow-md shadow-rose-200 dark:shadow-rose-900/30 transition-all cursor-pointer'
+                      type='submit'>
+                      <i className='bx bx-check-circle text-base'></i>
+                      Lưu thay đổi
+                    </button>
                   </div>
-                  <button className='bg-yellow-400 py-[5px] px-[10px] text-white text-h4 flex justify-center items-center rounded-[2px]' type='submit'><i className='bx bx-edit text-h3 pr-[5px] pb-[2px] pl-[2px]'></i>Cập nhật thay đổi</button>
                 </form>
-            </div>
-            <div className={`tab-body ${infoSideActive === 'bill' ? 'block' : 'hidden'}`}>
-                <p>haha</p>
+              </div>
+
+              {/* Bill tab */}
+              <div className={`${infoSideActive === 'bill' ? 'block' : 'hidden'}`}>
+                <div className='flex flex-col items-center justify-center py-12 text-center'>
+                  <div className='w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4'>
+                    <i className='bx bx-receipt text-3xl text-gray-300 dark:text-gray-600'></i>
+                  </div>
+                  <p className='text-gray-400 text-sm'>Chưa có thông tin hóa đơn</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-    </div>
+      </div>
+    </div>,
+    document.body
   )
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useCart } from '../CartContext';
 import Header from '../components/user/MainPage/Header/Header';
 import Footer from '../components/user/MainPage/Footer/Footer';
@@ -326,6 +327,10 @@ const CheckoutPage = () =>
     return (
         <>
             <Header />
+            <Helmet>
+                <title>Thanh Toán | CapyLumine</title>
+                <meta name="robots" content="noindex, nofollow" />
+            </Helmet>
             <div className='min-h-screen bg-gray-50 pt-6 pb-16'>
                 <div className='max-w-6xl mx-auto px-4'>
                     {/* Breadcrumb */}

@@ -9,6 +9,7 @@ import AdminDashboard from './components/admin/Dashboard/AdminDashboard/AdminDas
 import ProtectedRoute from './utils/ProtectedRoute';
 import ProductDetail from './components/user/ProductDetailPage/ProductDetail';
 import CheckoutPage from './pages/CheckoutPage';
+import OrderHistoryPage from './pages/OrderHistoryPage';
 import ChatButton from './components/user/Chat/ChatButton';
 import TokenExpiryWarning from './components/common/TokenExpiryWarning';
 import './App.css';
@@ -21,27 +22,33 @@ import WishlistPage from './components/user/WishlistPage/WishlistPage';
 import NewsListPage from './pages/NewsListPage';
 import NewsDetailPage from './pages/NewsDetailPage';
 import CategoryPage from './pages/CategoryPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Expose toast to global scope for NotificationService
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined')
+{
   window.toast = toast;
 }
 
-function AppContent() {
+function AppContent()
+{
   const location = useLocation();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const isAdminPage = location.pathname.startsWith('/admin');
 
   // Check login status và listen cho changes
-  useEffect(() => {
-    const checkLoginStatus = () => {
+  useEffect(() =>
+  {
+    const checkLoginStatus = () =>
+    {
       const token = localStorage.getItem('token');
       const loggedIn = token !== null && token !== '';
 
       setIsUserLoggedIn(loggedIn);
 
       // Khởi tạo SignalR notifications sớm sau khi đăng nhập
-      if (loggedIn) {
+      if (loggedIn)
+      {
         NotificationService.setupSignalRNotifications();
       }
     };
@@ -55,7 +62,8 @@ function AppContent() {
     // Custom event cho login/logout actions
     window.addEventListener('userLoginStatusChanged', checkLoginStatus);
 
-    return () => {
+    return () =>
+    {
       window.removeEventListener('storage', checkLoginStatus);
       window.removeEventListener('userLoginStatusChanged', checkLoginStatus);
     };
@@ -81,11 +89,13 @@ function AppContent() {
         />
         <Route path='/product/:id' element={<ProductDetail />} />
         <Route path='/checkout' element={<CheckoutPage />} />
+        <Route path='/my-orders' element={<OrderHistoryPage />} />
         <Route path='/wishlist' element={<WishlistPage />} />
         <Route path='/news' element={<NewsListPage />} />
         <Route path='/news/:id' element={<NewsDetailPage />} />
         <Route path='/categories' element={<CategoryPage />} />
         <Route path='/categories/:categoryId' element={<CategoryPage />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
 
       {/* Chat Button - chỉ hiển thị cho user đã login và không ở trang admin */}
@@ -112,7 +122,8 @@ function AppContent() {
   );
 }
 
-function App() {
+function App()
+{
   return (
     <HelmetProvider>
       <CartProvider>

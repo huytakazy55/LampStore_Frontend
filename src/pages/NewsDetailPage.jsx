@@ -143,12 +143,35 @@ const NewsDetailPage = () =>
     return (
         <>
             <Helmet>
-                <title>{article.title} | LampStore</title>
+                <title>{article.title} | CapyLumine</title>
                 <meta name="description" content={article.excerpt} />
+                <link rel="canonical" href={`${window.location.origin}/news/${id}`} />
+                <meta property="og:type" content="article" />
                 <meta property="og:title" content={article.title} />
                 <meta property="og:description" content={article.excerpt} />
                 <meta property="og:image" content={getImageSrc(article.imageUrl)} />
-                <meta property="og:type" content="article" />
+                <meta property="og:url" content={`${window.location.origin}/news/${id}`} />
+                <meta property="og:locale" content="vi_VN" />
+                <meta property="og:site_name" content="CapyLumine" />
+                <meta property="article:published_time" content={article.createdAt} />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={article.title} />
+                <meta name="twitter:description" content={article.excerpt} />
+                <meta name="twitter:image" content={getImageSrc(article.imageUrl)} />
+                <script type="application/ld+json">{JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "NewsArticle",
+                    "headline": article.title,
+                    "description": article.excerpt,
+                    "image": getImageSrc(article.imageUrl),
+                    "datePublished": article.createdAt,
+                    "author": { "@type": "Organization", "name": "CapyLumine" },
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "CapyLumine"
+                    },
+                    "mainEntityOfPage": `${window.location.origin}/news/${id}`
+                })}</script>
             </Helmet>
 
             <TopBar />

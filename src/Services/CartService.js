@@ -27,6 +27,27 @@ class CartService
     }
 
     /**
+     * Xóa 1 item khỏi giỏ hàng backend
+     * @param {string} itemId - Backend CartItem ID (Guid)
+     */
+    async removeItem(itemId)
+    {
+        const response = await axiosInstance.delete(`/api/Carts/my/items/${itemId}`);
+        return response.data;
+    }
+
+    /**
+     * Cập nhật số lượng 1 item trong giỏ hàng backend
+     * @param {string} itemId - Backend CartItem ID (Guid)
+     * @param {number} quantity - Số lượng mới
+     */
+    async updateItemQuantity(itemId, quantity)
+    {
+        const response = await axiosInstance.put(`/api/Carts/my/items/${itemId}`, { quantity });
+        return response.data;
+    }
+
+    /**
      * Xóa tất cả giỏ hàng của user
      */
     async clearMyCart()

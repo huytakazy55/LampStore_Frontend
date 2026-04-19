@@ -160,20 +160,20 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
         >
             {/* Modal Box */}
             <div
-                className="bg-white rounded-lg shadow-xl w-full max-w-3xl overflow-hidden relative animate-fadeIn"
+                className="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-3xl overflow-hidden relative animate-fadeIn"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-rose-600 transition-colors z-10"
+                    className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-rose-600 dark:hover:text-rose-400 transition-colors z-10"
                 >
                     <i className="bx bx-x text-3xl"></i>
                 </button>
 
                 <div className="flex flex-col md:flex-row h-full">
                     {/* Left: Image */}
-                    <div className="w-full md:w-2/5 bg-gray-50 p-6 flex justify-center items-center border-r border-gray-100">
+                    <div className="w-full md:w-2/5 bg-gray-50 dark:bg-gray-800 p-6 flex justify-center items-center border-r border-gray-100 dark:border-gray-700">
                         <img
                             src={mainImage}
                             alt={product.name}
@@ -184,16 +184,16 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
 
                     {/* Right: Details */}
                     <div className="w-full md:w-3/5 p-6 flex flex-col max-h-[80vh] overflow-y-auto">
-                        <h2 className="text-xl font-medium text-gray-800 mb-2 leading-snug pr-6">
+                        <h2 className="text-xl font-medium text-gray-800 dark:text-gray-100 mb-2 leading-snug pr-6">
                             {product.name}
                         </h2>
 
                         {/* Price Area */}
-                        <div className="flex items-end gap-3 mt-2 mb-5 bg-rose-50/50 p-4 rounded-md border border-rose-100/50">
+                        <div className="flex items-end gap-3 mt-2 mb-5 bg-rose-50/50 dark:bg-rose-900/20 p-4 rounded-md border border-rose-100/50 dark:border-rose-800/30">
                             <span className="text-2xl font-bold text-rose-600">₫{formatPrice(price)}</span>
                             {hasDiscount && (
                                 <>
-                                    <span className="text-sm line-through text-gray-400 mb-1">
+                                    <span className="text-sm line-through text-gray-400 dark:text-gray-500 mb-1">
                                         ₫{formatPrice(originalPrice)}
                                     </span>
                                     <span className="bg-rose-500 text-white text-xs px-1.5 py-0.5 rounded font-medium mb-1">
@@ -213,7 +213,7 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
                                     const isRequired = !selectedOptions[vt.name] && showError;
                                     return (
                                         <div key={vt.id} className="mb-3">
-                                            <h3 className={`text-sm font-medium mb-2 ${isRequired ? 'text-red-500' : 'text-gray-700'}`}>
+                                            <h3 className={`text-sm font-medium mb-2 ${isRequired ? 'text-red-500' : 'text-gray-700 dark:text-gray-300'}`}>
                                                 {vt.name}: {isRequired && <span className="text-xs font-normal">(Vui lòng chọn)</span>}
                                             </h3>
                                             <div className="flex flex-wrap gap-2">
@@ -225,10 +225,10 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
                                                             key={val.id}
                                                             onClick={() => handleSelectOption(vt.name, val)}
                                                             className={`py-1.5 px-4 cursor-pointer text-sm border rounded transition-all ${isSelected
-                                                                ? 'border-rose-600 text-rose-600 bg-rose-50 font-medium ring-1 ring-rose-600/20'
+                                                                ? 'border-rose-600 text-rose-600 bg-rose-50 dark:bg-rose-900/30 font-medium ring-1 ring-rose-600/20'
                                                                 : isRequired
-                                                                    ? 'border-red-300 hover:border-rose-300 text-gray-600'
-                                                                    : 'border-gray-300 hover:border-rose-300 hover:bg-gray-50 text-gray-600'
+                                                                    ? 'border-red-300 hover:border-rose-300 text-gray-600 dark:text-gray-400'
+                                                                    : 'border-gray-300 dark:border-gray-600 hover:border-rose-300 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400'
                                                                 }`}
                                                         >
                                                             {val.value}
@@ -247,20 +247,20 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
 
                         {/* Variant Info */}
                         {variant && variant.materials && (
-                            <div className="mb-4 text-sm text-gray-500">
+                            <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">
                                 <span>Chất liệu: {variant.materials}</span>
                             </div>
                         )}
 
                         {/* Quantity */}
                         <div className="mb-6 flex items-center gap-6">
-                            <h3 className="text-sm font-medium text-gray-700">Số lượng:</h3>
-                            <div className="flex items-center border border-gray-300 rounded overflow-hidden bg-white">
-                                <button onClick={handleDecrease} className="w-9 h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-rose-600 transition font-medium text-lg">-</button>
-                                <input type="number" value={quantity} readOnly className="w-12 h-9 text-center text-sm outline-none border-x border-gray-300" />
-                                <button onClick={handleIncrease} className="w-9 h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-rose-600 transition font-medium text-lg">+</button>
+                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Số lượng:</h3>
+                            <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded overflow-hidden bg-white dark:bg-gray-800">
+                                <button onClick={handleDecrease} className="w-9 h-9 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-rose-600 transition font-medium text-lg">-</button>
+                                <input type="number" value={quantity} readOnly className="w-12 h-9 text-center text-sm outline-none border-x border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200" />
+                                <button onClick={handleIncrease} className="w-9 h-9 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-rose-600 transition font-medium text-lg">+</button>
                             </div>
-                            <span className="text-sm text-gray-400">{stock} sản phẩm có sẵn</span>
+                            <span className="text-sm text-gray-400 dark:text-gray-500">{stock} sản phẩm có sẵn</span>
                         </div>
 
                         {/* Success Message */}
@@ -275,14 +275,16 @@ const AddToCartModal = ({ isOpen, onClose, product }) =>
                         <div className="mt-auto flex gap-4">
                             <button
                                 onClick={handleAddToCart}
-                                className="flex-1 bg-rose-50 border border-rose-600 text-rose-600 py-3 rounded-md font-medium hover:bg-rose-100 transition-colors flex justify-center items-center gap-2 cursor-pointer"
+                                className="flex-1 bg-rose-50 dark:bg-rose-900/30 border border-rose-600 text-rose-600 dark:text-rose-400 py-3 rounded-md font-medium hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-colors flex justify-center items-center gap-2 cursor-pointer"
                             >
                                 <i className="bx bx-cart-add text-xl"></i>
                                 Thêm vào giỏ
                             </button>
                             <button
-                                onClick={() => {
-                                    if (!allOptionsSelected) {
+                                onClick={() =>
+                                {
+                                    if (!allOptionsSelected)
+                                    {
                                         setShowError(true);
                                         return;
                                     }

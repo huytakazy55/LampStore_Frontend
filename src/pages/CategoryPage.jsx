@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import Header from '../components/user/MainPage/Header/Header'
 import NavbarPrimary from '../components/user/MainPage/NavbarPrimary/NavbarPrimary'
 import TopBar from '../components/user/MainPage/TopBar/TopBar'
@@ -13,28 +14,34 @@ import defaultImg from '../assets/images/cameras-2.jpg'
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
     if (!price) return '0'
     return price.toLocaleString('vi-VN')
 }
 
-const getProductImageSrc = (product) => {
+const getProductImageSrc = (product) =>
+{
     const imgs = product.images?.$values || product.images || product.Images || []
-    if (imgs.length > 0) {
+    if (imgs.length > 0)
+    {
         const path = imgs[0].imagePath || imgs[0].ImagePath
         if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`
     }
     return defaultImg
 }
 
-const getCategoryImageSrc = (category) => {
-    if (category.imageUrl) {
+const getCategoryImageSrc = (category) =>
+{
+    if (category.imageUrl)
+    {
         return category.imageUrl.startsWith('http') ? category.imageUrl : `${API_ENDPOINT}${category.imageUrl}`
     }
     return defaultImg
 }
 
-const CategoryPage = () => {
+const CategoryPage = () =>
+{
     const navigate = useNavigate()
     const { categoryId } = useParams()
     const [categories, setCategories] = useState([])
@@ -45,20 +52,26 @@ const CategoryPage = () => {
     const [cartModalProduct, setCartModalProduct] = useState(null)
 
     // Fetch categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
+    useEffect(() =>
+    {
+        const fetchCategories = async () =>
+        {
+            try
+            {
                 const response = await CategoryManage.GetCategory()
                 const data = response.data.$values || response.data || []
                 setCategories(data)
 
                 // If no active category, select first
-                if (!activeCategory && data.length > 0) {
+                if (!activeCategory && data.length > 0)
+                {
                     setActiveCategory(String(data[0].id))
                 }
-            } catch (error) {
+            } catch (error)
+            {
                 console.error('Error fetching categories:', error)
-            } finally {
+            } finally
+            {
                 setLoading(false)
             }
         }
@@ -66,27 +79,33 @@ const CategoryPage = () => {
     }, [])
 
     // Fetch products when active category changes
-    useEffect(() => {
+    useEffect(() =>
+    {
         if (!activeCategory) return
 
-        const fetchProducts = async () => {
+        const fetchProducts = async () =>
+        {
             setProductsLoading(true)
-            try {
+            try
+            {
                 const response = await ProductManage.GetProduct()
                 const allProducts = response.data?.$values || response.data || []
 
                 const filtered = allProducts.filter(p =>
                     String(p.categoryId) === String(activeCategory)
-                ).map(product => {
+                ).map(product =>
+                {
                     const imgData = product.images?.$values || product.images
                     const images = Array.isArray(imgData) ? imgData : []
                     return { ...product, images }
                 })
 
                 setProducts(filtered)
-            } catch (error) {
+            } catch (error)
+            {
                 console.error('Error fetching products:', error)
-            } finally {
+            } finally
+            {
                 setProductsLoading(false)
             }
         }
@@ -94,7 +113,8 @@ const CategoryPage = () => {
     }, [activeCategory])
 
     // Sync URL param
-    useEffect(() => {
+    useEffect(() =>
+    {
         if (categoryId) setActiveCategory(categoryId)
     }, [categoryId])
 
@@ -102,6 +122,16 @@ const CategoryPage = () => {
 
     return (
         <>
+            <Helmet>
+                <title>{activeCategoryData ? `${activeCategoryData.name} - Danh Mục | CapyLumine` : 'Danh Mục Sản Phẩm | CapyLumine'}</title>
+                <meta name="description" content={activeCategoryData ? `Khám phá ${products.length} sản phẩm ${activeCategoryData.name} cao cấp tại CapyLumine. Đèn trang trí chất lượng, giá tốt.` : 'Danh mục sản phẩm đèn trang trí cao cấp tại CapyLumine.'} />
+                <link rel="canonical" href={`${window.location.origin}/categories${activeCategory ? `/${activeCategory}` : ''}`} />
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content={activeCategoryData ? `${activeCategoryData.name} | CapyLumine` : 'Danh Mục Sản Phẩm'} />
+                <meta property="og:description" content={`Khám phá bộ sưu tập đèn trang trí cao cấp tại CapyLumine.`} />
+                <meta property="og:locale" content="vi_VN" />
+                <meta name="twitter:card" content="summary" />
+            </Helmet>
             <CustomScrollbar>
                 <TopBar />
                 <Header />
@@ -196,7 +226,8 @@ const CategoryPage = () => {
                                         </div>
                                     ) : products.length > 0 ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                                            {products.map((product) => {
+                                            {products.map((product) =>
+                                            {
                                                 const variant = product.variant
                                                 const price = variant?.discountPrice || variant?.price || 0
                                                 const originalPrice = variant?.price || 0
@@ -248,7 +279,8 @@ const CategoryPage = () => {
                                                                 </div>
                                                                 <button
                                                                     className="w-8 h-8 md:w-9 md:h-9 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95"
-                                                                    onClick={(e) => {
+                                                                    onClick={(e) =>
+                                                                    {
                                                                         e.stopPropagation()
                                                                         setCartModalProduct(product)
                                                                     }}

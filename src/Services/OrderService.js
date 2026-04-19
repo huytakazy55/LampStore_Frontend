@@ -1,40 +1,45 @@
 import axiosInstance from './axiosConfig';
 
-const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
-
 const OrderService = {
     // Get all orders (admin)
     getAllOrders: async () =>
     {
-        const response = await axiosInstance.get(`${API_ENDPOINT}/api/Orders`);
+        const response = await axiosInstance.get('/api/Orders');
         return response.data;
     },
 
     // Get order by ID
     getOrderById: async (id) =>
     {
-        const response = await axiosInstance.get(`${API_ENDPOINT}/api/Orders/${id}`);
+        const response = await axiosInstance.get(`/api/Orders/${id}`);
         return response.data;
     },
 
     // Create a new order (checkout)
     createOrder: async (orderData) =>
     {
-        const response = await axiosInstance.post(`${API_ENDPOINT}/api/Orders`, orderData);
+        const response = await axiosInstance.post('/api/Orders', orderData);
         return response.data;
     },
 
     // Update order status (admin)
     updateOrderStatus: async (id, status) =>
     {
-        const response = await axiosInstance.patch(`${API_ENDPOINT}/api/Orders/${id}/status`, { status });
+        const response = await axiosInstance.patch(`/api/Orders/${id}/status`, { status });
         return response.data;
     },
 
     // Delete order (admin)
     deleteOrder: async (id) =>
     {
-        const response = await axiosInstance.delete(`${API_ENDPOINT}/api/Orders/${id}`);
+        const response = await axiosInstance.delete(`/api/Orders/${id}`);
+        return response.data;
+    },
+
+    // Get current user's orders
+    getMyOrders: async () =>
+    {
+        const response = await axiosInstance.get('/api/Orders/my-orders');
         return response.data;
     },
 };

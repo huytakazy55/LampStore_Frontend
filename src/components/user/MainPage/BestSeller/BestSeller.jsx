@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import ProductManage from '../../../../Services/ProductManage';
+import React, { useState, useMemo } from 'react';
+import { useProducts } from '../../../../hooks/useProducts';
 import { useNavigate } from 'react-router-dom';
 import defaultImg from '../../../../assets/images/cameras-2.jpg';
 import AddToCartModal from '../AddToCartModal';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
   if (!price) return '0';
   return price.toLocaleString('vi-VN');
 };
 
-const getImageSrc = (product) => {
-  if (product.images && product.images.length > 0) {
+const getImageSrc = (product) =>
+{
+  if (product.images && product.images.length > 0)
+  {
     const path = product.images[0].imagePath || product.images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
-  if (product.Images && product.Images.length > 0) {
+  if (product.Images && product.Images.length > 0)
+  {
     const path = product.Images[0].imagePath || product.Images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
   return defaultImg;
 };
 
-const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
+const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
+{
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
   const originalPrice = variant?.price || 0;
@@ -78,7 +83,8 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
           </div>
           <button
             className='w-8 h-8 md:w-9 md:h-9 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
-            onClick={(e) => {
+            onClick={(e) =>
+            {
               e.stopPropagation();
               onAddToCartClick(product);
             }}
@@ -91,7 +97,8 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) => {
   );
 };
 
-const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
+const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
+{
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
   const originalPrice = variant?.price || 0;
@@ -132,7 +139,8 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
 
       {/* Thumbnails */}
       <div className='flex gap-2 mb-3'>
-        {product.images && product.images.slice(0, 3).map((img, i) => {
+        {product.images && product.images.slice(0, 3).map((img, i) =>
+        {
           const path = img.imagePath || img.ImagePath;
           const src = path ? (path.startsWith('http') ? path : `${API_ENDPOINT}${path}`) : defaultImg;
           return (
@@ -162,7 +170,8 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
         </div>
         <button
           className='w-9 h-9 md:w-10 md:h-10 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
-          onClick={(e) => {
+          onClick={(e) =>
+          {
             e.stopPropagation();
             onAddToCartClick(product);
           }}
@@ -174,47 +183,33 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) => {
   );
 };
 
-const BestSeller = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const BestSeller = () =>
+{
+  const { data: allProducts = [], isLoading: loading } = useProducts();
   const [activeCategory, setActiveCategory] = useState(null);
-  const [categories, setCategories] = useState([]);
   const [cartModalProduct, setCartModalProduct] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await ProductManage.GetProduct();
-        const allProducts = response.data?.$values || response.data || [];
+  const products = useMemo(() =>
+  {
+    const sorted = [...allProducts].sort((a, b) => (b.sellCount || 0) - (a.sellCount || 0));
+    return sorted.slice(0, 15).map((product) =>
+    {
+      const variant = product.variant;
+      const imgData = product.images?.$values || product.images;
+      const images = Array.isArray(imgData) ? imgData : [];
+      return { ...product, variant, images };
+    });
+  }, [allProducts]);
 
-        const sorted = [...allProducts].sort((a, b) => (b.sellCount || 0) - (a.sellCount || 0));
-
-        const productsWithDetails = sorted.slice(0, 15).map((product) => {
-          const variant = product.variant;
-          const imgData = product.images?.$values || product.images;
-          const images = Array.isArray(imgData) ? imgData : [];
-          return { ...product, variant, images };
-        });
-
-        setProducts(productsWithDetails);
-
-        const cats = [...new Map(
-          productsWithDetails
-            .filter(p => p.category)
-            .map(p => [p.category?.id || p.categoryId, p.category?.name || 'Khác'])
-        ).entries()].map(([id, name]) => ({ id, name })).slice(0, 3);
-        setCategories(cats);
-      } catch (error) {
-        console.error('Error fetching bestsellers:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const categories = useMemo(() =>
+  {
+    return [...new Map(
+      products
+        .filter(p => p.category)
+        .map(p => [p.category?.id || p.categoryId, p.category?.name || 'Khác'])
+    ).entries()].map(([id, name]) => ({ id, name })).slice(0, 3);
+  }, [products]);
 
   const filteredProducts = activeCategory
     ? products.filter(p => (p.category?.id || p.categoryId) === activeCategory)
@@ -223,20 +218,16 @@ const BestSeller = () => {
   const gridProducts = filteredProducts.slice(0, 8);
   const featuredProduct = filteredProducts[8] || filteredProducts[0];
 
-  // Timeout để tránh spinner vô hạn
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (loading) setLoading(false);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, [loading]);
+
 
   // Ẩn hoàn toàn nếu không có data
-  if (!loading && products.length === 0) {
+  if (!loading && products.length === 0)
+  {
     return null;
   }
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='w-full py-8 md:py-16 bg-gray-100 flex justify-center items-center'>
         <div className="text-center">

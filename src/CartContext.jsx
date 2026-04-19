@@ -3,6 +3,7 @@ import CartService from './Services/CartService';
 
 const CartContext = createContext();
 const CART_KEY = 'lamp_store_cart';
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
 const loadCart = () =>
 {
@@ -43,17 +44,28 @@ const backendToFrontendItem = (backendItem) =>
 
     const basePrice = backendItem.basePrice || 0;
 
+    // Fix image path: prepend API_ENDPOINT if relative
+    let imagePath = backendItem.productImage || '';
+    if (imagePath && !imagePath.startsWith('http'))
+    {
+        imagePath = `${API_ENDPOINT}${imagePath}`;
+    }
+
     return {
         key: getCartItemKey(backendItem.productId, selectedOptions),
+        backendId: backendItem.id, // Store backend CartItem.Id for API calls
         productId: backendItem.productId,
         name: backendItem.productName || '',
-        image: backendItem.productImage || '',
+        image: imagePath,
         basePrice: basePrice,
         finalPrice: basePrice + totalAdditional,
         quantity: backendItem.quantity,
         selectedOptions: selectedOptions
     };
 };
+
+// Helper: check if user is logged in
+const isLoggedIn = () => !!localStorage.getItem('token');
 
 export function CartProvider({ children })
 {
@@ -100,23 +112,70 @@ export function CartProvider({ children })
                 selectedOptions: item.selectedOptions || {}
             }];
         });
+
+        // Sync to backend if logged in (background, non-blocking)
+        if (isLoggedIn())
+        {
+            // Small delay to let state update first, then sync
+            setTimeout(() =>
+            {
+                const currentCart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+                CartService.syncCart(currentCart).then(backendData =>
+                {
+                    // Update with backend IDs
+                    const items = (backendData?.$values || backendData || [])
+                        .map(backendToFrontendItem);
+                    setCartItems(items);
+                }).catch(err => console.error('Cart add sync failed:', err));
+            }, 300);
+        }
     }, []);
 
     const removeFromCart = useCallback((key) =>
     {
-        setCartItems(prev => prev.filter(item => item.key !== key));
+        setCartItems(prev =>
+        {
+            const item = prev.find(i => i.key === key);
+            // If logged in and item has a backend ID, delete from backend too
+            if (item?.backendId && isLoggedIn())
+            {
+                CartService.removeItem(item.backendId).catch(err =>
+                    console.error('Failed to remove from backend:', err)
+                );
+            }
+            return prev.filter(i => i.key !== key);
+        });
     }, []);
 
     const updateQuantity = useCallback((key, quantity) =>
     {
         if (quantity < 1) return;
         setCartItems(prev => prev.map(item =>
-            item.key === key ? { ...item, quantity } : item
-        ));
+        {
+            if (item.key === key)
+            {
+                // Sync to backend if logged in
+                if (item.backendId && isLoggedIn())
+                {
+                    CartService.updateItemQuantity(item.backendId, quantity).catch(err =>
+                        console.error('Failed to update quantity in backend:', err)
+                    );
+                }
+                return { ...item, quantity };
+            }
+            return item;
+        }));
     }, []);
 
     const clearCart = useCallback(() =>
     {
+        // If logged in, also clear backend cart
+        if (isLoggedIn())
+        {
+            CartService.clearMyCart().catch(err =>
+                console.error('Failed to clear backend cart:', err)
+            );
+        }
         setCartItems([]);
     }, []);
 

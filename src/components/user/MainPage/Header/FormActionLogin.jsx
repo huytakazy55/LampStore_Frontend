@@ -54,23 +54,71 @@ const FormActionLogin = ({ toggleActionLogin, popupActionRef, setToggleActionLog
         setToggleProfile(true);
     }
 
+    const menuItems = [
+        { icon: 'bx-user-circle', label: 'Thông Tin Tài Khoản', onClick: handleProfileClick, ref: buttonProfileRef },
+        { icon: 'bx-package', label: 'Đơn Hàng Của Tôi', onClick: () => { setToggleActionLogin(false); navigate('/my-orders'); } },
+        { icon: 'bx-heart', label: 'Sản Phẩm Yêu Thích', onClick: () => { setToggleActionLogin(false); navigate('/wishlist'); } },
+    ];
+
     return (
-        <div ref={popupActionRef} onClick={(e) => e.stopPropagation()} className={`w-[17rem] absolute shadow-lg -right-[0.3rem] top-14 z-[1000] border-t-2 border-yellow-400 bg-white transition-all duration-300 ease-in-out ${toggleActionLogin ? 'visible opacity-100 translate-y-0' : 'invisible opacity-0 translate-y-2'}`} id='FormActionLogin'>
-            <div className='w-full mb-2'>
-                <div className='rounded-[50%] w-12 h-12 mt-[15px] mx-auto mb-[5px] overflow-hidden'>
-                    <img className='w-full h-full' src={profileData.ProfileAvatar ? (profileData.ProfileAvatar.startsWith('http') ? profileData.ProfileAvatar : `${API_ENDPOINT}${profileData.ProfileAvatar}`) : avatar} alt="" />
+        <div ref={popupActionRef} onClick={(e) => e.stopPropagation()}
+            className={`w-[280px] absolute -right-1 top-[56px] z-[1000] bg-white dark:bg-gray-900 rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.18)] border border-gray-100 dark:border-gray-800 overflow-hidden transition-all duration-300 ease-out ${toggleActionLogin ? 'visible opacity-100 translate-y-0' : 'invisible opacity-0 -translate-y-2 pointer-events-none'}`}
+            id='FormActionLogin'>
+
+            {/* Profile Header */}
+            <div className='relative px-5 pt-5 pb-4 bg-gradient-to-br from-rose-100 to-amber-100 dark:from-gray-800 dark:to-gray-800'>
+                {/* Decorative circle */}
+                <div className='absolute -top-6 -right-6 w-20 h-20 bg-rose-100/50 dark:bg-rose-900/10 rounded-full'></div>
+                <div className='relative flex items-center gap-3'>
+                    <div className='w-11 h-11 rounded-full overflow-hidden ring-2 ring-white dark:ring-gray-700 shadow-md flex-shrink-0'>
+                        <img className='w-full h-full object-cover'
+                            src={profileData.ProfileAvatar ? (profileData.ProfileAvatar.startsWith('http') ? profileData.ProfileAvatar : `${API_ENDPOINT}${profileData.ProfileAvatar}`) : avatar}
+                            alt="Avatar" />
+                    </div>
+                    <div className='min-w-0'>
+                        <p className='text-[13px] font-semibold text-gray-800 dark:text-gray-100 truncate'>
+                            {profileData.Email || 'Cập nhật tài khoản'}
+                        </p>
+                        <p className='text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-0.5'>
+                            <span className='w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block'></span>
+                            Đang hoạt động
+                        </p>
+                    </div>
                 </div>
-                <p className='text-center'>{profileData.Email != '' ? profileData.Email : <a href='#' onClick={handleProfileClick}>Cập nhật tài khoản</a>}</p>
             </div>
-            <ul className='block my-2 relative py-4 after:absolute after:w-[90%] after:h-[1px] after:bg-gray-500 after:left-1/2 after:-translate-x-1/2 after:top-0 before:absolute before:w-[90%] before:h-[1px] before:bg-gray-500 before:left-1/2 before:-translate-x-1/2 before:bottom-0'>
-                <li onClick={handleProfileClick} ref={buttonProfileRef} className='w-full h-8 mb-[2px] leading-[2] flex px-[10px] items-center justify-start hover:bg-gray-300'><i className='bx bx-user-pin align-middle text-xl mr-[5px]' ></i>
-                    Thông Tin Tài Khoản
-                </li>
-                <li className='w-full h-8 mb-[2px] leading-[2] flex px-[10px] items-center justify-start hover:bg-gray-300'><i className='bx bx-globe align-middle text-xl mr-[5px]'></i>Tiếng Việt (Vietnamese)</li>
-                <li className='w-full h-8 mb-[2px] leading-[2] flex px-[10px] items-center justify-start hover:bg-gray-300'><i className='bx bx-cog align-middle text-xl mr-[5px]'></i>Thiết Lập Shop</li>
-                <li className='w-full h-8 mb-[2px] leading-[2] flex px-[10px] items-center justify-start hover:bg-gray-300'><i className='bx bx-message-square-detail align-middle text-xl mr-[5px]' ></i>Phản hồi ý kiến</li>
-            </ul>
-            <div onClick={() => handleLogout()} className='px-3 py-[5px] w-full h-8 mb-2 leading-8 flex justify-start items-center hover:bg-gray-300'><i className='bx bx-exit mr-[5px] align-middle text-xl'></i>Đăng Xuất</div>
+
+            {/* Menu Items */}
+            <div className='py-1.5 px-2'>
+                {menuItems.map((item, idx) => (
+                    <button
+                        key={idx}
+                        ref={item.ref || null}
+                        onClick={item.onClick}
+                        className='w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 cursor-pointer group'
+                    >
+                        <span className='w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-rose-50 dark:group-hover:bg-rose-900/20 transition-colors'>
+                            <i className={`bx ${item.icon} text-lg text-gray-500 group-hover:text-rose-600 transition-colors`}></i>
+                        </span>
+                        <span className='font-medium group-hover:text-rose-600 transition-colors'>{item.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            {/* Divider */}
+            <div className='mx-4 h-px bg-gray-100 dark:bg-gray-800'></div>
+
+            {/* Logout */}
+            <div className='py-1.5 px-2 pb-2'>
+                <button
+                    onClick={() => handleLogout()}
+                    className='w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors duration-150 cursor-pointer group'
+                >
+                    <span className='w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-900/20 transition-colors'>
+                        <i className='bx bx-log-out text-lg text-gray-400 group-hover:text-red-500 transition-colors'></i>
+                    </span>
+                    <span className='font-medium group-hover:text-red-500 transition-colors'>Đăng Xuất</span>
+                </button>
+            </div>
         </div>
     )
 }

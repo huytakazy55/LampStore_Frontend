@@ -1,20 +1,24 @@
 import React from 'react'
 import { useCategories } from '../../../../hooks/useCategories'
 import Product1 from '../../../../assets/images/cameras-2.jpg'
+import { useNavigate } from 'react-router-dom'
 
-const CategorySale = () => {
+const CategorySale = () =>
+{
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
-  
+  const navigate = useNavigate()
+
   // Sử dụng React Query hook thay vì useState/useEffect
-  const { 
-    data: allCategories = [], 
-    isLoading: loading, 
+  const {
+    data: allCategories = [],
+    isLoading: loading,
     error,
-    isError 
+    isError
   } = useCategories()
 
   // Filter và limit categories (được cache tự động)
-  const categories = React.useMemo(() => {
+  const categories = React.useMemo(() =>
+  {
     const displayedCategories = allCategories.filter(category => category.isDisplayed !== false)
     return displayedCategories.slice(0, 4)
   }, [allCategories])
@@ -22,27 +26,35 @@ const CategorySale = () => {
 
 
 
-  const getImageSrc = (category) => {
-    if (category.imageUrl) {
+  const getImageSrc = (category) =>
+  {
+    if (category.imageUrl)
+    {
       // Kiểm tra nếu là URL từ Cloudinary (bắt đầu với https://)
-      if (category.imageUrl.startsWith('http')) {
+      if (category.imageUrl.startsWith('http'))
+      {
         return category.imageUrl // URL đầy đủ từ Cloudinary
-      } else {
+      } else
+      {
         // Legacy local images (cũ)
         return `${API_ENDPOINT}${category.imageUrl}`
       }
-    } else {
+    } else
+    {
       // Fallback về ảnh mặc định
       return Product1
     }
   }
 
-  const formatCategoryName = (name) => {
+  const formatCategoryName = (name) =>
+  {
     // Chia tên thành các từ và hiển thị trên nhiều dòng
     const words = name.split(' ')
-    if (words.length <= 2) {
+    if (words.length <= 2)
+    {
       return [name.toUpperCase()]
-    } else {
+    } else
+    {
       return [
         words.slice(0, Math.ceil(words.length / 2)).join(' ').toUpperCase(),
         words.slice(Math.ceil(words.length / 2)).join(' ').toUpperCase()
@@ -50,26 +62,30 @@ const CategorySale = () => {
     }
   }
 
-  const stripHtmlTags = (html) => {
+  const stripHtmlTags = (html) =>
+  {
     // Tạo một temporary div để strip HTML tags
     const tempDiv = document.createElement('div')
     tempDiv.innerHTML = html
     return tempDiv.textContent || tempDiv.innerText || ''
   }
 
-  const getDisplayDescription = (category) => {
-    if (!category.description) {
+  const getDisplayDescription = (category) =>
+  {
+    if (!category.description)
+    {
       return `Sản phẩm ${category.name.toLowerCase()}`
     }
-    
+
     const plainText = stripHtmlTags(category.description)
-    
-    return plainText.length > 25 ? 
-      `${plainText.substring(0, 25)}...` : 
+
+    return plainText.length > 25 ?
+      `${plainText.substring(0, 25)}...` :
       plainText
   }
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='w-full h-36 flex justify-center items-center mb-6 xl:mx-auto xl:max-w-[1440px]'>
         <div className="text-center">
@@ -80,7 +96,8 @@ const CategorySale = () => {
     )
   }
 
-  if (isError || categories.length === 0) {
+  if (isError || categories.length === 0)
+  {
     // Ẩn hoàn toàn section khi lỗi hoặc không có dữ liệu
     return null;
   }
@@ -89,24 +106,27 @@ const CategorySale = () => {
     <div className='w-full mb-8'>
       <div className='xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0'>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
-          {categories.map((category, index) => {
+          {categories.map((category, index) =>
+          {
             const nameLines = formatCategoryName(category.name)
             return (
-              <div 
-                key={category.id || index} 
+              <div
+                key={category.id || index}
                 className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden group border border-gray-200"
+                onClick={() => navigate(`/categories/${category.id}`)}
               >
                 <div className="relative h-40 overflow-hidden">
-                  <img 
-                    className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300' 
+                  <img
+                    className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
                     src={getImageSrc(category)}
                     alt={category.name}
-                    onError={(e) => {
+                    onError={(e) =>
+                    {
                       e.target.src = Product1
                     }}
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300"></div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
                     <div className="text-white">
                       <p className="text-xs font-medium mb-1 opacity-90">KHÁM PHÁ BỘ SƯU TẬP</p>
                       {nameLines.map((line, lineIndex) => (
@@ -123,24 +143,23 @@ const CategorySale = () => {
                       </p>
                     </div>
                     <div className="flex justify-end">
-                      <a 
-                        className='inline-flex items-center text-yellow-600 hover:text-yellow-700 font-semibold text-sm transition-colors duration-200 whitespace-nowrap' 
-                        href={`#category-${category.id}`}
+                      <span
+                        className='inline-flex items-center text-yellow-600 group-hover:text-yellow-700 font-semibold text-sm transition-colors duration-200 whitespace-nowrap'
                       >
-                        Xem ngay 
-                        <i className='bx bx-chevron-right ml-1 text-lg bg-yellow-400 hover:bg-yellow-500 rounded-full text-white transition-colors duration-200 w-6 h-6 flex items-center justify-center'></i>
-                      </a>
+                        Xem ngay
+                        <i className='bx bx-chevron-right ml-1 text-lg bg-yellow-400 group-hover:bg-yellow-500 rounded-full text-white transition-colors duration-200 w-6 h-6 flex items-center justify-center'></i>
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
             )
           })}
-          
+
           {/* Nếu có ít hơn 4 danh mục, hiển thị placeholder */}
           {categories.length < 4 && Array.from({ length: 4 - categories.length }).map((_, index) => (
-            <div 
-              key={`placeholder-${index}`} 
+            <div
+              key={`placeholder-${index}`}
               className="bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex flex-col justify-center items-center p-8 text-gray-400 hover:border-gray-400 hover:text-gray-500 transition-all duration-300"
               style={{ minHeight: '240px' }}
             >
@@ -151,7 +170,7 @@ const CategorySale = () => {
           ))}
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

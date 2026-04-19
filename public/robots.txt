@@ -1,3 +1,10 @@
-# https://www.robotstxt.org/robotstxt.html
+# CapyLumine - robots.txt
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+Disallow: /wishlist
+
+# Sitemaps
+Sitemap: https://capylumine.com/sitemap.xml
+Sitemap: https://capylumine.com/sitemap-dynamic.xml

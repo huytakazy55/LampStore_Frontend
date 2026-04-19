@@ -1,13 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
   <meta charset="utf-8" />
   <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon-16x16.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-react-app" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <meta name="theme-color" content="#f59e0b" />
+
+  <!-- Primary SEO Meta Tags -->
+  <title>CapyLumine - Đèn Ngủ & Đèn Trang Trí Cao Cấp | Đèn LED Nghệ Thuật, Đèn Bàn, Đèn Treo Tường</title>
+  <meta name="description"
+    content="CapyLumine - Cửa hàng đèn trang trí cao cấp hàng đầu Việt Nam. Chuyên đèn ngủ dễ thương, đèn capy capybara, đèn khung gỗ tranh anime LED, đèn bàn học, đèn LED nghệ thuật, đèn hình thú, đèn trái cây, đèn gấu bắc cực, đèn treo tường. Thiết kế độc đáo, ánh sáng ấm áp, an toàn cho mắt. Giao hàng toàn quốc, đổi trả miễn phí 15 ngày." />
+  <meta name="keywords"
+    content="đèn ngủ, đèn trang trí, đèn capy, đèn capybara, đèn khung gỗ, đèn khung tranh anime, đèn bàn, đèn LED nghệ thuật, đèn ngủ dễ thương, đèn anime, đèn hình thú, đèn trái cây, đèn gấu bắc cực, đèn treo tường, đèn phòng ngủ, đèn trang trí phòng, đèn LED, mua đèn ngủ online, đèn trang trí cao cấp, đèn ngủ giá rẻ, đèn LED đẹp, night light, CapyLumine, capy lumine, đèn ngủ cho bé, đèn trang trí quà tặng, đèn decor, đèn khung ảnh LED, đèn bàn học, lamp shop, đèn ngủ capybara" />
+  <meta name="author" content="CapyLumine" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="google-site-verification" content="RUmnTfMv6InSWgV3dYBS90RwKxug3MK-c6CUDw4CNjw" />
+  <link rel="canonical" href="https://capylumine.com/" />
+  <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/Capylumine.png" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="CapyLumine" />
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:url" content="https://capylumine.com/" />
+  <meta property="og:title" content="CapyLumine - Đèn Ngủ & Đèn Trang Trí Cao Cấp" />
+  <meta property="og:description"
+    content="Khám phá bộ sưu tập đèn ngủ dễ thương, đèn LED nghệ thuật, đèn anime, đèn hình thú Capybara. Thiết kế sang trọng, ánh sáng ấm áp. Giao hàng toàn quốc, đổi trả miễn phí 15 ngày." />
+  <meta property="og:image" content="https://capylumine.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="CapyLumine - Đèn trang trí cao cấp" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CapyLumine - Đèn Ngủ & Đèn Trang Trí Cao Cấp" />
+  <meta name="twitter:description"
+    content="Khám phá bộ sưu tập đèn ngủ dễ thương, đèn LED nghệ thuật, đèn anime, đèn hình thú. Giao hàng toàn quốc." />
+  <meta name="twitter:image" content="https://capylumine.com/og-image.png" />
+
+  <!-- Structured Data: Organization + Logo -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "CapyLumine",
+      "alternateName": "Capy Lumine",
+      "url": "https://capylumine.com",
+      "logo": "https://capylumine.com/Capylumine.png",
+      "image": "https://capylumine.com/og-image.png",
+      "description": "Cửa hàng đèn trang trí cao cấp - Đèn ngủ dễ thương, đèn LED nghệ thuật, đèn anime, đèn hình thú Capybara. Giao hàng toàn quốc.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "VN"
+      },
+      "sameAs": [],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "Vietnamese"
+      }
+    }
+  </script>
+
+  <!-- Structured Data: WebSite + SearchAction -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "CapyLumine",
+      "url": "https://capylumine.com",
+      "description": "CapyLumine - Cửa hàng đèn trang trí cao cấp hàng đầu Việt Nam",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://capylumine.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+  </script>
+
+  <!-- Structured Data: Online Store -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Store",
+      "name": "CapyLumine",
+      "url": "https://capylumine.com",
+      "logo": "https://capylumine.com/Capylumine.png",
+      "image": "https://capylumine.com/og-image.png",
+      "description": "Cửa hàng trực tuyến chuyên đèn ngủ, đèn trang trí, đèn LED nghệ thuật cao cấp. Đa dạng mẫu mã: đèn capy capybara, đèn khung gỗ tranh anime LED, đèn trái cây, đèn gấu bắc cực, đèn hình thú.",
+      "priceRange": "99000₫ - 999000₫",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "VN"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        "opens": "00:00",
+        "closes": "23:59"
+      },
+      "paymentAccepted": "Cash, Bank Transfer",
+      "currenciesAccepted": "VND"
+    }
+  </script>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link rel="stylesheet" type="text/css" charset="UTF-8"
@@ -16,11 +118,10 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-  <title>Paimon Lamp Store</title>
 </head>
 
 <body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <noscript>Bạn cần bật JavaScript để sử dụng ứng dụng này.</noscript>
   <div id="root"></div>
 </body>
 

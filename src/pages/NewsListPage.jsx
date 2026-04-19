@@ -52,8 +52,15 @@ const NewsListPage = () =>
     return (
         <>
             <Helmet>
-                <title>Tin tức & Góc nội thất | LampStore</title>
+                <title>Tin tức & Góc nội thất | CapyLumine</title>
                 <meta name="description" content="Cập nhật tin tức mới nhất về đèn trang trí, xu hướng nội thất và mẹo bố trí ánh sáng cho ngôi nhà của bạn." />
+                <link rel="canonical" href={`${window.location.origin}/news`} />
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content="Tin tức & Góc nội thất | CapyLumine" />
+                <meta property="og:description" content="Cập nhật tin tức mới nhất về đèn trang trí, xu hướng nội thất và mẹo bố trí ánh sáng." />
+                <meta property="og:locale" content="vi_VN" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="Tin tức & Góc nội thất | CapyLumine" />
             </Helmet>
 
             <TopBar />
@@ -61,18 +68,20 @@ const NewsListPage = () =>
             <NavbarPrimary />
 
             {/* Hero Banner */}
-            <div className="relative bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden">
-                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
-                <div className="w-full xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0 py-12 md:py-16 relative z-10">
-                    <nav className="flex items-center gap-2 text-sm text-gray-400 mb-6">
-                        <a href="/" className="hover:text-yellow-400 transition-colors">Trang chủ</a>
+            <div className="relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 overflow-hidden border-b border-amber-100">
+                <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d97706\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+                <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div className="absolute bottom-0 left-0 w-56 h-56 bg-yellow-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+                <div className="w-full xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0 py-10 md:py-14 relative z-10">
+                    <nav className="flex items-center gap-2 text-sm text-gray-500 mb-5">
+                        <a href="/" className="hover:text-amber-600 transition-colors font-medium">Trang chủ</a>
                         <i className='bx bx-chevron-right text-xs'></i>
-                        <span className="text-yellow-400 font-medium">Tin tức</span>
+                        <span className="text-amber-600 font-semibold">Tin tức</span>
                     </nav>
-                    <h1 className="text-3xl md:text-4xl font-bold mb-3">
-                        Tin tức & <span className="text-yellow-400">Góc nội thất</span>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+                        Tin tức & <span className="text-amber-600">Góc nội thất</span>
                     </h1>
-                    <p className="text-gray-300 max-w-xl text-sm md:text-base leading-relaxed">
+                    <p className="text-gray-500 max-w-xl text-sm md:text-base leading-relaxed">
                         Khám phá những xu hướng thiết kế chiếu sáng mới nhất, tips bố trí đèn trang trí và kiến thức hữu ích cho ngôi nhà hoàn hảo.
                     </p>
                 </div>

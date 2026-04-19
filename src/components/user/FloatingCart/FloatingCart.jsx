@@ -202,7 +202,7 @@ const FloatingCart = () =>
                 <div
                     ref={expandedRef}
                     onWheel={(e) => e.stopPropagation()}
-                    className={`absolute bottom-[72px] right-0 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300 origin-bottom-right ${isExpanded && cartItems.length > 0
+                    className={`absolute bottom-[72px] right-0 w-72 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden transition-all duration-300 origin-bottom-right ${isExpanded && cartItems.length > 0
                         ? 'opacity-100 scale-100 translate-y-0'
                         : 'opacity-0 scale-90 translate-y-4 pointer-events-none'
                         }`}
@@ -224,8 +224,8 @@ const FloatingCart = () =>
                     {/* Items list */}
                     <div className="max-h-64 overflow-y-auto custom-scrollbar">
                         {cartItems.slice(0, 5).map((item) => (
-                            <div key={item.key} className="flex items-center gap-2 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors group/item">
-                                <div className="w-10 h-10 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-200">
+                            <div key={item.key} className="flex items-center gap-2 px-4 py-3 border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group/item">
+                                <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex-shrink-0 overflow-hidden border border-gray-200 dark:border-gray-700">
                                     <img
                                         src={item.image}
                                         alt={item.name}
@@ -234,14 +234,14 @@ const FloatingCart = () =>
                                     />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-xs text-gray-800 font-medium line-clamp-1">{item.name}</p>
-                                    <p className="text-xs text-gray-400 mt-0.5">
+                                    <p className="text-xs text-gray-800 dark:text-gray-200 font-medium line-clamp-1">{item.name}</p>
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                                         x{item.quantity} · <span className="text-rose-500 font-medium">{formatPrice(item.finalPrice)}₫</span>
                                     </p>
                                 </div>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); removeFromCart(item.key); }}
-                                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/item:opacity-100 cursor-pointer"
+                                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-gray-300 dark:text-gray-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all opacity-0 group-hover/item:opacity-100 cursor-pointer"
                                     title="Xóa"
                                 >
                                     <i className="bx bx-x text-lg"></i>
@@ -256,9 +256,9 @@ const FloatingCart = () =>
                     </div>
 
                     {/* Footer */}
-                    <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
+                    <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
                         <div className="flex justify-between items-center mb-3">
-                            <span className="text-xs text-gray-500">Tổng cộng:</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Tổng cộng:</span>
                             <span className="text-base font-bold text-rose-600">{formatPrice(cartTotal)}₫</span>
                         </div>
                         <button

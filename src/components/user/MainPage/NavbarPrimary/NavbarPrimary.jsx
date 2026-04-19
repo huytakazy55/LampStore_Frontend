@@ -1,55 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import CategoryManage from '../../../../Services/CategoryManage'
+import { useCategories } from '../../../../hooks/useCategories'
+import { useProducts } from '../../../../hooks/useProducts'
 import ProductManage from '../../../../Services/ProductManage'
 import Product1 from '../../../../assets/images/cameras-2.jpg'
 
-const NavbarPrimary = () => {
+const NavbarPrimary = () =>
+{
   const navigate = useNavigate()
-  const [categories, setCategories] = useState([])
+  const { data: categories = [], isLoading: loading } = useCategories()
+  const { data: allProducts = [] } = useProducts()
   const [hoveredCategory, setHoveredCategory] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const [categoryProducts, setCategoryProducts] = useState({})
-  const [loading, setLoading] = useState(true)
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
   const hoverTimeoutRef = useRef(null)
   const animTimeoutRef = useRef(null)
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
-
-  const fetchCategories = async () => {
-    try {
-      setLoading(true)
-      const response = await CategoryManage.GetCategory()
-      const categoriesData = response.data.$values || response.data || []
-      setCategories(categoriesData)
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchProductsByCategory = async (categoryId) => {
+  const fetchProductsByCategory = async (categoryId) =>
+  {
     if (categoryProducts[categoryId]) return
 
-    try {
-      const response = await ProductManage.GetProduct()
-      const allProducts = response.data.$values || response.data || []
-
+    try
+    {
       const filteredProducts = allProducts.filter(product =>
         product.categoryId === categoryId
       ).slice(0, 6)
 
       const productsWithImages = await Promise.all(
-        filteredProducts.map(async (product) => {
-          try {
+        filteredProducts.map(async (product) =>
+        {
+          try
+          {
             const imageResponse = await ProductManage.GetProductImageById(product.id)
             const images = imageResponse.data.$values || imageResponse.data || []
             return { ...product, Images: images }
-          } catch (error) {
+          } catch (error)
+          {
             return { ...product, Images: [] }
           }
         })
@@ -59,37 +46,47 @@ const NavbarPrimary = () => {
         ...prev,
         [categoryId]: productsWithImages
       }))
-    } catch (error) {
+    } catch (error)
+    {
       console.error('Error fetching products:', error)
     }
   }
 
-  const handleCategoryHover = (category) => {
-    if (hoverTimeoutRef.current) {
+  const handleCategoryHover = (category) =>
+  {
+    if (hoverTimeoutRef.current)
+    {
       clearTimeout(hoverTimeoutRef.current)
       hoverTimeoutRef.current = null
     }
-    if (animTimeoutRef.current) {
+    if (animTimeoutRef.current)
+    {
       clearTimeout(animTimeoutRef.current)
       animTimeoutRef.current = null
     }
 
-    if (category) {
+    if (category)
+    {
       setHoveredCategory(category)
       setShowDropdown(true)
       fetchProductsByCategory(category.id)
-    } else {
-      hoverTimeoutRef.current = setTimeout(() => {
+    } else
+    {
+      hoverTimeoutRef.current = setTimeout(() =>
+      {
         setShowDropdown(false)
-        animTimeoutRef.current = setTimeout(() => {
+        animTimeoutRef.current = setTimeout(() =>
+        {
           setHoveredCategory(null)
         }, 300)
       }, 120)
     }
   }
 
-  const getImageSrc = (category) => {
-    if (category.imageUrl) {
+  const getImageSrc = (category) =>
+  {
+    if (category.imageUrl)
+    {
       return category.imageUrl.startsWith('http')
         ? category.imageUrl
         : `${API_ENDPOINT}${category.imageUrl}`
@@ -97,35 +94,43 @@ const NavbarPrimary = () => {
     return Product1
   }
 
-  const getProductImageSrc = (product) => {
+  const getProductImageSrc = (product) =>
+  {
     const imgs = product.Images || product.images || []
-    if (imgs.length > 0) {
+    if (imgs.length > 0)
+    {
       const path = imgs[0].imagePath || imgs[0].ImagePath
       if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`
     }
     return Product1
   }
 
-  const formatPrice = (price) => {
+  const formatPrice = (price) =>
+  {
     if (!price) return 'Liên hệ'
     return `${price.toLocaleString('vi-VN')}₫`
   }
 
-  const stripHtml = (html) => {
+  const stripHtml = (html) =>
+  {
     if (!html) return ''
-    try {
+    try
+    {
       const div = document.createElement('div')
       div.innerHTML = html
       return div.textContent || div.innerText || ''
-    } catch (e) {
+    } catch (e)
+    {
       return ''
     }
   }
 
   // Inject keyframe CSS into head instead of inline <style> to avoid React DOM errors
-  useEffect(() => {
+  useEffect(() =>
+  {
     const styleId = 'navbar-dropdown-keyframes'
-    if (!document.getElementById(styleId)) {
+    if (!document.getElementById(styleId))
+    {
       const style = document.createElement('style')
       style.id = styleId
       style.textContent = `
@@ -147,13 +152,15 @@ const NavbarPrimary = () => {
       `
       document.head.appendChild(style)
     }
-    return () => {
+    return () =>
+    {
       const el = document.getElementById(styleId)
       if (el) el.remove()
     }
   }, [])
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='bg-yellow-400 w-full h-12'>
         <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-center items-center h-full px-4 xl:px-0'>
@@ -166,18 +173,18 @@ const NavbarPrimary = () => {
   const products = hoveredCategory ? (categoryProducts[hoveredCategory.id] || []) : []
 
   return (
-    <div className='bg-yellow-400 w-full h-12'>
+    <div className='bg-yellow-400 dark:bg-gray-900 dark:border-b dark:border-amber-500/30 w-full h-12'>
       <nav className='relative xl:mx-auto xl:max-w-[1440px] flex justify-between items-center h-full px-4 xl:px-0'>
         <ul className='flex justify-start h-full relative overflow-x-auto overflow-y-hidden scrollbar-hide w-full'>
           {categories.map((category) => (
             <li
               key={category.id}
-              className={`flex items-center px-3 md:px-5 h-full border-r border-yellow-300/60 transition-colors duration-200 flex-shrink-0 cursor-pointer ${hoveredCategory?.id === category.id ? 'bg-yellow-500' : 'hover:bg-yellow-500/70'
+              className={`flex items-center px-3 md:px-5 h-full border-r border-yellow-300/60 dark:border-amber-500/20 transition-colors duration-200 flex-shrink-0 cursor-pointer ${hoveredCategory?.id === category.id ? 'bg-yellow-500 dark:bg-amber-500/20' : 'hover:bg-yellow-500/70 dark:hover:bg-amber-500/10'
                 }`}
               onMouseEnter={() => handleCategoryHover(category)}
               onMouseLeave={() => handleCategoryHover(null)}
             >
-              <a className='text-black font-medium text-xs md:text-sm whitespace-nowrap' href={`/categories/${category.id}`}
+              <a className='text-black dark:text-amber-400 font-medium text-xs md:text-sm whitespace-nowrap' href={`/categories/${category.id}`}
                 onClick={(e) => { e.preventDefault(); navigate(`/categories/${category.id}`) }}
               >
                 {category.name}
@@ -200,7 +207,7 @@ const NavbarPrimary = () => {
             onMouseLeave={() => handleCategoryHover(null)}
           >
             <div
-              className="bg-white/95 backdrop-blur-xl border border-gray-200/40 shadow-2xl rounded-b-sm overflow-hidden"
+              className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-200/40 dark:border-gray-700/40 shadow-2xl rounded-b-sm overflow-hidden"
               style={{ boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.2)' }}
             >
               <div className="flex h-[350px]">
@@ -209,7 +216,7 @@ const NavbarPrimary = () => {
                   <img
                     src={getImageSrc(hoveredCategory)}
                     alt={hoveredCategory.name}
-                    className="absolute inset-0 w-full h-full object-cover opacity-40"
+                    className="absolute inset-0 w-full h-full object-cover opacity-90"
                     onError={(e) => { e.target.src = Product1 }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent" />
@@ -225,7 +232,8 @@ const NavbarPrimary = () => {
                         : `Khám phá bộ sưu tập ${hoveredCategory.name.toLowerCase()}`}
                     </p>
                     <button
-                      onClick={() => {
+                      onClick={() =>
+                      {
                         setShowDropdown(false)
                         navigate(`/categories/${hoveredCategory.id}`)
                       }}
@@ -240,11 +248,11 @@ const NavbarPrimary = () => {
                 {/* Right — Products Grid */}
                 <div className="w-full lg:w-[70%] p-5">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-gray-800 text-base font-bold flex items-center gap-2">
+                    <h4 className="text-gray-800 dark:text-gray-100 text-base font-bold flex items-center gap-2">
                       <i className='bx bx-grid-alt text-amber-500' />
                       Sản phẩm nổi bật
                     </h4>
-                    <span className="text-gray-400 text-xs">{products.length} sản phẩm</span>
+                    <span className="text-gray-400 dark:text-gray-500 text-xs">{products.length} sản phẩm</span>
                   </div>
 
                   {products.length > 0 ? (
@@ -252,15 +260,16 @@ const NavbarPrimary = () => {
                       {products.map((product, idx) => (
                         <div
                           key={product.id || idx}
-                          className="flex items-center gap-3 p-2.5 rounded-sm bg-gray-50/80 hover:bg-amber-50 border border-transparent hover:border-amber-200 cursor-pointer group transition-all duration-200 hover:shadow-sm"
-                          onClick={() => {
+                          className="flex items-center gap-3 p-2.5 rounded-sm bg-gray-50/80 dark:bg-gray-800/80 hover:bg-amber-50 dark:hover:bg-amber-900/30 border border-transparent hover:border-amber-200 dark:hover:border-amber-700 cursor-pointer group transition-all duration-200 hover:shadow-sm"
+                          onClick={() =>
+                          {
                             setShowDropdown(false)
                             setHoveredCategory(null)
                             navigate(`/product/${product.id}`)
                           }}
                           style={{ animationDelay: `${idx * 50}ms` }}
                         >
-                          <div className="w-14 h-14 flex-shrink-0 rounded-sm overflow-hidden bg-white border border-gray-100">
+                          <div className="w-14 h-14 flex-shrink-0 rounded-sm overflow-hidden bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600">
                             <img
                               src={getProductImageSrc(product)}
                               alt={product.name}
@@ -269,20 +278,20 @@ const NavbarPrimary = () => {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h5 className="text-sm font-medium text-gray-800 truncate group-hover:text-amber-700 transition-colors duration-200">
+                            <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors duration-200">
                               {product.name}
                             </h5>
                             <p className="text-xs font-bold text-amber-600 mt-0.5">
                               {formatPrice(product.minPrice || product.price)}
                             </p>
                           </div>
-                          <i className='bx bx-chevron-right text-gray-300 group-hover:text-amber-500 transition-colors text-lg' />
+                          <i className='bx bx-chevron-right text-gray-300 dark:text-gray-600 group-hover:text-amber-500 transition-colors text-lg' />
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center h-[200px] text-gray-400">
-                      <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                    <div className="flex flex-col items-center justify-center h-[200px] text-gray-400 dark:text-gray-500">
+                      <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-3">
                         <i className='bx bx-loader-alt bx-spin text-xl text-gray-400' />
                       </div>
                       <p className="text-sm font-medium">Đang tải sản phẩm...</p>

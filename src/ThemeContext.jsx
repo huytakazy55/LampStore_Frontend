@@ -5,44 +5,54 @@ export const ThemeContext = createContext();
 
 export const useTheme = () => useContext(ThemeContext);
 
-export const ThemeProvider = ({ children }) => {
+export const ThemeProvider = ({ children }) =>
+{
   const [themeColors, setThemeColors] = useState({
     StartColorLinear: 'rgba(136,70,249,1)',
     EndColorLinear: 'rgba(255,175,0,1)'
   });
 
   // Dark mode state — check localStorage or system preference
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark, setIsDark] = useState(() =>
+  {
     const saved = localStorage.getItem('darkMode');
     if (saved !== null) return saved === 'true';
-    return window.matchMedia?.('(prefers-color-scheme: dark)').matches || false;
+    return false; // Default: light mode
   });
 
   // Apply dark class to <html>
-  useEffect(() => {
+  useEffect(() =>
+  {
     const root = document.documentElement;
-    if (isDark) {
+    if (isDark)
+    {
       root.classList.add('dark');
-    } else {
+    } else
+    {
       root.classList.remove('dark');
     }
     localStorage.setItem('darkMode', isDark);
   }, [isDark]);
 
   // Lấy màu từ localStorage nếu có
-  useEffect(() => {
+  useEffect(() =>
+  {
     const savedColors = localStorage.getItem('themeColors') ? JSON.parse(localStorage.getItem('themeColors')) : null;
-    if (savedColors) {
+    if (savedColors)
+    {
       setThemeColors(savedColors);
     }
   }, []);
 
   // Hàm thay đổi màu và lưu vào localStorage
-  const changeTheme = (colors) => {
-    if (typeof colors === 'object') {
+  const changeTheme = (colors) =>
+  {
+    if (typeof colors === 'object')
+    {
       setThemeColors(colors);
       localStorage.setItem('themeColors', JSON.stringify(colors));
-    } else {
+    } else
+    {
       console.error('Invalid colors object', colors);
     }
   };

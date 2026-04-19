@@ -4,18 +4,20 @@ import FormCart from './FormCart';
 import FormActionLogin from './FormActionLogin';
 import { useSelector } from 'react-redux';
 import 'react-tooltip/dist/react-tooltip.css';
-import Logo from "../../../../assets/images/LogoLamp3D.jpg"
+import { toast } from 'react-toastify';
+import Logo from "../../../../assets/images/Capylumine.png"
 import avatarimg from '../../../../assets/images/Avatar.jpg'
 import AuthService from '../../../../Services/AuthService';
 import FormProfile from './FormProfile';
 import SearchService from '../../../../Services/SearchService';
-import CategoryManage from '../../../../Services/CategoryManage';
+import { useCategories } from '../../../../hooks/useCategories';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../../CartContext';
 import { useWishlist } from '../../../../WishlistContext';
 import { useTheme } from '../../../../ThemeContext';
 
-const Header = () => {
+const Header = () =>
+{
   const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
   const navigate = useNavigate();
   const { cartCount, cartTotal } = useCart();
@@ -31,7 +33,7 @@ const Header = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const { data: categories = [] } = useCategories();
   const [suggestions, setSuggestions] = useState({ categories: [], products: [] });
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,74 +48,76 @@ const Header = () => {
   const searchRef = useRef(null);
   const avatarURL = useSelector((state) => state.avatar.avatar);
 
-  useEffect(() => {
-    if (token) {
+  useEffect(() =>
+  {
+    if (token)
+    {
       AuthService.profile()
-        .then((res) => {
+        .then((res) =>
+        {
           setAvatar({
             ProfileAvatar: res?.profileAvatar
           });
         })
-        .catch((error) => {
+        .catch((error) =>
+        {
           console.error("Error fetching profile:", error);
         });
-    } else {
+    } else
+    {
       setAvatar({ ProfileAvatar: '' });
     }
   }, [token]);
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await CategoryManage.GetCategory();
-        const categoriesData = response.data.$values || response.data || [];
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
 
-    fetchCategories();
-  }, []);
 
-  const toggleLoginForm = () => {
+  const toggleLoginForm = () =>
+  {
     setToggleLogin(!toggleLogin);
   }
 
-  const toggleArrow = () => {
+  const toggleArrow = () =>
+  {
     setArrowIcon(!arrowIcon);
   };
 
-  const closeArrow = () => {
+  const closeArrow = () =>
+  {
     setArrowIcon(false);
   };
 
-  const toggleActionLoginForm = () => {
+  const toggleActionLoginForm = () =>
+  {
     setToggleActionLogin(!toggleActionLogin);
   }
 
-  const toggleFormcart = () => {
+  const toggleFormcart = () =>
+  {
     setToggleCart(!toggleCart);
   }
 
-  const toggleFormProfile = () => {
+  const toggleFormProfile = () =>
+  {
     setToggleProfile(!toggleProfile);
   }
 
-  const handleClickOutside = (event, ref, buttonRef, toggleFunction) => {
+  const handleClickOutside = (event, ref, buttonRef, toggleFunction) =>
+  {
     if (ref.current && !ref.current.contains(event.target) &&
-      buttonRef.current && !buttonRef.current.contains(event.target)) {
+      buttonRef.current && !buttonRef.current.contains(event.target))
+    {
       toggleFunction(false);
     }
   };
 
   // Xử lý tìm kiếm nhanh
-  const handleQuickSearch = async () => {
+  const handleQuickSearch = async () =>
+  {
     if (!searchKeyword.trim()) return;
 
     setIsSearching(true);
-    try {
+    try
+    {
       const result = await SearchService.quickSearch(searchKeyword);
 
       // Chuyển đến trang kết quả tìm kiếm
@@ -124,16 +128,20 @@ const Header = () => {
           categoryId: selectedCategory
         }
       });
-    } catch (error) {
+    } catch (error)
+    {
       console.error('Search error:', error);
-    } finally {
+    } finally
+    {
       setIsSearching(false);
     }
   };
 
   // Debounced search suggestions
-  const fetchSuggestions = useCallback(async (keyword) => {
-    if (!keyword.trim()) {
+  const fetchSuggestions = useCallback(async (keyword) =>
+  {
+    if (!keyword.trim())
+    {
       setSuggestions({ categories: [], products: [] });
       setShowSuggestions(false);
       return;
@@ -147,7 +155,8 @@ const Header = () => {
     ).slice(0, 3);
 
     // Fetch product suggestions from API
-    try {
+    try
+    {
       const result = await SearchService.quickSearch(keyword, 1, 5);
       const products = result?.$values || result?.products?.$values || result?.products || [];
       setSuggestions({
@@ -155,25 +164,29 @@ const Header = () => {
         products: Array.isArray(products) ? products.slice(0, 6) : []
       });
       setShowSuggestions(true);
-    } catch (error) {
+    } catch (error)
+    {
       setSuggestions({ categories: matchedCategories, products: [] });
       setShowSuggestions(matchedCategories.length > 0);
     }
   }, [categories]);
 
   // Handle input change with debounce
-  const handleSearchInputChange = (e) => {
+  const handleSearchInputChange = (e) =>
+  {
     const value = e.target.value;
     setSearchKeyword(value);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
+    debounceRef.current = setTimeout(() =>
+    {
       fetchSuggestions(value);
     }, 300);
   };
 
   // Handle suggestion click - category
-  const handleCategorySuggestionClick = (category) => {
+  const handleCategorySuggestionClick = (category) =>
+  {
     setShowSuggestions(false);
     setSearchKeyword('');
     navigate('/search', {
@@ -185,42 +198,49 @@ const Header = () => {
   };
 
   // Handle suggestion click - product
-  const handleProductSuggestionClick = (product) => {
+  const handleProductSuggestionClick = (product) =>
+  {
     setShowSuggestions(false);
     setSearchKeyword(product.name || '');
     navigate(`/product/${product.id}`);
   };
 
   // Xử lý Enter key
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = (e) =>
+  {
+    if (e.key === 'Enter')
+    {
       setShowSuggestions(false);
       handleQuickSearch();
     }
   };
 
 
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
+  useEffect(() =>
+  {
+    const handleOutsideClick = (event) =>
+    {
       handleClickOutside(event, popupRef, buttonRef, setToggleCart);
       handleClickOutside(event, popupActionRef, buttonActionRef, setToggleActionLogin);
-      handleClickOutside(event, popupProfileRef, buttonProfileRef, setToggleProfile);
 
       // Close suggestions when click outside
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target) &&
-        searchRef.current && !searchRef.current.contains(event.target)) {
+        searchRef.current && !searchRef.current.contains(event.target))
+      {
         setShowSuggestions(false);
       }
     };
 
     document.addEventListener('click', handleOutsideClick, true);
-    return () => {
+    return () =>
+    {
       document.removeEventListener('click', handleOutsideClick, true);
     };
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => {
+  useEffect(() =>
+  {
     setMobileMenuOpen(false);
   }, [navigate]);
 
@@ -230,12 +250,12 @@ const Header = () => {
         {/* Logo */}
         <div className='flex-shrink-0'>
           <a href="/" className='flex items-center gap-2 no-underline group'>
-            <div className='w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-amber-300/50 transition-all duration-300 group-hover:scale-105'>
-              <i className='bx bx-bulb text-xl md:text-3xl text-white'></i>
+            <div className='w-10 h-10 md:w-14 md:h-14 rounded-lg overflow-hidden shadow-md group-hover:shadow-amber-300/50 transition-all duration-300 group-hover:scale-105'>
+              <img src={Logo} alt="CapyLumine" className='w-full h-full object-cover' />
             </div>
             <div className='hidden sm:block'>
               <div className='text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white transition-colors duration-300'>
-                Capy<span className='text-amber-500'>Lumiere</span>
+                Capy<span className='text-amber-500'>Lumine</span>
               </div>
               <div className='text-[9px] md:text-[10px] text-gray-400 dark:text-gray-500 font-medium tracking-[0.15em] uppercase -mt-1 transition-colors duration-300'>
                 Premium Lighting
@@ -255,10 +275,19 @@ const Header = () => {
         </div>
 
         {/* Search bar - hidden on mobile, shown on md+ */}
-        <div className='hidden md:flex border-2 border-yellow-400 rounded-[30px] w-2/5 lg:w-1/2 h-11 relative' ref={searchRef}>
+        <div className='hidden md:flex items-center bg-gray-50 dark:bg-gray-800 rounded-full w-2/5 lg:w-1/2 h-11 relative border-2 border-amber-400 dark:border-amber-500 focus-within:ring-2 focus-within:ring-amber-400/20 focus-within:bg-white dark:focus-within:bg-gray-900 transition-all duration-300 shadow-sm hover:shadow-md' ref={searchRef}>
+          {/* Search icon */}
+          <div className='flex items-center justify-center pl-4 pr-1'>
+            {isSearching ? (
+              <i className='bx bx-loader-alt bx-spin text-amber-500 text-lg'></i>
+            ) : (
+              <i className='bx bx-search text-gray-400 dark:text-gray-500 text-lg'></i>
+            )}
+          </div>
+
           {/* Input tìm kiếm */}
           <input
-            className='caret-y border-yellow-400 outline-0 border-0 w-3/4 py-[2px] px-[20px] h-full rounded-l-[28px]'
+            className='flex-1 bg-transparent outline-0 border-0 py-[2px] px-2 h-full text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500'
             type="text"
             placeholder='Tìm kiếm sản phẩm...'
             value={searchKeyword}
@@ -268,26 +297,36 @@ const Header = () => {
             autoComplete='off'
           />
 
+          {/* Clear button */}
+          {searchKeyword && (
+            <button
+              className='flex items-center justify-center w-7 h-7 mr-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200'
+              onClick={() => { setSearchKeyword(''); setSuggestions({ categories: [], products: [] }); setShowSuggestions(false); }}
+            >
+              <i className='bx bx-x text-gray-400 text-lg'></i>
+            </button>
+          )}
+
           {/* Search Suggestions Dropdown */}
           {showSuggestions && (suggestions.categories.length > 0 || suggestions.products.length > 0) && (
             <div
               ref={suggestionsRef}
-              className='absolute top-[calc(100%+4px)] left-0 w-full bg-white rounded-xl shadow-xl border border-gray-100 z-[60] overflow-hidden animate-fadeIn'
+              className='absolute top-[calc(100%+8px)] left-0 w-full bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 z-[60] overflow-hidden animate-fadeIn backdrop-blur-sm'
             >
               {/* Category suggestions */}
               {suggestions.categories.length > 0 && (
-                <div className='border-b border-gray-100'>
+                <div className='border-b border-gray-100 dark:border-gray-800'>
                   {suggestions.categories.map((cat) => (
                     <div
                       key={`cat-${cat.id}`}
-                      className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-yellow-50 transition-colors duration-150 group'
+                      className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors duration-150 group'
                       onClick={() => handleCategorySuggestionClick(cat)}
                     >
-                      <div className='w-7 h-7 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-200 transition-colors'>
-                        <i className='bx bx-category text-yellow-600 text-sm'></i>
+                      <div className='w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-200 dark:group-hover:bg-amber-800/50 transition-colors'>
+                        <i className='bx bx-category text-amber-600 dark:text-amber-400 text-sm'></i>
                       </div>
-                      <span className='text-sm text-gray-700 group-hover:text-gray-900'>
-                        Tìm trong danh mục <strong className='text-yellow-600'>"{cat.name}"</strong>
+                      <span className='text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'>
+                        Tìm trong danh mục <strong className='text-amber-600 dark:text-amber-400'>"{cat.name}"</strong>
                       </span>
                       <i className='bx bx-chevron-right text-gray-400 ml-auto text-lg'></i>
                     </div>
@@ -298,15 +337,15 @@ const Header = () => {
               {/* Product suggestions */}
               {suggestions.products.length > 0 && (
                 <div className='py-1'>
-                  <div className='px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider'>Sản phẩm gợi ý</div>
+                  <div className='px-4 py-1.5 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider'>Sản phẩm gợi ý</div>
                   {suggestions.products.map((product, index) => (
                     <div
                       key={`prod-${product.id || index}`}
-                      className='flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 transition-colors duration-150 group'
+                      className='flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 group'
                       onClick={() => handleProductSuggestionClick(product)}
                     >
-                      <i className='bx bx-search text-gray-400 text-base group-hover:text-yellow-500 transition-colors'></i>
-                      <span className='text-sm text-gray-600 group-hover:text-gray-900 truncate'>{product.name}</span>
+                      <i className='bx bx-search text-gray-400 text-base group-hover:text-amber-500 transition-colors'></i>
+                      <span className='text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white truncate'>{product.name}</span>
                     </div>
                   ))}
                 </div>
@@ -315,24 +354,24 @@ const Header = () => {
           )}
 
           {/* Dropdown danh mục */}
-          <div className='hidden lg:block w-1/4 h-full relative border-l border-gray-300'>
+          <div className='hidden lg:flex items-center h-full relative w-[30%] border-l border-amber-300 dark:border-amber-600'>
             <div
-              className='flex items-center justify-between h-full px-4 cursor-pointer select-none hover:bg-gray-50 transition-colors duration-200'
+              className='flex items-center justify-between w-full h-full px-4 cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 rounded-r-full'
               onClick={() => setArrowIcon(!arrowIcon)}
               onBlur={() => setTimeout(() => setArrowIcon(false), 150)}
               tabIndex={0}
             >
-              <span className='text-sm font-medium text-gray-600 truncate pr-2'>
+              <span className='text-sm font-medium text-gray-500 dark:text-gray-400 truncate'>
                 {selectedCategory
                   ? categories.find(c => String(c.id) === String(selectedCategory))?.name || 'Tất cả danh mục'
                   : 'Tất cả danh mục'}
               </span>
-              <i className={`bx bx-chevron-down text-gray-500 text-base transition-transform duration-300 ${arrowIcon ? 'rotate-180' : ''}`}></i>
+              <i className={`bx bx-chevron-down text-gray-400 text-sm transition-transform duration-300 flex-shrink-0 ${arrowIcon ? 'rotate-180' : ''}`}></i>
             </div>
 
             {/* Custom Dropdown Menu */}
             <div
-              className={`absolute top-[calc(100%+6px)] right-0 w-full min-w-[200px] bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden transition-all duration-300 origin-top ${arrowIcon
+              className={`absolute top-[calc(100%+8px)] right-0 w-full min-w-[200px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden transition-all duration-300 origin-top ${arrowIcon
                 ? 'opacity-100 scale-y-100 translate-y-0'
                 : 'opacity-0 scale-y-0 -translate-y-2 pointer-events-none'
                 }`}
@@ -340,45 +379,30 @@ const Header = () => {
               <div className='py-1.5 max-h-[280px] overflow-y-auto custom-scrollbar'>
                 <div
                   className={`flex items-center gap-2.5 px-4 py-2.5 cursor-pointer transition-all duration-200 text-sm ${selectedCategory === ''
-                    ? 'bg-yellow-50 text-yellow-700 font-semibold border-l-[3px] border-yellow-400'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:pl-5 border-l-[3px] border-transparent'
+                    ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold border-l-[3px] border-amber-400'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white hover:pl-5 border-l-[3px] border-transparent'
                     }`}
                   onClick={() => { setSelectedCategory(''); setArrowIcon(false); }}
                 >
-                  <i className={`bx bx-category text-base ${selectedCategory === '' ? 'text-yellow-500' : 'text-gray-400'}`}></i>
+                  <i className={`bx bx-category text-base ${selectedCategory === '' ? 'text-amber-500' : 'text-gray-400'}`}></i>
                   Tất cả danh mục
                 </div>
                 {categories.map((category) => (
                   <div
                     key={category.id}
                     className={`flex items-center gap-2.5 px-4 py-2.5 cursor-pointer transition-all duration-200 text-sm ${String(selectedCategory) === String(category.id)
-                      ? 'bg-yellow-50 text-yellow-700 font-semibold border-l-[3px] border-yellow-400'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:pl-5 border-l-[3px] border-transparent'
+                      ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold border-l-[3px] border-amber-400'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white hover:pl-5 border-l-[3px] border-transparent'
                       }`}
                     onClick={() => { setSelectedCategory(String(category.id)); setArrowIcon(false); }}
                   >
-                    <i className={`bx bx-lamp text-base ${String(selectedCategory) === String(category.id) ? 'text-yellow-500' : 'text-gray-400'}`}></i>
+                    <i className={`bx bx-lamp text-base ${String(selectedCategory) === String(category.id) ? 'text-amber-500' : 'text-gray-400'}`}></i>
                     {category.name}
                   </div>
                 ))}
               </div>
             </div>
           </div>
-
-          {/* Nút tìm kiếm */}
-          <button
-            className='w-[10%] min-w-[44px] h-full bg-yellow-400 text-slate-100 group flex items-center justify-center rounded-r-[28px]'
-            onClick={handleQuickSearch}
-            disabled={isSearching}
-          >
-            {isSearching ? (
-              <i className='bx bx-loader-alt bx-spin text-slate-100 text-h3'></i>
-            ) : (
-              <i className='bx bx-search text-slate-100 text-h3 transition-transform duration-100 group-hover:scale-110'></i>
-            )}
-          </button>
-
-
         </div>
 
         {/* Action icons - desktop */}
@@ -391,7 +415,15 @@ const Header = () => {
                   style={{ transform: isDark ? 'rotate(360deg)' : 'rotate(0deg)' }}></i>
               </div>
             </li>
-            <li className='group relative cursor-pointer' onClick={() => navigate('/wishlist')}>
+            <li className='group relative cursor-pointer' onClick={() =>
+            {
+              if (!isAuthenticated)
+              {
+                toast.info('Vui lòng đăng nhập để xem danh sách yêu thích!');
+                return;
+              }
+              navigate('/wishlist');
+            }}>
               <i className='bx bx-heart text-h2 leading-none align-middle text-red-600 cursor-pointer transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
               {wishlistCount > 0 && (
                 <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-rose-500 rounded-[50%] text-center text-xs leading-5 text-white font-medium'>{wishlistCount}</div>
@@ -409,9 +441,7 @@ const Header = () => {
               </div>
             </li>
             <FormLogin toggleLogin={toggleLogin} setToggleLogin={setToggleLogin} />
-            <div onClick={toggleFormProfile} >
-              <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} />
-            </div>
+
             {
               isAuthenticated ?
                 <>
@@ -432,9 +462,16 @@ const Header = () => {
 
       {/* Mobile search bar - shown below header on mobile */}
       <div className='md:hidden px-4 pb-3' ref={searchRef}>
-        <div className='flex border-2 border-yellow-400 rounded-[30px] h-10 relative'>
+        <div className='flex items-center bg-gray-50 dark:bg-gray-800 rounded-full h-10 relative border-2 border-amber-400 dark:border-amber-500 focus-within:ring-2 focus-within:ring-amber-400/20 focus-within:bg-white dark:focus-within:bg-gray-900 transition-all duration-300 shadow-sm'>
+          <div className='flex items-center justify-center pl-3.5 pr-1'>
+            {isSearching ? (
+              <i className='bx bx-loader-alt bx-spin text-amber-500 text-base'></i>
+            ) : (
+              <i className='bx bx-search text-gray-400 dark:text-gray-500 text-base'></i>
+            )}
+          </div>
           <input
-            className='caret-y border-yellow-400 outline-0 border-0 w-full py-[2px] px-[16px] h-full rounded-l-[28px] text-sm'
+            className='flex-1 bg-transparent outline-0 border-0 py-[2px] px-2 h-full text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500'
             type="text"
             placeholder='Tìm kiếm sản phẩm...'
             value={searchKeyword}
@@ -443,30 +480,27 @@ const Header = () => {
             onFocus={() => { if (searchKeyword.trim()) fetchSuggestions(searchKeyword); }}
             autoComplete='off'
           />
-          <button
-            className='w-12 h-full bg-yellow-400 text-slate-100 group flex items-center justify-center rounded-r-[28px]'
-            onClick={handleQuickSearch}
-            disabled={isSearching}
-          >
-            {isSearching ? (
-              <i className='bx bx-loader-alt bx-spin text-slate-100 text-lg'></i>
-            ) : (
-              <i className='bx bx-search text-slate-100 text-lg transition-transform duration-100 group-hover:scale-110'></i>
-            )}
-          </button>
+          {searchKeyword && (
+            <button
+              className='flex items-center justify-center w-6 h-6 mr-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200'
+              onClick={() => { setSearchKeyword(''); setSuggestions({ categories: [], products: [] }); setShowSuggestions(false); }}
+            >
+              <i className='bx bx-x text-gray-400 text-base'></i>
+            </button>
+          )}
         </div>
         {/* Mobile Search Suggestions */}
         {showSuggestions && (suggestions.categories.length > 0 || suggestions.products.length > 0) && (
           <div
             ref={suggestionsRef}
-            className='w-full bg-white rounded-xl shadow-xl border border-gray-100 z-[60] overflow-hidden animate-fadeIn mt-1'
+            className='w-full bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 z-[60] overflow-hidden animate-fadeIn mt-2'
           >
             {suggestions.categories.length > 0 && (
-              <div className='border-b border-gray-100'>
+              <div className='border-b border-gray-100 dark:border-gray-800'>
                 {suggestions.categories.map((cat) => (
-                  <div key={`mcat-${cat.id}`} className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-yellow-50 transition-colors' onClick={() => handleCategorySuggestionClick(cat)}>
-                    <div className='w-6 h-6 rounded-lg bg-yellow-100 flex items-center justify-center flex-shrink-0'><i className='bx bx-category text-yellow-600 text-xs'></i></div>
-                    <span className='text-sm text-gray-700 truncate'>Danh mục <strong className='text-yellow-600'>"{cat.name}"</strong></span>
+                  <div key={`mcat-${cat.id}`} className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors' onClick={() => handleCategorySuggestionClick(cat)}>
+                    <div className='w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0'><i className='bx bx-category text-amber-600 dark:text-amber-400 text-xs'></i></div>
+                    <span className='text-sm text-gray-700 dark:text-gray-300 truncate'>Danh mục <strong className='text-amber-600 dark:text-amber-400'>"{cat.name}"</strong></span>
                   </div>
                 ))}
               </div>
@@ -474,9 +508,9 @@ const Header = () => {
             {suggestions.products.length > 0 && (
               <div className='py-1'>
                 {suggestions.products.map((product, index) => (
-                  <div key={`mprod-${product.id || index}`} className='flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 transition-colors' onClick={() => handleProductSuggestionClick(product)}>
+                  <div key={`mprod-${product.id || index}`} className='flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors' onClick={() => handleProductSuggestionClick(product)}>
                     <i className='bx bx-search text-gray-400 text-sm'></i>
-                    <span className='text-sm text-gray-600 truncate'>{product.name}</span>
+                    <span className='text-sm text-gray-600 dark:text-gray-400 truncate'>{product.name}</span>
                   </div>
                 ))}
               </div>
@@ -520,7 +554,7 @@ const Header = () => {
                   <i className='bx bx-shopping-bag text-xl text-gray-600'></i>
                   <span className='text-sm'>Giỏ hàng</span>
                 </div>
-                <div onClick={() => { navigate('/wishlist'); setMobileMenuOpen(false); }} className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer'>
+                <div onClick={() => { if (!isAuthenticated) { toast.info('Vui lòng đăng nhập để xem danh sách yêu thích!'); } else { navigate('/wishlist'); } setMobileMenuOpen(false); }} className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer'>
                   <i className='bx bx-heart text-xl text-red-500'></i>
                   <span className='text-sm'>Yêu thích</span>
                   {wishlistCount > 0 && (
@@ -544,6 +578,9 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      {/* Profile Modal - rendered at top level for correct fixed positioning */}
+      <FormProfile popupProfileRef={popupProfileRef} toggleProfile={toggleProfile} setToggleProfile={setToggleProfile} />
     </>
   )
 }

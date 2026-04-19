@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import ProductManage from '../../../../Services/ProductManage';
+import React, { useState, useMemo } from 'react';
+import { useProducts } from '../../../../hooks/useProducts';
 import { useNavigate } from 'react-router-dom';
 import defaultImg from '../../../../assets/images/cameras-2.jpg';
 import AddToCartModal from '../AddToCartModal';
@@ -7,24 +7,29 @@ import { useWishlist } from '../../../../WishlistContext';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
   if (!price) return '0';
   return price.toLocaleString('vi-VN');
 };
 
-const getImageSrc = (product) => {
-  if (product.images && product.images.length > 0) {
+const getImageSrc = (product) =>
+{
+  if (product.images && product.images.length > 0)
+  {
     const path = product.images[0].imagePath || product.images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
-  if (product.Images && product.Images.length > 0) {
+  if (product.Images && product.Images.length > 0)
+  {
     const path = product.Images[0].imagePath || product.Images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
   return defaultImg;
 };
 
-const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist, onToggleWishlist }) => {
+const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist, onToggleWishlist }) =>
+{
   const variant = product.variant;
   const price = variant?.discountPrice || variant?.price || 0;
   const originalPrice = variant?.price || 0;
@@ -91,7 +96,8 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist
           </div>
           <button
             className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95"
-            onClick={(e) => {
+            onClick={(e) =>
+            {
               e.stopPropagation();
               onAddToCartClick(product);
             }}
@@ -104,52 +110,42 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist
   );
 };
 
-const ProductCarousel = () => {
+const ProductCarousel = () =>
+{
   const [activeTab, setActiveTab] = useState('featured');
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: allProducts = [], isLoading: loading } = useProducts();
   const [cartModalProduct, setCartModalProduct] = useState(null);
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await ProductManage.GetProduct();
-        const allProducts = response.data?.$values || response.data || [];
-
-        const productsWithDetails = allProducts.map((product) => {
-          const variant = product.variant;
-          const imgData = product.images?.$values || product.images;
-          const images = Array.isArray(imgData) ? imgData : [];
-          return { ...product, variant, images };
-        });
-
-        setProducts(productsWithDetails);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const products = useMemo(() =>
+  {
+    return allProducts.map((product) =>
+    {
+      const variant = product.variant;
+      const imgData = product.images?.$values || product.images;
+      const images = Array.isArray(imgData) ? imgData : [];
+      return { ...product, variant, images };
+    });
+  }, [allProducts]);
 
   // Filter products theo tab
-  const getFilteredProducts = () => {
+  const getFilteredProducts = () =>
+  {
     let filtered = [...products];
-    switch (activeTab) {
+    switch (activeTab)
+    {
       case 'featured':
         filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case 'onsale':
-        filtered = filtered.filter(p => {
+        filtered = filtered.filter(p =>
+        {
           const v = p.variant;
           return v && v.discountPrice && v.discountPrice < v.price;
         });
-        filtered.sort((a, b) => {
+        filtered.sort((a, b) =>
+        {
           const discountA = a.variant ? (a.variant.price - a.variant.discountPrice) / a.variant.price : 0;
           const discountB = b.variant ? (b.variant.price - b.variant.discountPrice) / b.variant.price : 0;
           return discountB - discountA;
@@ -172,20 +168,16 @@ const ProductCarousel = () => {
     { key: 'toprated', label: 'Đánh giá cao', icon: 'bx bxs-like' },
   ];
 
-  // Timeout để tránh spinner vô hạn
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (loading) setLoading(false);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, [loading]);
+
 
   // Ẩn section nếu không có sản phẩm
-  if (!loading && products.length === 0) {
+  if (!loading && products.length === 0)
+  {
     return null;
   }
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='w-full py-8 md:py-16 mb-4 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="text-center">
@@ -198,20 +190,22 @@ const ProductCarousel = () => {
 
   return (
     <div className='w-full mb-4 xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0'>
-      <div className='flex justify-center items-center gap-2 md:gap-3 mb-6 md:mb-8'>
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            className={`flex items-center gap-1.5 md:gap-2 px-4 md:px-6 py-2 md:py-2.5 rounded-sm text-xs md:text-sm font-medium transition-all duration-300 ${activeTab === tab.key
-              ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-lg shadow-amber-200 scale-105'
-              : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
-              }`}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            <i className={`${tab.icon} text-sm md:text-base`}></i>
-            {tab.label}
-          </button>
-        ))}
+      <div className='flex justify-center items-center mb-6 md:mb-8'>
+        <div className='inline-flex items-center bg-gray-50 dark:bg-gray-800/80 rounded-full p-1 md:p-1.5 border border-gray-200/60 dark:border-gray-700/50 shadow-sm'>
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              className={`relative flex items-center gap-1.5 md:gap-2 px-5 md:px-7 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-semibold transition-all duration-300 ${activeTab === tab.key
+                ? 'bg-white dark:bg-gray-700 text-amber-600 dark:text-amber-400 shadow-md'
+                : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                }`}
+              onClick={() => setActiveTab(tab.key)}
+            >
+              <i className={`${tab.icon} text-sm md:text-base`}></i>
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className='tab-content'>
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4'>

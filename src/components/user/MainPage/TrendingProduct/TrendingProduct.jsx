@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Slider3 from "react-slick";
-import ProductManage from '../../../../Services/ProductManage';
+import { useProducts } from '../../../../hooks/useProducts';
 import { useNavigate } from 'react-router-dom';
 import defaultImg from '../../../../assets/images/cameras-2.jpg';
 import AddToCartModal from '../AddToCartModal';
@@ -8,17 +8,21 @@ import { useWishlist } from '../../../../WishlistContext';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
 
-const formatPrice = (price) => {
+const formatPrice = (price) =>
+{
   if (!price) return '0';
   return price.toLocaleString('vi-VN');
 };
 
-const getImageSrc = (product) => {
-  if (product.images && product.images.length > 0) {
+const getImageSrc = (product) =>
+{
+  if (product.images && product.images.length > 0)
+  {
     const path = product.images[0].imagePath || product.images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
-  if (product.Images && product.Images.length > 0) {
+  if (product.Images && product.Images.length > 0)
+  {
     const path = product.Images[0].imagePath || product.Images[0].ImagePath;
     if (path) return path.startsWith('http') ? path : `${API_ENDPOINT}${path}`;
   }
@@ -43,39 +47,24 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
-const TrendingProduct = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const TrendingProduct = () =>
+{
+  const { data: allProducts = [], isLoading: loading } = useProducts();
   const [cartModalProduct, setCartModalProduct] = useState(null);
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  useEffect(() => {
-    const fetchTrending = async () => {
-      try {
-        setLoading(true);
-        const response = await ProductManage.GetProduct();
-        const allProducts = response.data?.$values || response.data || [];
-
-        const sorted = [...allProducts].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
-
-        const productsWithDetails = sorted.slice(0, 12).map((product) => {
-          const variant = product.variant;
-          const imgData = product.images?.$values || product.images;
-          const images = Array.isArray(imgData) ? imgData : [];
-          return { ...product, variant, images };
-        });
-
-        setProducts(productsWithDetails);
-      } catch (error) {
-        console.error('Error fetching trending products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTrending();
-  }, []);
+  const products = useMemo(() =>
+  {
+    const sorted = [...allProducts].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+    return sorted.slice(0, 12).map((product) =>
+    {
+      const variant = product.variant;
+      const imgData = product.images?.$values || product.images;
+      const images = Array.isArray(imgData) ? imgData : [];
+      return { ...product, variant, images };
+    });
+  }, [allProducts]);
 
   const slidesToShow = Math.min(products.length, 4) || 1;
 
@@ -114,20 +103,16 @@ const TrendingProduct = () => {
     ]
   };
 
-  // Timeout để tránh spinner vô hạn khi API fail
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (loading) setLoading(false);
-    }, 8000);
-    return () => clearTimeout(timer);
-  }, [loading]);
+
 
   // Ẩn hoàn toàn nếu không có data (API fail hoặc không có sản phẩm)
-  if (!loading && products.length === 0) {
+  if (!loading && products.length === 0)
+  {
     return null;
   }
 
-  if (loading) {
+  if (loading)
+  {
     return (
       <div className='w-full py-8 md:py-16 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="text-center">
@@ -145,7 +130,8 @@ const TrendingProduct = () => {
       </div>
       <div>
         <Slider3 key={`slider-${products.length}`} {...settings}>
-          {products.map((product) => {
+          {products.map((product) =>
+          {
             const variant = product.variant;
             const price = variant?.discountPrice || variant?.price || 0;
 
@@ -180,7 +166,8 @@ const TrendingProduct = () => {
                       </div>
                       <div
                         className='w-7 h-7 md:w-9 md:h-9 rounded-sm bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
-                        onClick={(e) => {
+                        onClick={(e) =>
+                        {
                           e.stopPropagation();
                           setCartModalProduct(product);
                         }}

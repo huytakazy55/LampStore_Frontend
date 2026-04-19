@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import Slider2 from "react-slick";
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../../../../WishlistContext';
+import { useProducts } from '../../../../hooks/useProducts';
 import AddToCartModal from '../AddToCartModal';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT;
@@ -25,7 +25,8 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
-const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist, onAddToCartClick }) => {
+const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist, onAddToCartClick }) =>
+{
   const images = product.images?.$values || product.images || [];
   const firstImage = images.length > 0 ? images[0] : null;
   const imageSrc = firstImage
@@ -39,7 +40,8 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist, onA
   const hasDiscount = discountPrice > 0 && discountPrice < price;
   const discountPercent = hasDiscount ? Math.round((1 - discountPrice / price) * 100) : 0;
 
-  const formatPrice = (p) => {
+  const formatPrice = (p) =>
+  {
     if (!p) return '0';
     return new Intl.NumberFormat('vi-VN').format(p);
   };
@@ -114,35 +116,20 @@ const ProductCardItem = ({ product, onClick, isInWishlist, onToggleWishlist, onA
   );
 };
 
-const SectionProductCardCarousel = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const SectionProductCardCarousel = () =>
+{
+  const { data: allProducts = [], isLoading: loading } = useProducts();
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [cartModalProduct, setCartModalProduct] = useState(null);
 
-  useEffect(() => {
-    const fetchBestSelling = async () => {
-      try {
-        const response = await axios.get(`${API_ENDPOINT}/api/Products`);
-        const allProducts = response.data?.$values || response.data || [];
-
-        // Sort by SellCount descending and take top 12
-        const sorted = [...allProducts]
-          .filter(p => p.status)
-          .sort((a, b) => (b.sellCount || 0) - (a.sellCount || 0))
-          .slice(0, 12);
-
-        setProducts(sorted);
-      } catch (error) {
-        console.error('Error fetching best selling products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBestSelling();
-  }, []);
+  const products = useMemo(() =>
+  {
+    return [...allProducts]
+      .filter(p => p.status)
+      .sort((a, b) => (b.sellCount || 0) - (a.sellCount || 0))
+      .slice(0, 12);
+  }, [allProducts]);
 
   var settings = {
     dots: true,

@@ -190,20 +190,56 @@ const OrdersManage = () =>
             title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
-            width: 150,
+            width: 170,
             align: 'center',
-            render: (status, record) => (
-                <Select
-                    value={status}
-                    size="small"
-                    style={{ width: 140 }}
-                    onChange={(val) => handleStatusChange(record.id, val)}
-                    options={Object.entries(statusConfig).map(([key, val]) => ({
-                        value: key,
-                        label: <Tag color={val.color} style={{ margin: 0 }}>{val.label}</Tag>,
-                    }))}
-                />
-            ),
+            render: (status, record) =>
+            {
+                const colorMap = {
+                    Pending: { bg: '#fef3c7', border: '#fcd34d', text: '#b45309', icon: 'bx-time-five' },
+                    Confirmed: { bg: '#dbeafe', border: '#93c5fd', text: '#1d4ed8', icon: 'bx-check-circle' },
+                    Shipping: { bg: '#e0e7ff', border: '#a5b4fc', text: '#4338ca', icon: 'bx-package' },
+                    Completed: { bg: '#d1fae5', border: '#6ee7b7', text: '#065f46', icon: 'bx-check-double' },
+                    Cancelled: { bg: '#fee2e2', border: '#fca5a5', text: '#b91c1c', icon: 'bx-x-circle' },
+                };
+                return (
+                    <Select
+                        value={status}
+                        size="small"
+                        style={{ width: 158 }}
+                        onChange={(val) => handleStatusChange(record.id, val)}
+                        popupMatchSelectWidth={false}
+                        variant="borderless"
+                        labelRender={({ value: v }) =>
+                        {
+                            const cm = colorMap[v] || colorMap.Pending;
+                            const lb = statusConfig[v]?.label || v;
+                            return (
+                                <span style={{
+                                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                                    padding: '2px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+                                    background: cm.bg, color: cm.text, border: `1px solid ${cm.border}`,
+                                }}>
+                                    <i className={`bx ${cm.icon}`} style={{ fontSize: 13 }}></i>
+                                    {lb}
+                                </span>
+                            );
+                        }}
+                        options={Object.entries(statusConfig).map(([key, val]) =>
+                        {
+                            const cm = colorMap[key] || colorMap.Pending;
+                            return {
+                                value: key,
+                                label: (
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, color: cm.text }}>
+                                        <i className={`bx ${cm.icon}`} style={{ fontSize: 14 }}></i>
+                                        {val.label}
+                                    </span>
+                                ),
+                            };
+                        })}
+                    />
+                );
+            },
         },
         {
             title: 'Ngày đặt',

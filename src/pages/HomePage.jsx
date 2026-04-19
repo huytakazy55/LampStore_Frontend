@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { ToastContainer } from 'react-toastify';
 import Header from '../components/user/MainPage/Header/Header';
 import NavbarPrimary from '../components/user/MainPage/NavbarPrimary/NavbarPrimary';
@@ -14,7 +15,7 @@ import ScrollTimeline from '../components/common/ScrollTimeline';
 // === Code Splitting: Lazy load các component nặng ===
 // Chỉ load JS bundle khi component thực sự cần render
 const CategorySale = lazy(() => import('../components/user/MainPage/CategorySale/CategorySale'));
-const FeatureList = lazy(() => import('../components/user/MainPage/FeatureList/FeatureList'));
+
 const ProductCarousel = lazy(() => import('../components/user/MainPage/ProductCarousel/ProductCarousel'));
 const SectionProductCardCarousel = lazy(() => import('../components/user/MainPage/SectionProductCardCarousel/SectionProductCardCarousel'));
 const NewsSection = lazy(() => import('../components/user/MainPage/NewsSection/NewsSection'));
@@ -30,16 +31,21 @@ const SectionSpinner = ({ height = '200px' }) => (
   </div>
 );
 
-const HomePage = () => {
-  useEffect(() => {
-    const initializeNotifications = async () => {
-      try {
+const HomePage = () =>
+{
+  useEffect(() =>
+  {
+    const initializeNotifications = async () =>
+    {
+      try
+      {
         await NotificationService.setupSignalRNotifications();
         NotificationService.requestNotificationPermission();
         NotificationService.cleanOldNotifications();
 
         console.log('📢 HomePage: Notification system initialized for user');
-      } catch (error) {
+      } catch (error)
+      {
         console.error('❌ HomePage: Failed to initialize notifications:', error);
       }
     };
@@ -49,6 +55,25 @@ const HomePage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>CapyLumine - Đèn Ngủ & Đèn Trang Trí Cao Cấp | Đèn LED Nghệ Thuật, Đèn Bàn, Đèn Anime</title>
+        <meta name="description" content="CapyLumine - Cửa hàng đèn trang trí cao cấp hàng đầu Việt Nam. Chuyên đèn ngủ dễ thương, đèn bàn học, đèn LED nghệ thuật, đèn anime, đèn hình thú Capybara, đèn trái cây, đèn treo tường. Thiết kế độc đáo, ánh sáng ấm áp, an toàn cho mắt. Giao hàng toàn quốc, đổi trả miễn phí 15 ngày. Giá từ 99.000₫." />
+        <link rel="canonical" href="https://capylumine.com/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="CapyLumine - Đèn Ngủ & Đèn Trang Trí Cao Cấp" />
+        <meta property="og:description" content="Khám phá bộ sưu tập đèn ngủ dễ thương, đèn LED nghệ thuật, đèn anime, đèn hình thú Capybara. Thiết kế sang trọng, ánh sáng ấm áp. Giao hàng toàn quốc, đổi trả miễn phí 15 ngày." />
+        <meta property="og:url" content="https://capylumine.com/" />
+        <meta property="og:site_name" content="CapyLumine" />
+        <meta property="og:locale" content="vi_VN" />
+        <meta property="og:image" content="https://capylumine.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="CapyLumine - Đèn trang trí cao cấp" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="CapyLumine - Đèn Ngủ & Đèn Trang Trí Cao Cấp" />
+        <meta name="twitter:description" content="Đèn ngủ dễ thương, đèn LED nghệ thuật, đèn anime, đèn hình thú. Giao hàng toàn quốc, đổi trả miễn phí." />
+        <meta name="twitter:image" content="https://capylumine.com/og-image.png" />
+      </Helmet>
       <CustomScrollbar>
         {/* === ABOVE THE FOLD: Load ngay lập tức === */}
         <TopBar />
@@ -73,12 +98,7 @@ const HomePage = () => {
           </LazySection>
         </div>
 
-        {/* FeatureList - nhẹ, load sớm */}
-        <LazySection height="80px">
-          <Suspense fallback={<SectionSpinner height="80px" />}>
-            <FeatureList />
-          </Suspense>
-        </LazySection>
+
 
         {/* ProductCarousel - nặng, fetch products */}
         <div data-section="products" data-label="Sản phẩm">
