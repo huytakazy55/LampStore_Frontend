@@ -1,10 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 const plugin = require("tailwindcss/plugin");
+const colors = require('tailwindcss/colors');
+
 export default {
   darkMode: 'class',
   content: ["./src/**/*.{js,jsx,ts,tsx}"], // Đảm bảo Tailwind quét tất cả file React
   theme: {
     extend: {
+      colors: {
+        primary: colors.amber,
+        secondary: colors.yellow,
+      },
       fontFamily: {
         sans: [
           "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen",

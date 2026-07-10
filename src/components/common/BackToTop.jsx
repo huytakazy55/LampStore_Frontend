@@ -137,7 +137,7 @@ const BackToTop = () => {
         </svg>
 
         {/* Arrow icon */}
-        <i className='bx bx-chevron-up text-xl text-gray-600 group-hover:text-amber-600 transition-colors duration-200 relative z-10'></i>
+        <i className='bx bx-chevron-up text-xl text-gray-600 group-hover:text-primary-600 transition-colors duration-200 relative z-10'></i>
       </button>
     </>,
     document.body

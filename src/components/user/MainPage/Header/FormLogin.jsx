@@ -407,7 +407,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                                 />
                             </div>
                             <div>
-                                <p onClick={ChangeFormLogin}>Don't have an account? <a className='ml-1 text-yellow-400' href="#">Register</a></p>
+                                <p onClick={ChangeFormLogin}>Don't have an account? <a className='ml-1 text-secondary-400' href="#">Register</a></p>
                             </div>
                         </form>
                         <form className={`absolute w-full transition-all duration-1000 ease-in-out ${!changeForm ? 'opacity-0 invisible rotate-90 top-[500px] left-[500px]' : 'visible opacity-100 rotate-0 top-0 left-0'}`} action="" autoComplete="off">
@@ -451,7 +451,7 @@ const FormLogin = ({ toggleLogin, setToggleLogin }) => {
                             </div>
                             <button className='w-full py-[5px] rounded-2xl mb-4 border-2 border-white' type="submit" onClick={handleSignup}>Đăng ký</button>
                             <div>
-                                <p onClick={ChangeFormLogin}>Đã có tài khoản? <a className='ml-1 text-yellow-400' href="#">Đăng nhập ngay</a></p>
+                                <p onClick={ChangeFormLogin}>Đã có tài khoản? <a className='ml-1 text-secondary-400' href="#">Đăng nhập ngay</a></p>
                             </div>
                         </form>
                     </div>

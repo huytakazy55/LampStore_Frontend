@@ -233,7 +233,7 @@ const WishlistPage = () =>
 
                                         {/* Stats */}
                                         <div className='flex items-center text-xs text-gray-400 mb-3'>
-                                            <i className='bx bx-purchase-tag text-yellow-500 mr-1'></i>
+                                            <i className='bx bx-purchase-tag text-secondary-500 mr-1'></i>
                                             Đã bán {item.sellCount || 0}
                                         </div>
 

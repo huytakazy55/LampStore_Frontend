@@ -288,8 +288,8 @@ const AdminChatDashboard = () => {
       </div>
     ),
     inProgress: (
-      <div className="bg-yellow-100 p-1 rounded-full">
-        <UserOutlined className="text-yellow-500 text-base" />
+      <div className="bg-secondary-100 p-1 rounded-full">
+        <UserOutlined className="text-secondary-500 text-base" />
       </div>
     ),
     resolved: (
@@ -402,7 +402,7 @@ const AdminChatDashboard = () => {
         </Col>
         <Col flex={1}>
           <div
-            className="bg-white rounded-xl shadow-lg p-2 flex items-center min-w-[100px] border-l-8 border-yellow-400 hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
+            className="bg-white rounded-xl shadow-lg p-2 flex items-center min-w-[100px] border-l-8 border-secondary-400 hover:scale-[1.03] hover:shadow-2xl transition-all duration-200"
             style={{ background: 'linear-gradient(135deg, #f8fafc 60%, #f1f5f9 100%)' }}
           >
             {chatIcons.inProgress}

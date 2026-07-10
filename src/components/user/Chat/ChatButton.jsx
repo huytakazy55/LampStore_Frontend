@@ -88,7 +88,7 @@ const ChatButton = () => {
         transition: 'all 0.35s cubic-bezier(.4,2,.6,1)',
         position: 'fixed',
         bottom: '110px',
-        right: '40px',
+        right: '96px',
         zIndex: 999,
       }}>
         {isChatOpen && (

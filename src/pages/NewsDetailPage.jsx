@@ -117,7 +117,7 @@ const NewsDetailPage = () =>
                         <p className="text-gray-500 mb-6">Bài viết có thể đã bị xóa hoặc không tồn tại.</p>
                         <button
                             onClick={() => navigate('/news')}
-                            className="px-6 py-2.5 bg-yellow-400 text-white font-medium rounded-full hover:bg-yellow-500 transition-colors shadow-md"
+                            className="px-6 py-2.5 bg-secondary-400 text-white font-medium rounded-full hover:bg-secondary-500 transition-colors shadow-md"
                         >
                             Quay lại trang tin tức
                         </button>
@@ -188,7 +188,7 @@ const NewsDetailPage = () =>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0">
                     <div className="w-full xl:mx-auto xl:max-w-[900px] px-4 xl:px-0 pb-8 md:pb-12">
-                        <span className="inline-block bg-yellow-400 text-white text-xs font-bold px-3 py-1.5 rounded-full mb-4 shadow-lg">
+                        <span className="inline-block bg-secondary-400 text-white text-xs font-bold px-3 py-1.5 rounded-full mb-4 shadow-lg">
                             {article.category}
                         </span>
                         <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-3 drop-shadow-lg">
@@ -212,9 +212,9 @@ const NewsDetailPage = () =>
 
                     {/* Breadcrumb */}
                     <nav className="flex items-center gap-2 text-sm text-gray-400 py-6">
-                        <a href="/" className="hover:text-yellow-500 transition-colors">Trang chủ</a>
+                        <a href="/" className="hover:text-secondary-500 transition-colors">Trang chủ</a>
                         <i className='bx bx-chevron-right text-xs'></i>
-                        <a href="/news" className="hover:text-yellow-500 transition-colors">Tin tức</a>
+                        <a href="/news" className="hover:text-secondary-500 transition-colors">Tin tức</a>
                         <i className='bx bx-chevron-right text-xs'></i>
                         <span className="text-gray-600 font-medium truncate max-w-[200px]">{article.title}</span>
                     </nav>
@@ -224,7 +224,7 @@ const NewsDetailPage = () =>
                         <div className="p-6 md:p-10 lg:p-12">
 
                             {/* Excerpt as lead paragraph */}
-                            <p className="text-lg md:text-xl text-gray-700 font-medium leading-relaxed mb-8 border-l-4 border-yellow-400 pl-5 bg-yellow-50/50 py-4 pr-4 rounded-r-lg italic">
+                            <p className="text-lg md:text-xl text-gray-700 font-medium leading-relaxed mb-8 border-l-4 border-secondary-400 pl-5 bg-secondary-50/50 py-4 pr-4 rounded-r-lg italic">
                                 {article.excerpt}
                             </p>
 
@@ -239,9 +239,9 @@ const NewsDetailPage = () =>
                                         [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul]:text-gray-600
                                         [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol]:text-gray-600
                                         [&_li]:mb-2 [&_li]:leading-relaxed
-                                        [&_blockquote]:border-l-4 [&_blockquote]:border-yellow-400 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_blockquote]:my-6
+                                        [&_blockquote]:border-l-4 [&_blockquote]:border-secondary-400 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_blockquote]:my-6
                                         [&_strong]:font-bold [&_strong]:text-gray-800
-                                        [&_a]:text-yellow-600 [&_a]:underline [&_a]:hover:text-yellow-700
+                                        [&_a]:text-secondary-600 [&_a]:underline [&_a]:hover:text-secondary-700
                                         [&_img]:rounded-xl [&_img]:shadow-md [&_img]:my-6 [&_img]:max-w-full"
                                     dangerouslySetInnerHTML={{ __html: article.content }}
                                 />
@@ -257,7 +257,7 @@ const NewsDetailPage = () =>
                                                 return (
                                                     <div key={idx} className="mb-6">
                                                         <h3 className="text-lg font-bold text-gray-800 mb-2 flex items-start gap-3">
-                                                            <span className="flex-shrink-0 w-8 h-8 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-sm">
+                                                            <span className="flex-shrink-0 w-8 h-8 bg-secondary-400 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-sm">
                                                                 {numberMatch[1]}
                                                             </span>
                                                             <span>{numberMatch[2]}</span>
@@ -270,7 +270,7 @@ const NewsDetailPage = () =>
                                             {
                                                 return (
                                                     <div key={idx} className="flex items-start gap-3 mb-3 pl-2">
-                                                        <i className='bx bx-check-circle text-yellow-500 text-lg mt-0.5 flex-shrink-0'></i>
+                                                        <i className='bx bx-check-circle text-secondary-500 text-lg mt-0.5 flex-shrink-0'></i>
                                                         <p className="text-base text-gray-600 leading-relaxed">{text.substring(2)}</p>
                                                     </div>
                                                 );
@@ -290,13 +290,13 @@ const NewsDetailPage = () =>
                             {/* Tags */}
                             <div className="flex flex-wrap items-center gap-2 mt-10 pt-8 border-t border-gray-100">
                                 <span className="text-sm font-semibold text-gray-500 mr-2">Tags:</span>
-                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-yellow-50 hover:text-yellow-600 transition-colors cursor-pointer">
+                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-secondary-50 hover:text-secondary-600 transition-colors cursor-pointer">
                                     #{article.category}
                                 </span>
-                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-yellow-50 hover:text-yellow-600 transition-colors cursor-pointer">
+                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-secondary-50 hover:text-secondary-600 transition-colors cursor-pointer">
                                     #đèn trang trí
                                 </span>
-                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-yellow-50 hover:text-yellow-600 transition-colors cursor-pointer">
+                                <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full hover:bg-secondary-50 hover:text-secondary-600 transition-colors cursor-pointer">
                                     #nội thất
                                 </span>
                             </div>
@@ -333,7 +333,7 @@ const NewsDetailPage = () =>
                     {relatedArticles.length > 0 && (
                         <div className="mb-12">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-1 h-6 bg-yellow-400 rounded-full"></div>
+                                <div className="w-1 h-6 bg-secondary-400 rounded-full"></div>
                                 <h3 className="text-xl font-bold text-gray-800">Bài viết liên quan</h3>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -351,7 +351,7 @@ const NewsDetailPage = () =>
                                                 loading="lazy"
                                             />
                                             <div className="absolute top-2.5 left-2.5">
-                                                <span className="bg-yellow-400/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                                <span className="bg-secondary-400/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                                                     {news.category}
                                                 </span>
                                             </div>
@@ -361,7 +361,7 @@ const NewsDetailPage = () =>
                                                 <i className='bx bx-calendar'></i>
                                                 {new Date(news.createdAt).toLocaleDateString('vi-VN')}
                                             </p>
-                                            <h4 className="text-sm font-bold text-gray-800 line-clamp-2 group-hover:text-yellow-600 transition-colors leading-snug">
+                                            <h4 className="text-sm font-bold text-gray-800 line-clamp-2 group-hover:text-secondary-600 transition-colors leading-snug">
                                                 {news.title}
                                             </h4>
                                         </div>
@@ -375,7 +375,7 @@ const NewsDetailPage = () =>
                     <div className="text-center pb-12">
                         <button
                             onClick={() => navigate('/news')}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-full hover:border-yellow-400 hover:text-yellow-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 font-medium rounded-full hover:border-secondary-400 hover:text-secondary-600 transition-all duration-200 shadow-sm hover:shadow-md"
                         >
                             <i className='bx bx-arrow-back text-lg'></i>
                             Xem tất cả bài viết

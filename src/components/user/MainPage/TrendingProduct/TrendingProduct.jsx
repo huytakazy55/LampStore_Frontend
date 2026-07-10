@@ -116,7 +116,7 @@ const TrendingProduct = () =>
     return (
       <div className='w-full py-8 md:py-16 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400 mx-auto"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary-400 mx-auto"></div>
           <p className="mt-3 text-gray-500 text-sm">Đang tải sản phẩm thịnh hành...</p>
         </div>
       </div>
@@ -125,7 +125,7 @@ const TrendingProduct = () =>
 
   return (
     <div className='w-full xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0 mb-8'>
-      <div className='relative pb-2 border-b border-gray-300 mb-6 md:mb-8 after:w-[30%] md:after:w-[13%] after:h-[1px] after:absolute after:bottom-0 after:bg-yellow-400'>
+      <div className='relative pb-2 border-b border-gray-300 mb-6 md:mb-8 after:w-[30%] md:after:w-[13%] after:h-[1px] after:absolute after:bottom-0 after:bg-secondary-400'>
         <h3 className='text-sm md:text-h3 font-medium text-black'>Sản phẩm thịnh hành</h3>
       </div>
       <div>
@@ -161,11 +161,11 @@ const TrendingProduct = () =>
                       </div>
                     </div>
                     <div className='mt-auto flex justify-between items-center'>
-                      <div className='text-xs md:text-normal font-bold text-yellow-600'>
+                      <div className='text-xs md:text-normal font-bold text-secondary-600'>
                         {formatPrice(price)}<span>₫</span>
                       </div>
                       <div
-                        className='w-7 h-7 md:w-9 md:h-9 rounded-sm bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-yellow-400 transition-colors flex justify-center items-center'
+                        className='w-7 h-7 md:w-9 md:h-9 rounded-sm bg-gray-300 -mt-[1px] cursor-pointer group-hover:bg-secondary-400 transition-colors flex justify-center items-center'
                         onClick={(e) =>
                         {
                           e.stopPropagation();

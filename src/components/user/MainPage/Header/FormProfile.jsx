@@ -172,7 +172,7 @@ const FormProfile = ({ popupProfileRef, toggleProfile, setToggleProfile }) =>
         className={`relative w-[95%] max-w-[820px] bg-white dark:bg-gray-900 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] overflow-hidden transition-all duration-300 ${toggleProfile ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
 
         {/* Header */}
-        <div className='relative bg-gradient-to-r from-rose-600 to-amber-500 px-6 py-5 overflow-hidden'>
+        <div className='relative bg-gradient-to-r from-rose-600 to-primary-500 px-6 py-5 overflow-hidden'>
           <div className='absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2'></div>
           <div className='absolute bottom-0 left-16 w-20 h-20 bg-white/5 rounded-full translate-y-1/2'></div>
           <div className='relative z-10'>
@@ -289,7 +289,7 @@ const FormProfile = ({ popupProfileRef, toggleProfile, setToggleProfile }) =>
                   {/* Submit */}
                   <div className='flex justify-end'>
                     <button
-                      className='flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-rose-600 to-amber-500 hover:from-rose-700 hover:to-amber-600 text-white text-sm font-semibold rounded-lg shadow-md shadow-rose-200 dark:shadow-rose-900/30 transition-all cursor-pointer'
+                      className='flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-rose-600 to-primary-500 hover:from-rose-700 hover:to-primary-600 text-white text-sm font-semibold rounded-lg shadow-md shadow-rose-200 dark:shadow-rose-900/30 transition-all cursor-pointer'
                       type='submit'>
                       <i className='bx bx-check-circle text-base'></i>
                       Lưu thay đổi

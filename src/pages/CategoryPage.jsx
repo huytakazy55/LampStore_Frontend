@@ -143,7 +143,7 @@ const CategoryPage = () =>
 
                         {/* Breadcrumb */}
                         <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-                            <span className="hover:text-amber-600 cursor-pointer" onClick={() => navigate('/')}>Trang chủ</span>
+                            <span className="hover:text-primary-600 cursor-pointer" onClick={() => navigate('/')}>Trang chủ</span>
                             <i className='bx bx-chevron-right text-xs'></i>
                             <span className="text-gray-800 font-medium">Danh mục sản phẩm</span>
                         </div>
@@ -156,7 +156,7 @@ const CategoryPage = () =>
 
                         {loading ? (
                             <div className="flex justify-center items-center h-64">
-                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-500"></div>
+                                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500"></div>
                             </div>
                         ) : (
                             <div className="flex flex-col lg:flex-row gap-6">
@@ -166,7 +166,7 @@ const CategoryPage = () =>
                                     <div className="bg-white rounded-sm border border-gray-200 overflow-hidden sticky top-4">
                                         <div className="p-4 bg-gray-900 text-white">
                                             <h3 className="text-sm font-semibold flex items-center gap-2">
-                                                <i className='bx bx-category text-amber-400'></i>
+                                                <i className='bx bx-category text-primary-400'></i>
                                                 Danh mục ({categories.length})
                                             </h3>
                                         </div>
@@ -175,7 +175,7 @@ const CategoryPage = () =>
                                                 <div
                                                     key={cat.id}
                                                     className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-200 ${String(activeCategory) === String(cat.id)
-                                                        ? 'bg-amber-50 border-l-[3px] border-amber-500 text-amber-700 font-semibold'
+                                                        ? 'bg-primary-50 border-l-[3px] border-primary-500 text-primary-700 font-semibold'
                                                         : 'border-l-[3px] border-transparent hover:bg-gray-50 text-gray-700 hover:text-gray-900'
                                                         }`}
                                                     onClick={() => setActiveCategory(String(cat.id))}
@@ -222,7 +222,7 @@ const CategoryPage = () =>
                                     {/* Products Grid */}
                                     {productsLoading ? (
                                         <div className="flex justify-center items-center h-48">
-                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
                                         </div>
                                     ) : products.length > 0 ? (
                                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
@@ -242,7 +242,7 @@ const CategoryPage = () =>
                                                     >
                                                         {/* Discount Badge */}
                                                         {hasDiscount && (
-                                                            <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
+                                                            <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
                                                                 -{discountPercent}%
                                                             </div>
                                                         )}
@@ -263,12 +263,12 @@ const CategoryPage = () =>
                                                             <p className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">
                                                                 {product.category?.name || activeCategoryData?.name || 'Đèn ngủ'}
                                                             </p>
-                                                            <h3 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-amber-700 transition-colors duration-200">
+                                                            <h3 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-primary-700 transition-colors duration-200">
                                                                 {product.name}
                                                             </h3>
                                                             <div className="flex items-end justify-between mt-2.5 pt-2.5 border-t border-gray-100">
                                                                 <div>
-                                                                    <div className="text-sm md:text-base font-bold text-amber-600">
+                                                                    <div className="text-sm md:text-base font-bold text-primary-600">
                                                                         {formatPrice(price)}<span className="text-[10px] font-normal ml-0.5">₫</span>
                                                                     </div>
                                                                     {hasDiscount && (
@@ -278,7 +278,7 @@ const CategoryPage = () =>
                                                                     )}
                                                                 </div>
                                                                 <button
-                                                                    className="w-8 h-8 md:w-9 md:h-9 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95"
+                                                                    className="w-8 h-8 md:w-9 md:h-9 rounded-sm bg-primary-50 text-primary-600 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary-200 group-hover:scale-105 active:scale-95"
                                                                     onClick={(e) =>
                                                                     {
                                                                         e.stopPropagation()

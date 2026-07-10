@@ -43,7 +43,7 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist
     >
       {/* Discount Badge */}
       {hasDiscount && (
-        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
+        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
           -{discountPercent}%
         </div>
       )}
@@ -78,14 +78,14 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist
         </p>
 
         {/* Title */}
-        <h3 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-amber-700 transition-colors duration-200">
+        <h3 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-primary-700 transition-colors duration-200">
           {product.name}
         </h3>
 
         {/* Price + Cart Row */}
         <div className="flex items-end justify-between mt-3 pt-3 border-t border-gray-100">
           <div>
-            <div className="text-base md:text-lg font-bold text-amber-600">
+            <div className="text-base md:text-lg font-bold text-primary-600">
               {formatPrice(price)}<span className="text-xs font-normal ml-0.5">₫</span>
             </div>
             {hasDiscount && (
@@ -95,7 +95,7 @@ const ProductCard = ({ product, isLast, navigate, onAddToCartClick, isInWishlist
             )}
           </div>
           <button
-            className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95"
+            className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-primary-50 text-primary-600 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary-200 group-hover:scale-105 active:scale-95"
             onClick={(e) =>
             {
               e.stopPropagation();
@@ -181,7 +181,7 @@ const ProductCarousel = () =>
     return (
       <div className='w-full py-8 md:py-16 mb-4 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400 mx-auto"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary-400 mx-auto"></div>
           <p className="mt-3 text-gray-500 text-sm">Đang tải sản phẩm...</p>
         </div>
       </div>
@@ -196,7 +196,7 @@ const ProductCarousel = () =>
             <button
               key={tab.key}
               className={`relative flex items-center gap-1.5 md:gap-2 px-5 md:px-7 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-semibold transition-all duration-300 ${activeTab === tab.key
-                ? 'bg-white dark:bg-gray-700 text-amber-600 dark:text-amber-400 shadow-md'
+                ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-md'
                 : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}
               onClick={() => setActiveTab(tab.key)}

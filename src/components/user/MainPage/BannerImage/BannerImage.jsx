@@ -28,7 +28,7 @@ const BannerImage = () => {
   if (loading) {
     return (
       <div className='w-full h-28 md:h-40 mt-8 md:mt-16 xl:mx-auto xl:max-w-[1440px] flex justify-center items-center px-4 xl:px-0'>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary-400"></div>
       </div>
     );
   }

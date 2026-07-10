@@ -89,7 +89,7 @@ const CategorySale = () =>
     return (
       <div className='w-full h-36 flex justify-center items-center mb-6 xl:mx-auto xl:max-w-[1440px]'>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary-400 mx-auto"></div>
           <p className="mt-2 text-gray-600">Đang tải danh mục... (React Query Cache)</p>
         </div>
       </div>
@@ -144,10 +144,10 @@ const CategorySale = () =>
                     </div>
                     <div className="flex justify-end">
                       <span
-                        className='inline-flex items-center text-yellow-600 group-hover:text-yellow-700 font-semibold text-sm transition-colors duration-200 whitespace-nowrap'
+                        className='inline-flex items-center text-secondary-600 group-hover:text-secondary-700 font-semibold text-sm transition-colors duration-200 whitespace-nowrap'
                       >
                         Xem ngay
-                        <i className='bx bx-chevron-right ml-1 text-lg bg-yellow-400 group-hover:bg-yellow-500 rounded-full text-white transition-colors duration-200 w-6 h-6 flex items-center justify-center'></i>
+                        <i className='bx bx-chevron-right ml-1 text-lg bg-secondary-400 group-hover:bg-secondary-500 rounded-full text-white transition-colors duration-200 w-6 h-6 flex items-center justify-center'></i>
                       </span>
                     </div>
                   </div>

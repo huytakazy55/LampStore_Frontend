@@ -17,7 +17,7 @@ const NotFoundPage = () =>
 
             <Header />
 
-            <div className="min-h-[70vh] bg-gradient-to-br from-gray-50 to-amber-50/30 flex items-center justify-center px-4">
+            <div className="min-h-[70vh] bg-gradient-to-br from-gray-50 to-primary-50/30 flex items-center justify-center px-4">
                 <div className="text-center max-w-lg">
                     {/* 404 Number */}
                     <div className="relative mb-6">
@@ -25,7 +25,7 @@ const NotFoundPage = () =>
                             404
                         </h1>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-200/50">
+                            <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-primary-400 to-primary-500 rounded-full flex items-center justify-center shadow-lg shadow-primary-200/50">
                                 <i className='bx bx-bulb text-4xl md:text-5xl text-white'></i>
                             </div>
                         </div>
@@ -44,14 +44,14 @@ const NotFoundPage = () =>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                         <button
                             onClick={() => navigate('/')}
-                            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold rounded-full hover:from-amber-600 hover:to-amber-700 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer"
+                            className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-full hover:from-primary-600 hover:to-primary-700 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <i className='bx bx-home text-lg'></i>
                             Về trang chủ
                         </button>
                         <button
                             onClick={() => navigate(-1)}
-                            className="w-full sm:w-auto px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:border-amber-400 hover:text-amber-600 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
+                            className="w-full sm:w-auto px-8 py-3 border border-gray-300 text-gray-700 font-medium rounded-full hover:border-primary-400 hover:text-primary-600 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <i className='bx bx-arrow-back text-lg'></i>
                             Quay lại
@@ -64,14 +64,14 @@ const NotFoundPage = () =>
                         <div className="flex items-center justify-center gap-4 text-sm">
                             <span
                                 onClick={() => navigate('/categories')}
-                                className="text-amber-600 hover:text-amber-700 hover:underline cursor-pointer transition-colors"
+                                className="text-primary-600 hover:text-primary-700 hover:underline cursor-pointer transition-colors"
                             >
                                 Danh mục
                             </span>
                             <span className="text-gray-300">•</span>
                             <span
                                 onClick={() => navigate('/news')}
-                                className="text-amber-600 hover:text-amber-700 hover:underline cursor-pointer transition-colors"
+                                className="text-primary-600 hover:text-primary-700 hover:underline cursor-pointer transition-colors"
                             >
                                 Tin tức
                             </span>

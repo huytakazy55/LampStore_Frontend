@@ -42,7 +42,7 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
     >
       {/* Discount Badge */}
       {hasDiscount && (
-        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
+        <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg">
           -{discountPercent}%
         </div>
       )}
@@ -65,14 +65,14 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
         </p>
 
         {/* Title */}
-        <h3 className='text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-amber-700 transition-colors duration-200'>
+        <h3 className='text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 leading-snug min-h-[2.4em] group-hover:text-primary-700 transition-colors duration-200'>
           {product.name}
         </h3>
 
         {/* Price + Cart */}
         <div className='flex items-end justify-between mt-2.5 pt-2.5 border-t border-gray-100'>
           <div>
-            <div className='text-sm md:text-base font-bold text-amber-600'>
+            <div className='text-sm md:text-base font-bold text-primary-600'>
               {formatPrice(price)}<span className='text-[10px] font-normal ml-0.5'>₫</span>
             </div>
             {hasDiscount && (
@@ -82,7 +82,7 @@ const SmallProductCard = ({ product, navigate, onAddToCartClick }) =>
             )}
           </div>
           <button
-            className='w-8 h-8 md:w-9 md:h-9 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
+            className='w-8 h-8 md:w-9 md:h-9 rounded-sm bg-primary-50 text-primary-600 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary-200 group-hover:scale-105 active:scale-95'
             onClick={(e) =>
             {
               e.stopPropagation();
@@ -112,7 +112,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
     >
       {/* Discount Badge */}
       {hasDiscount && (
-        <div className="inline-flex self-start bg-gradient-to-r from-red-500 to-rose-400 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg mb-2">
+        <div className="inline-flex self-start bg-gradient-to-r from-primary-500 to-secondary-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-sm shadow-lg mb-2">
           -{discountPercent}%
         </div>
       )}
@@ -123,7 +123,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
       </p>
 
       {/* Title */}
-      <h3 className='text-sm md:text-base font-semibold text-gray-800 line-clamp-2 group-hover:text-amber-700 transition-colors duration-200'>
+      <h3 className='text-sm md:text-base font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-700 transition-colors duration-200'>
         {product.name}
       </h3>
 
@@ -146,7 +146,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
           return (
             <img
               key={i}
-              className='w-12 h-12 md:w-16 md:h-16 border border-gray-200 rounded-sm object-cover hover:border-amber-400 transition-colors'
+              className='w-12 h-12 md:w-16 md:h-16 border border-gray-200 rounded-sm object-cover hover:border-primary-400 transition-colors'
               src={src}
               alt=""
               loading="lazy"
@@ -159,7 +159,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
       {/* Price + Cart */}
       <div className='mt-auto flex justify-between items-end pt-3 border-t border-gray-100'>
         <div>
-          <div className='text-base md:text-lg font-bold text-amber-600'>
+          <div className='text-base md:text-lg font-bold text-primary-600'>
             {formatPrice(price)}<span className='text-xs font-normal ml-0.5'>₫</span>
           </div>
           {hasDiscount && (
@@ -169,7 +169,7 @@ const BigProductCard = ({ product, navigate, onAddToCartClick }) =>
           )}
         </div>
         <button
-          className='w-9 h-9 md:w-10 md:h-10 rounded-sm bg-amber-50 text-amber-600 flex items-center justify-center transition-all duration-300 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-amber-200 group-hover:scale-105 active:scale-95'
+          className='w-9 h-9 md:w-10 md:h-10 rounded-sm bg-primary-50 text-primary-600 flex items-center justify-center transition-all duration-300 group-hover:bg-primary-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary-200 group-hover:scale-105 active:scale-95'
           onClick={(e) =>
           {
             e.stopPropagation();
@@ -231,7 +231,7 @@ const BestSeller = () =>
     return (
       <div className='w-full py-8 md:py-16 bg-gray-100 flex justify-center items-center'>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400 mx-auto"></div>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary-400 mx-auto"></div>
           <p className="mt-3 text-gray-500 text-sm">Đang tải sản phẩm bán chạy...</p>
         </div>
       </div>
@@ -241,11 +241,11 @@ const BestSeller = () =>
   return (
     <div className='w-full bg-transparent'>
       <div className='xl:mx-auto xl:max-w-[1440px] px-4 xl:px-0'>
-        <div className='border-b border-gray-300 pb-1 relative mb-6 md:mb-8 pt-4 md:pt-6 flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 after:w-1/12 after:h-[1px] after:absolute after:bottom-0 after:bg-yellow-400'>
+        <div className='border-b border-gray-300 pb-1 relative mb-6 md:mb-8 pt-4 md:pt-6 flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 after:w-1/12 after:h-[1px] after:absolute after:bottom-0 after:bg-secondary-400'>
           <h3 className='text-sm md:text-h3 font-medium text-black'>Bán chạy nhất</h3>
           <div className='text-xs md:text-normal flex justify-start sm:justify-end gap-4 md:gap-8 items-center font-medium overflow-x-auto pr-1'>
             <button
-              className={`transition-colors whitespace-nowrap ${!activeCategory ? 'text-yellow-600 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`transition-colors whitespace-nowrap ${!activeCategory ? 'text-secondary-600 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
               onClick={() => setActiveCategory(null)}
             >
               Tất cả
@@ -253,7 +253,7 @@ const BestSeller = () =>
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                className={`transition-colors whitespace-nowrap ${activeCategory === cat.id ? 'text-yellow-600 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`transition-colors whitespace-nowrap ${activeCategory === cat.id ? 'text-secondary-600 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
                 onClick={() => setActiveCategory(cat.id)}
               >
                 {cat.name}

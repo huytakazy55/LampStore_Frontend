@@ -5,7 +5,7 @@ const features = [
     icon: 'bx-rocket',
     title: 'Miễn phí vận chuyển',
     desc: 'Đơn hàng từ 500K',
-    gradient: 'from-amber-500 to-orange-500',
+    gradient: 'from-primary-500 to-secondary-500',
   },
   {
     icon: 'bx-like',
@@ -29,7 +29,7 @@ const features = [
     icon: 'bx-crown',
     title: 'Thương hiệu chính hãng',
     desc: 'Cam kết chất lượng',
-    gradient: 'from-rose-500 to-pink-500',
+    gradient: 'from-primary-500 to-pink-500',
     colSpan: true,
   },
 ]
@@ -45,7 +45,7 @@ const FeatureList = () =>
             className={`group relative flex items-center gap-3 md:gap-4 p-4 md:p-5 rounded-xl 
               bg-white dark:bg-gray-800/60 
               border border-gray-100 dark:border-gray-700/50
-              hover:border-amber-200 dark:hover:border-amber-500/30
+              hover:border-primary-200 dark:hover:border-primary-500/30
               shadow-sm hover:shadow-md dark:shadow-none
               transition-all duration-300 cursor-default
               ${feature.colSpan ? 'col-span-2 md:col-span-1' : ''}`}

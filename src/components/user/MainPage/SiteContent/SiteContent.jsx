@@ -87,8 +87,8 @@ export const SiteContent = () => {
                 />
               </div>
               {/* Decorative accent */}
-              <div className="absolute -bottom-3 -left-3 w-24 h-24 md:w-32 md:h-32 border-2 border-amber-400/30 rounded-sm -z-10" />
-              <div className="absolute -top-3 -right-3 w-20 h-20 md:w-28 md:h-28 border-2 border-amber-400/20 rounded-sm -z-10" />
+              <div className="absolute -bottom-3 -left-3 w-24 h-24 md:w-32 md:h-32 border-2 border-primary-400/30 rounded-sm -z-10" />
+              <div className="absolute -top-3 -right-3 w-20 h-20 md:w-28 md:h-28 border-2 border-primary-400/20 rounded-sm -z-10" />
             </div>
           </div>
 
@@ -96,17 +96,17 @@ export const SiteContent = () => {
           <div className="w-full lg:w-[55%]">
             {/* Tagline */}
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-3 h-3 bg-amber-500 rounded-sm" />
-              <span className="text-amber-600 text-xs md:text-sm font-semibold tracking-[0.15em] uppercase">
+              <div className="w-3 h-3 bg-primary-500 rounded-sm" />
+              <span className="text-primary-600 text-xs md:text-sm font-semibold tracking-[0.15em] uppercase">
                 Về Lumina Home
               </span>
             </div>
 
             {/* Heading */}
             <h2 className="text-gray-900 text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-bold leading-tight mb-4 md:mb-5 whitespace-nowrap">
-              Đèn Ngủ Cao Cấp — <span className="text-amber-600">{displayText}</span>
+              Đèn Ngủ Cao Cấp — <span className="text-primary-600">{displayText}</span>
               <span
-                className="inline-block w-[2px] md:w-[3px] h-[1em] bg-amber-500 ml-0.5 align-baseline"
+                className="inline-block w-[2px] md:w-[3px] h-[1em] bg-primary-500 ml-0.5 align-baseline"
                 style={{ animation: 'blink 0.7s step-end infinite' }}
               />
             </h2>
@@ -119,8 +119,8 @@ export const SiteContent = () => {
             {/* Feature badges */}
             <div className="grid grid-cols-2 gap-4 mb-6 md:mb-8">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 md:w-11 md:h-11 bg-amber-50 border border-amber-200 rounded-sm flex items-center justify-center flex-shrink-0">
-                  <i className='bx bxs-check-shield text-amber-500 text-lg md:text-xl' />
+                <div className="w-10 h-10 md:w-11 md:h-11 bg-primary-50 border border-primary-200 rounded-sm flex items-center justify-center flex-shrink-0">
+                  <i className='bx bxs-check-shield text-primary-500 text-lg md:text-xl' />
                 </div>
                 <div>
                   <h4 className="text-gray-800 text-xs md:text-sm font-semibold mb-0.5">Bảo Hành 12 Tháng</h4>
@@ -128,8 +128,8 @@ export const SiteContent = () => {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 md:w-11 md:h-11 bg-amber-50 border border-amber-200 rounded-sm flex items-center justify-center flex-shrink-0">
-                  <i className='bx bxs-truck text-amber-500 text-lg md:text-xl' />
+                <div className="w-10 h-10 md:w-11 md:h-11 bg-primary-50 border border-primary-200 rounded-sm flex items-center justify-center flex-shrink-0">
+                  <i className='bx bxs-truck text-primary-500 text-lg md:text-xl' />
                 </div>
                 <div>
                   <h4 className="text-gray-800 text-xs md:text-sm font-semibold mb-0.5">Giao Hàng Toàn Quốc</h4>
@@ -142,7 +142,7 @@ export const SiteContent = () => {
             <div className="flex flex-wrap items-center gap-4 md:gap-6">
               <button
                 onClick={() => navigate('/#products')}
-                className="bg-amber-500 hover:bg-amber-600 text-white text-xs md:text-sm font-semibold px-6 md:px-8 py-2.5 md:py-3 rounded-sm transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/25 active:scale-95 cursor-pointer flex items-center gap-2"
+                className="bg-primary-500 hover:bg-primary-600 text-white text-xs md:text-sm font-semibold px-6 md:px-8 py-2.5 md:py-3 rounded-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary-500/25 active:scale-95 cursor-pointer flex items-center gap-2"
               >
                 Khám Phá Ngay
                 <i className='bx bx-right-arrow-alt text-lg' />

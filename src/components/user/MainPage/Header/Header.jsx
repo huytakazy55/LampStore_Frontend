@@ -250,12 +250,12 @@ const Header = () =>
         {/* Logo */}
         <div className='flex-shrink-0'>
           <a href="/" className='flex items-center gap-2 no-underline group'>
-            <div className='w-10 h-10 md:w-14 md:h-14 rounded-lg overflow-hidden shadow-md group-hover:shadow-amber-300/50 transition-all duration-300 group-hover:scale-105'>
+            <div className='w-10 h-10 md:w-14 md:h-14 rounded-lg overflow-hidden shadow-md group-hover:shadow-primary-300/50 transition-all duration-300 group-hover:scale-105'>
               <img src={Logo} alt="CapyLumine" className='w-full h-full object-cover' />
             </div>
             <div className='hidden sm:block'>
               <div className='text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white transition-colors duration-300'>
-                Capy<span className='text-amber-500'>Lumine</span>
+                Capy<span className='text-primary-500'>Lumine</span>
               </div>
               <div className='text-[9px] md:text-[10px] text-gray-400 dark:text-gray-500 font-medium tracking-[0.15em] uppercase -mt-1 transition-colors duration-300'>
                 Premium Lighting
@@ -275,11 +275,11 @@ const Header = () =>
         </div>
 
         {/* Search bar - hidden on mobile, shown on md+ */}
-        <div className='hidden md:flex items-center bg-gray-50 dark:bg-gray-800 rounded-full w-2/5 lg:w-1/2 h-11 relative border-2 border-amber-400 dark:border-amber-500 focus-within:ring-2 focus-within:ring-amber-400/20 focus-within:bg-white dark:focus-within:bg-gray-900 transition-all duration-300 shadow-sm hover:shadow-md' ref={searchRef}>
+        <div className='hidden md:flex items-center bg-gray-50 dark:bg-gray-800 rounded-full w-2/5 lg:w-1/2 h-11 relative border-2 border-primary-400 dark:border-primary-500 focus-within:ring-2 focus-within:ring-primary-400/20 focus-within:bg-white dark:focus-within:bg-gray-900 transition-all duration-300 shadow-sm hover:shadow-md' ref={searchRef}>
           {/* Search icon */}
           <div className='flex items-center justify-center pl-4 pr-1'>
             {isSearching ? (
-              <i className='bx bx-loader-alt bx-spin text-amber-500 text-lg'></i>
+              <i className='bx bx-loader-alt bx-spin text-primary-500 text-lg'></i>
             ) : (
               <i className='bx bx-search text-gray-400 dark:text-gray-500 text-lg'></i>
             )}
@@ -319,14 +319,14 @@ const Header = () =>
                   {suggestions.categories.map((cat) => (
                     <div
                       key={`cat-${cat.id}`}
-                      className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors duration-150 group'
+                      className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150 group'
                       onClick={() => handleCategorySuggestionClick(cat)}
                     >
-                      <div className='w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-200 dark:group-hover:bg-amber-800/50 transition-colors'>
-                        <i className='bx bx-category text-amber-600 dark:text-amber-400 text-sm'></i>
+                      <div className='w-7 h-7 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/50 transition-colors'>
+                        <i className='bx bx-category text-primary-600 dark:text-primary-400 text-sm'></i>
                       </div>
                       <span className='text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white'>
-                        Tìm trong danh mục <strong className='text-amber-600 dark:text-amber-400'>"{cat.name}"</strong>
+                        Tìm trong danh mục <strong className='text-primary-600 dark:text-primary-400'>"{cat.name}"</strong>
                       </span>
                       <i className='bx bx-chevron-right text-gray-400 ml-auto text-lg'></i>
                     </div>
@@ -344,7 +344,7 @@ const Header = () =>
                       className='flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-150 group'
                       onClick={() => handleProductSuggestionClick(product)}
                     >
-                      <i className='bx bx-search text-gray-400 text-base group-hover:text-amber-500 transition-colors'></i>
+                      <i className='bx bx-search text-gray-400 text-base group-hover:text-primary-500 transition-colors'></i>
                       <span className='text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white truncate'>{product.name}</span>
                     </div>
                   ))}
@@ -354,7 +354,7 @@ const Header = () =>
           )}
 
           {/* Dropdown danh mục */}
-          <div className='hidden lg:flex items-center h-full relative w-[30%] border-l border-amber-300 dark:border-amber-600'>
+          <div className='hidden lg:flex items-center h-full relative w-[30%] border-l border-primary-300 dark:border-primary-600'>
             <div
               className='flex items-center justify-between w-full h-full px-4 cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 rounded-r-full'
               onClick={() => setArrowIcon(!arrowIcon)}
@@ -379,24 +379,24 @@ const Header = () =>
               <div className='py-1.5 max-h-[280px] overflow-y-auto custom-scrollbar'>
                 <div
                   className={`flex items-center gap-2.5 px-4 py-2.5 cursor-pointer transition-all duration-200 text-sm ${selectedCategory === ''
-                    ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold border-l-[3px] border-amber-400'
+                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold border-l-[3px] border-primary-400'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white hover:pl-5 border-l-[3px] border-transparent'
                     }`}
                   onClick={() => { setSelectedCategory(''); setArrowIcon(false); }}
                 >
-                  <i className={`bx bx-category text-base ${selectedCategory === '' ? 'text-amber-500' : 'text-gray-400'}`}></i>
+                  <i className={`bx bx-category text-base ${selectedCategory === '' ? 'text-primary-500' : 'text-gray-400'}`}></i>
                   Tất cả danh mục
                 </div>
                 {categories.map((category) => (
                   <div
                     key={category.id}
                     className={`flex items-center gap-2.5 px-4 py-2.5 cursor-pointer transition-all duration-200 text-sm ${String(selectedCategory) === String(category.id)
-                      ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold border-l-[3px] border-amber-400'
+                      ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 font-semibold border-l-[3px] border-primary-400'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white hover:pl-5 border-l-[3px] border-transparent'
                       }`}
                     onClick={() => { setSelectedCategory(String(category.id)); setArrowIcon(false); }}
                   >
-                    <i className={`bx bx-lamp text-base ${String(selectedCategory) === String(category.id) ? 'text-amber-500' : 'text-gray-400'}`}></i>
+                    <i className={`bx bx-lamp text-base ${String(selectedCategory) === String(category.id) ? 'text-primary-500' : 'text-gray-400'}`}></i>
                     {category.name}
                   </div>
                 ))}
@@ -410,8 +410,8 @@ const Header = () =>
           <ul className='flex justify-end lg:justify-between items-center gap-3 lg:gap-0'>
             {/* Dark mode toggle */}
             <li className='relative cursor-pointer' onClick={toggleDarkMode}>
-              <div className='w-8 h-8 flex items-center justify-center rounded-full transition-all duration-500 hover:bg-amber-100 dark:hover:bg-gray-700'>
-                <i className={`bx ${isDark ? 'bx-sun text-amber-400' : 'bx-moon text-indigo-500'} text-xl transition-all duration-500`}
+              <div className='w-8 h-8 flex items-center justify-center rounded-full transition-all duration-500 hover:bg-primary-100 dark:hover:bg-gray-700'>
+                <i className={`bx ${isDark ? 'bx-sun text-primary-400' : 'bx-moon text-indigo-500'} text-xl transition-all duration-500`}
                   style={{ transform: isDark ? 'rotate(360deg)' : 'rotate(0deg)' }}></i>
               </div>
             </li>
@@ -433,7 +433,7 @@ const Header = () =>
               <div className='relative'>
                 <i id='header-cart-icon' className='bx bx-shopping-bag text-h2 leading-none align-middle transition-transform duration-100 group-hover:-translate-y-[2px] group-hover:translate-x-[2px]'></i>
                 <FormCart popupRef={popupRef} toggleCart={toggleCart} setToggleCart={setToggleCart} />
-                <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-yellow-400 rounded-[50%] text-center text-xs leading-5 text-gray-700 font-medium'>{cartCount}</div>
+                <div className='absolute right-[-7px] bottom-[-10px] w-5 h-5 bg-secondary-400 rounded-[50%] text-center text-xs leading-5 text-gray-700 font-medium'>{cartCount}</div>
               </div>
               <div className='hidden lg:block text-small ml-1 p-[2px] relative font-medium'>
                 <div className='absolute w-1 h-1 -top-[2px] -left-[7px] text-small'>₫</div>
@@ -445,7 +445,7 @@ const Header = () =>
             {
               isAuthenticated ?
                 <>
-                  <li onClick={toggleActionLoginForm} ref={buttonActionRef} className='relative w-8 h-8 leading-8 border-2 border-yellow-400 rounded-[20%] p-[1px] cursor-pointer'>
+                  <li onClick={toggleActionLoginForm} ref={buttonActionRef} className='relative w-8 h-8 leading-8 border-2 border-secondary-400 rounded-[20%] p-[1px] cursor-pointer'>
                     <img className='rounded-[20%] h-full w-full ' src={avatarURL ? avatarURL : (avatar.ProfileAvatar ? (avatar.ProfileAvatar.startsWith('http') ? avatar.ProfileAvatar : `${API_ENDPOINT}${avatar.ProfileAvatar}`) : avatarimg)} alt="" />
                     <FormActionLogin toggleProfile={toggleProfile} setToggleProfile={setToggleProfile} buttonProfileRef={buttonProfileRef} popupActionRef={popupActionRef} toggleActionLogin={toggleActionLogin} setToggleActionLogin={setToggleActionLogin} />
                   </li>
@@ -462,10 +462,10 @@ const Header = () =>
 
       {/* Mobile search bar - shown below header on mobile */}
       <div className='md:hidden px-4 pb-3' ref={searchRef}>
-        <div className='flex items-center bg-gray-50 dark:bg-gray-800 rounded-full h-10 relative border-2 border-amber-400 dark:border-amber-500 focus-within:ring-2 focus-within:ring-amber-400/20 focus-within:bg-white dark:focus-within:bg-gray-900 transition-all duration-300 shadow-sm'>
+        <div className='flex items-center bg-gray-50 dark:bg-gray-800 rounded-full h-10 relative border-2 border-primary-400 dark:border-primary-500 focus-within:ring-2 focus-within:ring-primary-400/20 focus-within:bg-white dark:focus-within:bg-gray-900 transition-all duration-300 shadow-sm'>
           <div className='flex items-center justify-center pl-3.5 pr-1'>
             {isSearching ? (
-              <i className='bx bx-loader-alt bx-spin text-amber-500 text-base'></i>
+              <i className='bx bx-loader-alt bx-spin text-primary-500 text-base'></i>
             ) : (
               <i className='bx bx-search text-gray-400 dark:text-gray-500 text-base'></i>
             )}
@@ -498,9 +498,9 @@ const Header = () =>
             {suggestions.categories.length > 0 && (
               <div className='border-b border-gray-100 dark:border-gray-800'>
                 {suggestions.categories.map((cat) => (
-                  <div key={`mcat-${cat.id}`} className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors' onClick={() => handleCategorySuggestionClick(cat)}>
-                    <div className='w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0'><i className='bx bx-category text-amber-600 dark:text-amber-400 text-xs'></i></div>
-                    <span className='text-sm text-gray-700 dark:text-gray-300 truncate'>Danh mục <strong className='text-amber-600 dark:text-amber-400'>"{cat.name}"</strong></span>
+                  <div key={`mcat-${cat.id}`} className='flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors' onClick={() => handleCategorySuggestionClick(cat)}>
+                    <div className='w-6 h-6 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center flex-shrink-0'><i className='bx bx-category text-primary-600 dark:text-primary-400 text-xs'></i></div>
+                    <span className='text-sm text-gray-700 dark:text-gray-300 truncate'>Danh mục <strong className='text-primary-600 dark:text-primary-400'>"{cat.name}"</strong></span>
                   </div>
                 ))}
               </div>
@@ -536,7 +536,7 @@ const Header = () =>
                 {isAuthenticated ? (
                   <>
                     <div className='flex items-center gap-3 p-2 rounded-lg bg-gray-50'>
-                      <img className='w-10 h-10 rounded-full border-2 border-yellow-400' src={avatarURL ? avatarURL : (avatar.ProfileAvatar ? (avatar.ProfileAvatar.startsWith('http') ? avatar.ProfileAvatar : `${API_ENDPOINT}${avatar.ProfileAvatar}`) : avatarimg)} alt="" />
+                      <img className='w-10 h-10 rounded-full border-2 border-secondary-400' src={avatarURL ? avatarURL : (avatar.ProfileAvatar ? (avatar.ProfileAvatar.startsWith('http') ? avatar.ProfileAvatar : `${API_ENDPOINT}${avatar.ProfileAvatar}`) : avatarimg)} alt="" />
                       <span className='font-medium text-sm'>Tài khoản</span>
                     </div>
                     <div onClick={() => { toggleFormProfile(); setMobileMenuOpen(false); }} className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer'>
@@ -567,8 +567,8 @@ const Header = () =>
                 <h3 className='text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3'>Danh mục</h3>
                 <div className='space-y-1'>
                   {categories.map((category) => (
-                    <a key={category.id} href={`#category-${category.id}`} className='flex items-center gap-3 p-3 hover:bg-yellow-50 rounded-lg text-sm text-gray-700' onClick={() => setMobileMenuOpen(false)}>
-                      <i className='bx bx-lamp text-yellow-500'></i>
+                    <a key={category.id} href={`#category-${category.id}`} className='flex items-center gap-3 p-3 hover:bg-secondary-50 rounded-lg text-sm text-gray-700' onClick={() => setMobileMenuOpen(false)}>
+                      <i className='bx bx-lamp text-secondary-500'></i>
                       {category.name}
                     </a>
                   ))}

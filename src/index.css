@@ -159,11 +159,11 @@ code {
   background-color: #222222 !important;
 }
 
-.dark .bg-yellow-50 {
+.dark .bg-secondary-50 {
   background-color: #1a1500 !important;
 }
 
-.dark .bg-amber-50 {
+.dark .bg-primary-50 {
   background-color: #1a1500 !important;
 }
 
@@ -225,7 +225,7 @@ code {
   border-color: #404040 !important;
 }
 
-.dark .border-yellow-400 {
+.dark .border-secondary-400 {
   border-color: #b8860b !important;
 }
 
@@ -265,7 +265,7 @@ code {
 }
 
 /* --- Header area --- */
-.dark .border-yellow-400 {
+.dark .border-secondary-400 {
   border-color: #b8860b !important;
 }
 
@@ -273,15 +273,15 @@ code {
 /* bg-black is intentionally NOT overridden to preserve image overlays using bg-black/bg-opacity */
 
 /* --- NavbarPrimary --- */
-.dark .bg-yellow-400 {
+.dark .bg-secondary-400 {
   background-color: #2d2000 !important;
 }
 
-.dark .bg-yellow-400 .text-black {
+.dark .bg-secondary-400 .text-black {
   color: #fbbf24 !important;
 }
 
-.dark .bg-yellow-400 a {
+.dark .bg-secondary-400 a {
   color: #fbbf24 !important;
 }
 
@@ -296,7 +296,7 @@ code {
   background-color: #222222 !important;
 }
 
-.dark .hover\:bg-yellow-50:hover {
+.dark .hover\:bg-secondary-50:hover {
   background-color: #1a1500 !important;
 }
 

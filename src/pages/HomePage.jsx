@@ -27,7 +27,7 @@ const Newsletter = lazy(() => import('../components/user/MainPage/Newsletter/New
 // Fallback spinner cho Suspense
 const SectionSpinner = ({ height = '200px' }) => (
   <div className="w-full flex justify-center items-center" style={{ height }}>
-    <div className="w-8 h-8 border-2 border-gray-200 border-t-yellow-400 rounded-full animate-spin"></div>
+    <div className="w-8 h-8 border-2 border-gray-200 border-t-secondary-400 rounded-full animate-spin"></div>
   </div>
 );
 

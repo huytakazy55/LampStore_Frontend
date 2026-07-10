@@ -78,8 +78,8 @@ const ChatWindow = ({ onClose }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 1: return 'bg-green-100 text-green-800';
-      case 2: return 'bg-yellow-100 text-yellow-800';
-      case 3: return 'bg-blue-100 text-blue-800';
+      case 2: return 'bg-secondary-100 text-secondary-800';
+      case 3: return 'bg-primary-100 text-primary-800';
       case 4: return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -93,7 +93,7 @@ const ChatWindow = ({ onClose }) => {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 1: return 'bg-gray-100 text-gray-800';
-      case 2: return 'bg-blue-100 text-blue-800';
+      case 2: return 'bg-primary-100 text-primary-800';
       case 3: return 'bg-orange-100 text-orange-800';
       case 4: return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -476,7 +476,7 @@ const ChatWindow = ({ onClose }) => {
             <p>Chưa có cuộc trò chuyện nào</p>
             <button
               onClick={createNewChat}
-              className="mt-2 text-blue-600 hover:text-blue-800"
+              className="mt-2 text-primary-600 hover:text-primary-800"
             >
               Tạo chat hỗ trợ mới
             </button>
@@ -597,7 +597,7 @@ const ChatWindow = ({ onClose }) => {
                 )}
                 <div className={`px-3 py-2 rounded-lg ${
                   isFromCurrentUser
-                    ? 'bg-blue-600 text-white rounded-br-none'
+                    ? 'bg-primary-600 text-white rounded-br-none'
                     : 'bg-gray-200 text-gray-800 rounded-bl-none'
                 }`}>
                   {isFromAdmin && (
@@ -618,7 +618,7 @@ const ChatWindow = ({ onClose }) => {
                   </div>
                 </div>
                 {isFromCurrentUser && (
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                     U
                   </div>
                 )}
@@ -690,11 +690,11 @@ const ChatWindow = ({ onClose }) => {
   const renderNewChatView = () => (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+      <div className="bg-primary-600 text-white p-4 rounded-t-lg flex justify-between items-center">
         <div className="flex items-center">
           <button
             onClick={backToList}
-            className="mr-3 hover:bg-blue-700 p-1 rounded"
+            className="mr-3 hover:bg-primary-700 p-1 rounded"
           >
             ←
           </button>
@@ -702,7 +702,7 @@ const ChatWindow = ({ onClose }) => {
         </div>
         <button
           onClick={onClose}
-          className="hover:bg-blue-700 p-1 rounded"
+          className="hover:bg-primary-700 p-1 rounded"
         >
           <Minimize2 size={20} />
         </button>
@@ -718,7 +718,7 @@ const ChatWindow = ({ onClose }) => {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="Mô tả ngắn gọn vấn đề của bạn"
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
         <div>
@@ -728,7 +728,7 @@ const ChatWindow = ({ onClose }) => {
           <select
             value={priority}
             onChange={(e) => setPriority(parseInt(e.target.value))}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             {priorityOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -746,13 +746,13 @@ const ChatWindow = ({ onClose }) => {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Mô tả chi tiết vấn đề bạn đang gặp phải..."
             rows={4}
-            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
         <button
           onClick={handleCreateChat}
           disabled={!subject.trim() || creating}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {creating ? 'Đang tạo...' : 'Tạo yêu cầu hỗ trợ'}
         </button>

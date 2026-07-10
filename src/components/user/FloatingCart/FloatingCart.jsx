@@ -283,7 +283,7 @@ const FloatingCart = () =>
 
                     {/* Badge */}
                     {cartCount > 0 && (
-                        <div className={`absolute -top-1.5 -right-1.5 min-w-[22px] h-[22px] px-1 rounded-full bg-yellow-400 text-gray-800 text-xs font-bold flex items-center justify-center shadow-md transition-transform ${bounce ? 'animate-badgePop' : ''
+                        <div className={`absolute -top-1.5 -right-1.5 min-w-[22px] h-[22px] px-1 rounded-full bg-secondary-400 text-gray-800 text-xs font-bold flex items-center justify-center shadow-md transition-transform ${bounce ? 'animate-badgePop' : ''
                             }`}>
                             {cartCount > 99 ? '99+' : cartCount}
                         </div>
